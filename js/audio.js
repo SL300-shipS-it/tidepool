@@ -68,8 +68,10 @@ const SFX = {
   unlock: () => seq([[60, .25], [64, .25], [67, .25], [72, 1]], 260),
 };
 
+const SILENT = new URLSearchParams(location.search).has("fast"); // automated playtests never make sound
+
 export function sfx(name) {
-  if (!ctx || muted) return;
+  if (!ctx || muted || SILENT) return;
   try { if (ctx.state === "suspended") ctx.resume(); (SFX[name] || (() => {}))(); } catch {}
 }
 export const SFX_NAMES = Object.keys(SFX);

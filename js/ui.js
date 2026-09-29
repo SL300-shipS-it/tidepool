@@ -97,7 +97,8 @@ export function setSpeaker(name) {
 }
 
 // Types one box of text; first tap completes it, next tap advances.
-export async function say(text, { speed = CONFIG.TEXT_SPEED_MS, wait = true } = {}) {
+const FAST = new URLSearchParams(location.search).has("fast");
+export async function say(text, { speed = FAST ? 0 : CONFIG.TEXT_SPEED_MS, wait = true } = {}) {
   const el = $("text");
   const more = $("more");
   const full = fmt(text);

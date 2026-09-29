@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Playtest</title>
+<style>
+  body { font: 13px/1.4 system-ui, sans-serif; margin: 12px; display: flex; gap: 12px; }
+  iframe { width: 375px; height: 740px; border: 1px solid #999; flex: none; }
+  pre { white-space: pre-wrap; font-size: 11px; margin: 0; }
+  .ok { color: #1a7f37; } .bad { color: #c00; }
+</style>
+</head>
+<body>
+<iframe id="game"></iframe>
+<div>
+  <h3 id="status">Playtest: starting...</h3>
+  <p>Plays the whole game several times, varying every choice and battle answer so each option is taken
+  at least once. Unlocks badges with their code words from <code>tools/tokens.local.json</code>.
+  <b>Local only; this wipes the local save.</b> Result JSON is also on <code>window.__result</code>.</p>
+  <pre id="out"></pre>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const SAVE = "tp_save_v1";
+
+async function main() {
+  const story = await (await fetch("../story/story.json", { cache: "no-store" })).json();
+  const secrets = await (await fetch("tokens.local.json", { cache: "no-store" })).json();
+  const maxOpts = Math.max(2, ...Object.values(story.scenes).map((s) => (s.choices || []).length),
+    ...Object.values(story.battles || {}).flatMap((b) => (b.questions || []).map((q) => q.options.length)),
+    (story.lists?.restaurants || []).length);
+  const runs = [], visited = new Set();
+  for (let k = 0; k < maxOpts; k++) {
+    $("status").textContent = `Playtest: run ${k + 1} of ${maxOpts}...`;
+    runs.push(await playOnce(k, story, secrets, visited));
+  }
+  const unvisited = Object.keys(story.scenes).filter((s) => !visited.has(s));
+  const problems = runs.flatMap((r, i) => r.problems.map((p) => `run ${i + 1}: ${p}`));
+  const result = { ok: problems.length === 0, runs: runs.length, scenesVisited: visited.size, scenesTotal: Object.keys(story.scenes).length,
+    unvisited, problems, paths: runs.map((r) => r.summary) };
+  window.__result = result;
+  $("status").textContent = result.ok ? "PLAYTEST PASSED" : "PLAYTEST FAILED";
+  $("status").className = result.ok ? "ok" : "bad";
+  $("out").textContent = JSON.stringify(result, null, 1);
+}
+
+function nextChapter(story, st) {
+  const test = (cond) => Object.entries(cond || {}).every(([k, want]) => {
+    const have = st.flags[k];
+    if (Array.isArray(want)) return want.includes(have);
+    if (typeof want === "string" && want.startsWith("!")) return have !== want.slice(1);
+    return have === want;
+  });
+  return story.chapters.find((c) => !st.done.includes(c.id) && test(c.if));
+}
+
+async function playOnce(k, story, secrets, visited) {
+  localStorage.removeItem(SAVE);
+  const frame = $("game");
+  frame.src = "../index.html?fast=1&run=" + k + "&t=" + Date.now();
+  await new Promise((r) => (frame.onload = r));
+  const w = frame.contentWindow, d = frame.contentDocument;
+  const problems = [];
+  w.addEventListener("error", (e) => problems.push("JS error: " + e.message));
+  w.addEventListener("unhandledrejection", (e) => problems.push("JS rejection: " + e.reason));
+  const g = (id) => d.getElementById(id);
+  const on = (id) => g(id).classList.contains("on");
+  const hidden = (el) => el.classList.contains("hidden");
+  await wait(400);
+  g("btnNew").click();
+  await wait(300);
+
+  const seen = {}, summary = [];
+  let lastSig = "", sameFor = 0;
+  for (let step = 0; step < 6000; step++) {
+    await wait(15);
+    const st = JSON.parse(localStorage.getItem(SAVE) || "{}");
+    if (st.scene) visited.add(st.scene);
+    const sig = [st.scene, g("text").textContent, [...d.querySelectorAll(".screen.on")].map((s) => s.id).join(), hidden(g("popup"))].join("|");
+    if (sig === lastSig) { if (++sameFor > 300) { problems.push(`stuck at scene ${st.scene} (screen: ${sig})`); break; } } else { sameFor = 0; lastSig = sig; }
+
+    if (!hidden(g("popup"))) {
+      const t = g("popTitle").textContent;
+      if (/MISSING|UNKNOWN|ERROR/.test(t)) problems.push(`popup "${t}: ${g("popText").textContent}"`);
+      g("popOk").click(); continue;
+    }
+    if (on("card")) { g("cardDone").click(); continue; }
+    if (on("letter")) { g("letter").click(); if (!hidden(g("letterDone"))) g("letterDone").click(); continue; }
+    if (on("photos")) {
+      const img = g("photoImg");
+      if (img.complete && img.naturalWidth === 0) problems.push("photo failed to load: " + img.getAttribute("src"));
+      g("photos").click(); continue;
+    }
+    if (on("credits")) { g("credits").click(); continue; }
+    if (on("case")) { d.querySelector("#case .back").click(); continue; }
+    if (on("hub")) {
+      if (g("hubTitle").textContent === "THE END") { summary.push("END"); return { problems, summary }; }
+      if (!hidden(g("hubGo"))) { g("hubGo").click(); await wait(100); continue; }
+      const ch = nextChapter(story, st);
+      if (!ch || !ch.key || !secrets[ch.key]) { problems.push(`hub locked with no way forward (next chapter: ${ch && ch.id})`); break; }
+      summary.push(`unlock:${ch.key}`);
+      g("hubWord").click(); await wait(60);
+      g("popExtra").querySelector("input").value = secrets[ch.key].word;
+      g("popOk").click(); await wait(120);
+      continue;
+    }
+    if (!hidden(g("inputRow"))) { g("nameInput").value = "TESTER"; g("nameOk").click(); continue; }
+    const lis = [...g("choices").querySelectorAll("li")];
+    if (!hidden(g("choices")) && lis.length) {
+      const key = st.scene + ":" + g("text").textContent;
+      seen[key] = (seen[key] || 0) + 1;
+      const pick = (k + seen[key] - 1) % lis.length;  // rotate on repeats so fail-loops move on
+      summary.push(`${st.scene}→${lis[pick].textContent}`);
+      lis[pick].click(); await wait(200); continue;
+    }
+    g("text").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+  }
+  if (!problems.length) problems.push("did not reach THE END within the step limit");
+  return { problems, summary };
+}
+
+main().catch((e) => { $("status").textContent = "PLAYTEST CRASHED: " + e.message; window.__result = { ok: false, problems: [String(e)] }; });
+</script>
+</body>
+</html>

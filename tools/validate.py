@@ -204,6 +204,47 @@ while stack:
 for sid in scenes:
     if sid not in reached: warn(f"scene {sid} is never reached in normal play")
 
+# ---------- offline cache + version ----------
+sw = (ROOT / "sw.js").read_text()
+cfg = (ROOT / "config.js").read_text()
+core = set(re.findall(r'"([^"]+)"', sw.split("const CORE = [")[1].split("];")[0]))
+for js in sorted((ROOT / "js").glob("*.js")):
+    if f"js/{js.name}" not in core: err(f"sw.js CORE is missing js/{js.name}: the game would break offline")
+for f in ("index.html", "styles.css", "config.js", "story/story.json"):
+    if f not in core: err(f"sw.js CORE is missing {f}")
+sw_v = re.search(r'VERSION = "tp-v([\d.]+)"', sw)
+cfg_v = re.search(r'VERSION: "([\d.]+)"', cfg)
+if not (sw_v and cfg_v and sw_v.group(1) == cfg_v.group(1)):
+    err(f"version mismatch: sw.js {sw_v and sw_v.group(1)} vs config.js {cfg_v and cfg_v.group(1)}")
+
+# ---------- frozen ids (things Jess's save depends on) ----------
+# tools/frozen.json lists ids that must never disappear once she is playing:
+# chapter ids, badge ids, and flag values her prologue picks can hold.
+frozen_path = ROOT / "tools" / "frozen.json"
+if "--freeze" in sys.argv:
+    vals = {}
+    for sc in scenes.values():
+        for c in sc.get("choices") or []:
+            for k, v in (c.get("set") or {}).items(): vals.setdefault(k, set()).add(v)
+    frozen = {"chapters": [c["id"] for c in story["chapters"]], "badges": list(badges),
+              "flags": {k: sorted(v) for k, v in sorted(vals.items())}}
+    frozen_path.write_text(json.dumps(frozen, indent=1) + "\n")
+    print("Wrote tools/frozen.json")
+if frozen_path.exists():
+    frozen = json.loads(frozen_path.read_text())
+    ch_ids = {c["id"] for c in story["chapters"]}
+    for c in frozen["chapters"]:
+        if c not in ch_ids: err(f"frozen chapter id '{c}' was removed or renamed (would break Jess's save)")
+    for b in frozen["badges"]:
+        if b not in badges: err(f"frozen badge id '{b}' was removed or renamed (printed stickers depend on it)")
+    now = {}
+    for sc in scenes.values():
+        for c in sc.get("choices") or []:
+            for k, v in (c.get("set") or {}).items(): now.setdefault(k, set()).add(v)
+    for k, vs in frozen["flags"].items():
+        for v in vs:
+            if v not in now.get(k, set()): warn(f"frozen flag value {k}={v} no longer set anywhere; saves holding it may misbehave")
+
 # ---------- report ----------
 for w in warnings: print("WARN ", w)
 for e in errors: print("ERROR", e)

@@ -9,7 +9,9 @@ export const G = {
 };
 
 export const $ = (id) => document.getElementById(id);
-export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// ?fast=1 (used by tools/playtest.html) shrinks every delay so the whole game plays in seconds.
+const FAST = new URLSearchParams(location.search).has("fast");
+export const sleep = (ms) => new Promise((r) => setTimeout(r, FAST ? Math.min(ms, 4) : ms));
 
 export function on(evt, fn) { (G.listeners[evt] ||= []).push(fn); }
 export function emit(evt, data) { (G.listeners[evt] || []).forEach((fn) => fn(data)); }

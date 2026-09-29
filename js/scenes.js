@@ -28,10 +28,12 @@ export async function startChapter(ch) {
 // Resume wherever the save says.
 export async function resume() {
   const s = G.state;
-  if (s.chapter && s.scene && !s.done.includes(s.chapter) && G.story.scenes[s.scene]) {
-    const ch = chapterOf(s.chapter);
-    await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch?.title || ""); });
-    await runFrom(s.scene);
+  const ch = s.chapter && chapterOf(s.chapter);
+  if (ch && !s.done.includes(s.chapter)) {
+    // If a story edit removed the saved scene, restart the chapter instead of breaking.
+    const from = G.story.scenes[s.scene] ? s.scene : ch.start;
+    await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch.title || ""); });
+    await runFrom(from);
   } else {
     await openHub();
   }
@@ -286,6 +288,7 @@ export async function runCredits(s) {
   const roll = $("creditsRoll");
   roll.innerHTML = (s.lines || []).map((l) => (l.startsWith("#") ? `<div class="big">${esc(fmt(l.slice(1).trim()))}</div>` : `<div>${esc(fmt(l)) || "&nbsp;"}</div>`)).join("");
   sfx("victory");
+  if (new URLSearchParams(location.search).has("fast")) { await sleep(50); show("play"); return; } // playtest mode
   const H = $("credits").clientHeight;
   roll.style.transform = `translateY(${H}px)`;
   const total = roll.scrollHeight + H;
