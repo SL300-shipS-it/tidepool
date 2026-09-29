@@ -366,6 +366,16 @@
       "type": "credits",
       "lines": ["# TIDEPOOL", "", "TODO: DIRECTED BY", "LEON", "", "TODO: STARRING", "{name}", "{partner}", "", "# THANK YOU FOR PLAYING"],
       "next": "@end"
-    }
+    },
+
+    "ex_minigame": {
+      "type": "minigame", "game": "tap", "params": { "taps": 10, "seconds": 5 },
+      "bg": "field", "sprites": [],
+      "speaker": "{partner}",
+      "lines": ["EXAMPLE: Tap 10 times in 5 seconds!"],
+      "win": "ex_minigame_won", "lose": "ex_minigame_lost", "next": "@hub"
+    },
+    "ex_minigame_won": { "lines": ["EXAMPLE: You won the minigame!"], "next": "@hub" },
+    "ex_minigame_lost": { "lines": ["EXAMPLE: You moved on without winning."], "next": "@hub" }
   }
 }

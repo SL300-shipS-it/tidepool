@@ -170,12 +170,71 @@ async function play(id, s) {
       await showCard({ share: true });
       return resolveNext(s.next);
     }
+    case "minigame": {
+      await sayAll(s.lines, s.speaker);
+      while (true) {
+        const r = await runMinigame(s);
+        if (s.scoreFlag) applySet({ [s.scoreFlag]: r.score ?? 0 });
+        if (!r.won && s.retry !== false) {
+          // A loss never traps the player: TRY AGAIN replays, MOVE ON follows lose (or next).
+          const i = await choose(["TRY AGAIN", "MOVE ON"], { prompt: s.retryPrompt || "So close! Try again?" });
+          if (i === 0) continue;
+        }
+        await doEffects(s.do);
+        return resolveNext(r.won ? (s.win ?? s.next) : (s.lose ?? s.next));
+      }
+    }
     case "letter": await runLetter(s); return resolveNext(s.next);
     case "photos": await runPhotos(s); show("play"); return resolveNext(s.next);
     case "credits": await runCredits(s); return resolveNext(s.next);
     default:
       await popup({ title: "UNKNOWN SCENE TYPE", text: s.type });
       return resolveNext(s.next);
+  }
+}
+
+// ---------- minigames ----------
+// Loads js/minigames/<game> through the registry and plays it. Resolves { won, score }.
+// ?fast=1 (playtest) auto-wins instantly. A missing or crashing game counts as a win so the
+// player can never get stuck.
+const FAST = new URLSearchParams(location.search).has("fast");
+async function runMinigame(s) {
+  if (FAST) return { won: true, score: 0 };
+  let mod;
+  try { mod = (await import("./minigames/index.js")).GAMES[s.game]; } catch (e) { console.warn("minigames failed to load", e); }
+  if (!mod?.play) { console.warn("unknown minigame", s.game); return { won: true, score: 0 }; }
+  setSpeaker(null);
+  $("text").textContent = "";
+  const canvas = $("stage");
+  const container = document.createElement("div");
+  container.className = "minigame";
+  // z 15: above the play screen, below the menu (20), popups (40) and fades (50).
+  Object.assign(container.style, { position: "fixed", zIndex: "15", overflow: "hidden" });
+  const place = () => {
+    const r = canvas.getBoundingClientRect();
+    Object.assign(container.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" });
+  };
+  place();
+  window.addEventListener("resize", place);
+  document.body.appendChild(container);
+  const ctx = {
+    params: s.params || {},
+    canvas,                                                   // the stage canvas (logical pixels; CSS-scaled)
+    size: () => ({ W: stage.W, H: stage.H, scale: stage.scale }),
+    draw: (fn) => { stage.custom = fn; },                     // fn(g2d, t) runs every frame after the background
+    container,                                                // DOM layer over the stage; removed automatically
+    sfx, sleep, fmt,
+  };
+  try {
+    const r = await mod.play(ctx);
+    return { won: !!r?.won, score: r?.score };
+  } catch (e) {
+    console.warn("minigame crashed", s.game, e);
+    return { won: true, score: 0 };
+  } finally {
+    stage.custom = null;
+    window.removeEventListener("resize", place);
+    container.remove();
   }
 }
 

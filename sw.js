@@ -8,6 +8,7 @@ const CORE = [
   "./", "index.html", "styles.css", "config.js",
   "js/main.js", "js/core.js", "js/ui.js", "js/art.js", "js/audio.js",
   "js/scenes.js", "js/battle.js", "js/badges.js", "js/admin.js",
+  "js/minigames/index.js", "js/minigames/tap.js",
   "vendor/jsQR.js", "assets/fonts/PressStart2P.woff2",
   "story/story.json",
 ];

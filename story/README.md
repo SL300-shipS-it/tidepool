@@ -80,6 +80,57 @@ in the story, run the validator.
 | `letter` | `title`, `text` (blank line = new paragraph, each fades in) or `paragraphs: []`, `msPerParagraph` | `ch7_letter` |
 | `photos` | `photos: [{ src: "assets/photos/x.jpg", caption }]`, tap to advance | `ch7_photos` |
 | `credits` | `lines` (a line starting `#` is a big heading), `speed` | `post_credits` |
+| `minigame` | `game` (id in `js/minigames/index.js`), `params` (passed to the game), `win`, `lose`, `next`, optional `retry`, `retryPrompt`, `scoreFlag`. See below. | `ex_minigame` (admin-only example) |
+
+## Minigames
+
+```json
+"ch3_buds": {
+  "type": "minigame", "game": "tap", "params": { "taps": 10, "seconds": 5 },
+  "lines": ["Pick the sunflower buds! Tap fast!"],
+  "win": "ch3_buds_won", "lose": "ch3_buds_meh", "next": "ch3_after"
+}
+```
+
+- `lines` play first as an intro, then the game runs on the stage (`bg`/`sprites` work as usual).
+- `win` / `lose`: where to go after a win or a loss. Either can be a scene id or a conditional list,
+  like `next`. **If `win` or `lose` is omitted, that outcome goes to `next`.** A scene needs `next`, or
+  both `win` and `lose`.
+- The player can't get stuck: after a loss a menu offers TRY AGAIN / MOVE ON (MOVE ON follows `lose`).
+  `retryPrompt` changes the question (default "So close! Try again?"). `"retry": false` skips the menu
+  and goes straight to `lose`.
+- `do` effects run after the game, for either outcome. For win-only rewards, put them on the win scene.
+- `scoreFlag` (optional): stores the game's score in that flag, e.g. `{f.buds}` in later text.
+- If a game file is missing or crashes, it counts as a win. In `?fast=1` (playtest) every minigame
+  wins instantly.
+- `ex_` scenes are admin-only examples (reach them via the admin panel's JUMP TO SCENE). The validator
+  doesn't warn that they're unreachable. They end at `@hub`.
+
+| Game | Params | What it is |
+| --- | --- | --- |
+| `tap` | `taps` (10), `seconds` (5) | Stub/example: tap the stage N times before the timer runs out. |
+
+### Adding a minigame (engine work)
+
+1. Create `js/minigames/<id>.js` exporting `async function play(ctx)` that resolves `{ won, score? }`.
+2. Register it in `js/minigames/index.js` (`GAMES = { <id>: module, ... }`, one per line: the
+   validator reads the ids from there).
+3. Add the file to `CORE` in `sw.js` (the validator errors if any `js/**/*.js` is missing).
+4. Add a row to the table above, run `python3 tools/validate.py`.
+
+`ctx` gives the game everything it needs without touching `ui.js`:
+
+| Field | What |
+| --- | --- |
+| `params` | The scene's `params` object (`{}` if none). |
+| `canvas` | The stage canvas (low-res pixel canvas, CSS-scaled up). |
+| `size()` | `{ W, H, scale }`: logical canvas size and the CSS scale factor. |
+| `draw(fn)` | `fn(g2d, t)` runs every frame after the background (sprites are not drawn while it's set). Cleared after the game. Sprite art can be drawn with `drawGrid`/`SPRITES` from `js/art.js`. |
+| `container` | An empty DOM layer exactly over the stage for buttons/touch targets (use inline styles). Removed after the game. Sits under the menu and popups. |
+| `sfx(name)`, `sleep(ms)`, `fmt(text)` | Sound (silent in playtest), fast-aware sleep, placeholder expansion. |
+
+Games must always finish (use a timer), shouldn't read or write the save directly, and shouldn't
+edit `index.html` or `styles.css`: create any DOM they need inside `container`.
 
 ## Battles
 

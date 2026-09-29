@@ -21,7 +21,12 @@ TOGGLES = {k: v == "true" for k, v in re.findall(r"^\s*(\w+):\s*(true|false)", _
 SPRITES = set(re.findall(r"^\s{2}(\w+): (?:withTail\(\[|\[)", art_js, re.M))
 BADGE_ICONS = set(re.findall(r"^\s{2}(\w+): \[", art_js.split("BADGE_ICONS = {")[1], re.M)) | {"canele"}
 BGS = set(re.findall(r'case "(\w+)"', art_js.split("export function drawBg")[1]))
-TYPES = {"dialogue", "choice", "input", "encounter", "obstacle", "battle", "trainerCard", "letter", "photos", "credits"}
+TYPES = {"dialogue", "choice", "input", "encounter", "obstacle", "battle", "trainerCard", "letter", "photos", "credits", "minigame"}
+# Minigame ids from the registry in js/minigames/index.js (`GAMES = { id: module, ... }`).
+_mg = ROOT / "js" / "minigames" / "index.js"
+_mg_block = re.search(r"GAMES\s*=\s*\{(.*?)\};", _mg.read_text(), re.S) if _mg.exists() else None
+MINIGAMES = set(re.findall(r"^\s*(\w+)\s*:", _mg_block.group(1), re.M)) if _mg_block else set()
+EXAMPLE_PREFIX = "ex_"  # admin-only example scenes: not warned about when unreachable
 MAX_BOX = 90  # characters per text box (after {name} etc. expand to ~10 chars)
 
 errors, warnings = [], []
@@ -95,6 +100,17 @@ for sid, s in scenes.items():
     targets(s.get("else"), w)
     if t == "input": flags_set.add(s.get("flag", "name"))
     if t == "battle" and s.get("battle") not in battles: err(f"{w}: unknown battle '{s.get('battle')}'")
+    if t == "minigame":
+        if s.get("game") not in MINIGAMES:
+            err(f"{w}: unknown minigame '{s.get('game')}' (known: {', '.join(sorted(MINIGAMES)) or 'none'}; see js/minigames/index.js)")
+        if "params" in s and not isinstance(s["params"], dict): err(f"{w}: minigame params must be an object")
+        targets(s.get("win"), f"{w} win")
+        targets(s.get("lose"), f"{w} lose")
+        if not s.get("next") and not (s.get("win") and s.get("lose")):
+            err(f"{w}: minigame needs next, or both win and lose (a win or loss would go nowhere)")
+        if s.get("retryPrompt"): check_line(s["retryPrompt"], f"{w} retryPrompt")
+        if s.get("scoreFlag"): flags_set.add(s["scoreFlag"])
+        if s.get("choices") or s.get("choicesFrom"): err(f"{w}: minigame scenes can't have choices (use win/lose)")
     if s.get("choicesFrom"):
         if s["choicesFrom"] not in lists: err(f"{w}: choicesFrom list '{s['choicesFrom']}' missing")
         if not s.get("choiceFlag"): err(f"{w}: choicesFrom needs choiceFlag")
@@ -171,6 +187,12 @@ def successors(sid, flags):
         if "set" in e: f.update(e["set"])
     if s.get("type") == "input" and s.get("flag", "name") != "name":
         f[s["flag"]] = "TEXT"
+    if s.get("type") == "minigame":
+        if s.get("scoreFlag"): f[s["scoreFlag"]] = "SCORE"
+        # Both outcomes are possible (a loss can also retry, which changes nothing).
+        for key in ("win", "lose"):
+            yield resolve(s.get(key) if s.get(key) is not None else s.get("next"), f), f
+        return
     choices = s.get("choices")
     if s.get("choicesFrom"):
         choices = [{"set": {s["choiceFlag"]: x["id"]}} for x in lists.get(s["choicesFrom"], []) if x.get("available", True) is not False]
@@ -227,14 +249,15 @@ for mask in range(2 ** len(names)):
     walk_lines.append(f"  [{tag}] {len(r)} reachable, {e} complete playthroughs, {st} states walked")
 
 for sid in scenes:
-    if sid not in reached: warn(f"scene {sid} is never reached in normal play")
+    if sid not in reached and not sid.startswith(EXAMPLE_PREFIX): warn(f"scene {sid} is never reached in normal play")
 
 # ---------- offline cache + version ----------
 sw = (ROOT / "sw.js").read_text()
 cfg = cfg_js
 core = set(re.findall(r'"([^"]+)"', sw.split("const CORE = [")[1].split("];")[0]))
-for js in sorted((ROOT / "js").glob("*.js")):
-    if f"js/{js.name}" not in core: err(f"sw.js CORE is missing js/{js.name}: the game would break offline")
+for js in sorted((ROOT / "js").rglob("*.js")):
+    rel = js.relative_to(ROOT).as_posix()
+    if rel not in core: err(f"sw.js CORE is missing {rel}: the game would break offline")
 for f in ("index.html", "styles.css", "config.js", "story/story.json"):
     if f not in core: err(f"sw.js CORE is missing {f}")
 sw_v = re.search(r'VERSION = "tp-v([\d.]+)"', sw)
