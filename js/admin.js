@@ -35,6 +35,15 @@ export function openAdmin() {
   p.appendChild(h3(`ADMIN · v${CONFIG.VERSION} · ${st.name || "(no name)"}`));
   p.appendChild(row(btn("CLOSE", close), btn(G.debug ? "DEBUG: ON" : "DEBUG: OFF", () => { G.debug = !G.debug; debugUpdate(); openAdmin(); })));
 
+  // toggles (read-only: deploy-time settings in config.js TOGGLES)
+  const tg = Object.entries(CONFIG.TOGGLES || {});
+  if (tg.length) {
+    p.appendChild(h3("TOGGLES (config.js, read-only)"));
+    const pre = document.createElement("div");
+    pre.textContent = tg.map(([k, v]) => `${k}: ${v ? "ON" : "OFF"}`).join(" · ");
+    p.appendChild(pre);
+  }
+
   // chapters
   p.appendChild(h3("JUMP TO CHAPTER"));
   const chSel = select(G.story.chapters.map((c) => [c.id, `${c.id} — ${c.title}${st.done.includes(c.id) ? " ✓" : ""}`]));

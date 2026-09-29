@@ -44,14 +44,34 @@ that are too long.
 | `if` / `else` | Skip this scene unless flags match; go to `else` (or `next`) instead. |
 | `next` | Scene id, `"@end"` (finish chapter), or a conditional list: `[{ "if": { "lodging": "hideout" }, "next": "a" }, { "next": "b" }]`. |
 
-Conditions (`if`): `{ "flag": "value" }`, `{ "flag": ["a", "b"] }` (any of), `{ "flag": "!value" }` (not). All keys must match.
+Conditions (`if`): `{ "flag": "value" }`, `{ "flag": ["a", "b"] }` (any of), `{ "flag": "!value" }` (not),
+`{ "cfg.toggle": true }` (a deploy-time toggle, see below). All keys must match.
+
+## Toggles (`cfg.` conditions)
+
+`config.js` has `TOGGLES`: on/off switches Leon sets before a deploy (they are not flags and are not
+saved; the admin panel shows them read-only). A condition key starting with `cfg.` reads a toggle and
+compares it to `true` or `false`, anywhere `if` is allowed (scenes, conditional `next`, choices, chapters,
+badges, card rows). Example (`pro_lodging`):
+
+```json
+"next": [{ "if": { "cfg.fakeLodging": true }, "next": "pro_lodging_fake" }, { "next": "pro_sunflower" }]
+```
+
+The validator walks the whole game once per toggle combination and errors if a story condition names a
+toggle that `config.js` doesn't have. Adding a toggle needs no engine work: add it to `TOGGLES`, use it
+in the story, run the validator.
+
+| Toggle | Default | Effect |
+| --- | --- | --- |
+| `fakeLodging` | `false` | Off: the prologue lodging pick is real (`lodging` = `inn` or `hideout`, shown on the Trainer Card). On: after either pick, `pro_lodging_fake` plays ({partner} knocks the other brochure off the table) and sets `lodging` = `inn`. Nothing later depends on `lodging`. |
 
 ## Scene types
 
 | Type | Extra fields | Example scene |
 | --- | --- | --- |
 | dialogue (default) | `lines`, optional `choices` | `pro_start` |
-| `choice` | `choices: [{ label, set?, next?, lines?, do?, if? }]`, `prompt?`. Or `choicesFrom: "restaurants"` + `choiceFlag` to build choices from a list. | `pro_lodging`, `pro_restaurant` |
+| `choice` | `choices: [{ label, set?, next?, lines?, do?, if? }]`, `prompt?`. Or `choicesFrom: "restaurants"` + `choiceFlag` to build choices from a list. | `pro_lodging`, `pro_restaurant`, `ch2_breakfast` |
 | `input` | `flag` (`"name"` = trainer name), `prompt`, `placeholder`, `max` | `pro_name` |
 | `encounter` | `text` ("A wild LEON appeared!"), `sprites` slide in with a flash | `ch1_wild` |
 | `obstacle` | Choices with `fail: [lines]` show a funny fail line and loop back; the right choice has `next`. Any choice in any scene can use `fail`. | `ch2_obstacle` |

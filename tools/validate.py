@@ -3,7 +3,8 @@
 
 Checks story/story.json for broken links, unknown art/backgrounds/items, flags that are read but
 never set, lines too long for the text box, and walks EVERY branch combination of the whole game
-to make sure each path reaches the end without getting stuck. Exit code 1 on errors.
+to make sure each path reaches the end without getting stuck. The walk runs once per combination of
+config.js TOGGLES (read in conditions as "cfg.<name>"). Exit code 1 on errors.
 """
 import json, re, sys
 from pathlib import Path
@@ -11,6 +12,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 story = json.loads((ROOT / "story" / "story.json").read_text())
 art_js = (ROOT / "js" / "art.js").read_text()
+cfg_js = (ROOT / "config.js").read_text()
+
+# Deploy-time toggles from config.js TOGGLES (read in story conditions as "cfg.<name>").
+_tg = re.search(r"TOGGLES:\s*\{(.*?)\n\s*\}", cfg_js, re.S)
+TOGGLES = {k: v == "true" for k, v in re.findall(r"^\s*(\w+):\s*(true|false)", _tg.group(1), re.M)} if _tg else {}
 
 SPRITES = set(re.findall(r"^\s{2}(\w+): (?:withTail\(\[|\[)", art_js, re.M))
 BADGE_ICONS = set(re.findall(r"^\s{2}(\w+): \[", art_js.split("BADGE_ICONS = {")[1], re.M)) | {"canele"}
@@ -32,8 +38,11 @@ lists = story.get("lists", {})
 flags_set, flags_read = {"name"}, set()
 
 def read_cond(cond, where):
-    for k in (cond or {}):
-        if k != "hasKey":
+    for k, want in (cond or {}).items():
+        if k.startswith("cfg."):
+            if k[4:] not in TOGGLES: err(f"{where}: condition uses toggle '{k}' but config.js TOGGLES has no '{k[4:]}'")
+            elif not isinstance(want, bool): err(f"{where}: toggle condition '{k}' must be true or false")
+        elif k != "hasKey":
             flags_read.add(k)
 
 def text_flags(s):
@@ -131,11 +140,13 @@ for r in story.get("card", []):
 for f in sorted(flags_read - flags_set):
     err(f"flag '{f}' is read somewhere but never set")
 
-# ---------- walk every branch of the whole game ----------
+# ---------- walk every branch of the whole game (once per toggle combination) ----------
+TG = {}  # toggle values for the current walk
+
 def test(cond, flags):
     for k, want in (cond or {}).items():
         if k == "hasKey": continue
-        have = flags.get(k)
+        have = TG.get(k[4:], False) if k.startswith("cfg.") else flags.get(k)
         if isinstance(want, list):
             if have not in want: return False
         elif isinstance(want, str) and want.startswith("!"):
@@ -176,37 +187,51 @@ def successors(sid, flags):
         yield resolve(s.get("next"), f), f
 
 chapters = story["chapters"]
-reached, endings, seen = set(), 0, set()
-stack = [(0, chapters[0]["start"], ())]
-steps = 0
-while stack:
-    ci, sid, fl = stack.pop()
-    key = (ci, sid, fl)
-    if key in seen: continue
-    seen.add(key); steps += 1
-    if steps > 200000: err("branch walk exploded (>200k states); check for loops"); break
-    flags = dict(fl)
-    if sid in ("@end", "@hub"):
-        nxt = ci + 1
-        while nxt < len(chapters) and not test(chapters[nxt].get("if"), flags): nxt += 1
-        if nxt >= len(chapters): endings += 1
-        else: stack.append((nxt, chapters[nxt]["start"], fl))
-        continue
-    if sid is None:
-        err(f"dead end: a scene in chapter {chapters[ci]['id']} has no next (flags {flags})"); continue
-    if sid == "__STUCK__":
-        err(f"stuck: all visible choices fail in chapter {chapters[ci]['id']} (flags {flags})"); continue
-    if sid not in scenes: continue  # already reported
-    reached.add(sid)
-    for n, f in successors(sid, flags):
-        stack.append((ci, n, tuple(sorted(f.items()))))
+
+def walk(prefix):
+    """Walk every branch of the whole game with the current TG. Returns (reached, endings, steps)."""
+    reached, endings, seen = set(), 0, set()
+    stack = [(0, chapters[0]["start"], ())]
+    steps = 0
+    while stack:
+        ci, sid, fl = stack.pop()
+        key = (ci, sid, fl)
+        if key in seen: continue
+        seen.add(key); steps += 1
+        if steps > 200000: err(f"{prefix}branch walk exploded (>200k states); check for loops"); break
+        flags = dict(fl)
+        if sid in ("@end", "@hub"):
+            nxt = ci + 1
+            while nxt < len(chapters) and not test(chapters[nxt].get("if"), flags): nxt += 1
+            if nxt >= len(chapters): endings += 1
+            else: stack.append((nxt, chapters[nxt]["start"], fl))
+            continue
+        if sid is None:
+            err(f"{prefix}dead end: a scene in chapter {chapters[ci]['id']} has no next (flags {flags})"); continue
+        if sid == "__STUCK__":
+            err(f"{prefix}stuck: all visible choices fail in chapter {chapters[ci]['id']} (flags {flags})"); continue
+        if sid not in scenes: continue  # already reported
+        reached.add(sid)
+        for n, f in successors(sid, flags):
+            stack.append((ci, n, tuple(sorted(f.items()))))
+    return reached, endings, steps
+
+names = sorted(TOGGLES)
+reached, walk_lines, endings, steps = set(), [], 0, 0
+for mask in range(2 ** len(names)):
+    TG = {n: bool(mask >> i & 1) for i, n in enumerate(names)}
+    tag = ", ".join(f"{n}={'on' if v else 'off'}" for n, v in TG.items()) or "no toggles"
+    r, e, st = walk(f"[{tag}] " if names else "")
+    reached |= r
+    if mask == 0: endings, steps = e, st  # headline numbers: all toggles off
+    walk_lines.append(f"  [{tag}] {len(r)} reachable, {e} complete playthroughs, {st} states walked")
 
 for sid in scenes:
     if sid not in reached: warn(f"scene {sid} is never reached in normal play")
 
 # ---------- offline cache + version ----------
 sw = (ROOT / "sw.js").read_text()
-cfg = (ROOT / "config.js").read_text()
+cfg = cfg_js
 core = set(re.findall(r'"([^"]+)"', sw.split("const CORE = [")[1].split("];")[0]))
 for js in sorted((ROOT / "js").glob("*.js")):
     if f"js/{js.name}" not in core: err(f"sw.js CORE is missing js/{js.name}: the game would break offline")
@@ -248,6 +273,7 @@ if frozen_path.exists():
 # ---------- report ----------
 for w in warnings: print("WARN ", w)
 for e in errors: print("ERROR", e)
-print(f"\n{len(scenes)} scenes, {len(reached)} reachable, {endings} distinct complete playthroughs, {steps} states walked.")
+print(f"\n{len(scenes)} scenes, {len(reached)} reachable across all toggle combinations.")
+for line in walk_lines: print(line)
 print("OK" if not errors else f"{len(errors)} error(s)")
 sys.exit(1 if errors else 0)

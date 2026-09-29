@@ -80,12 +80,15 @@ export function baseUrl() {
 export function restoreLink() { return baseUrl() + "#r=" + exportCode(); }
 
 // ---------- conditions + text ----------
-// cond: { flag: "value" | ["a","b"] | "!value" }  (all must match)
+// cond: { flag: "value" | ["a","b"] | "!value", "cfg.toggle": true|false }  (all must match)
+// "cfg.x" keys read CONFIG.TOGGLES.x (deploy-time switches in config.js; missing = false).
+export function toggle(name) { return (CONFIG.TOGGLES || {})[name] ?? false; }
 export function test(cond) {
   if (!cond) return true;
   const f = G.state.flags;
   return Object.entries(cond).every(([k, want]) => {
-    const have = k === "hasKey" ? (G.state.keys[want] ? want : null) : f[k];
+    const have = k === "hasKey" ? (G.state.keys[want] ? want : null)
+      : k.startsWith("cfg.") ? toggle(k.slice(4)) : f[k];
     if (k === "hasKey") return !!have;
     if (Array.isArray(want)) return want.includes(have);
     if (typeof want === "string" && want.startsWith("!")) return have !== want.slice(1);

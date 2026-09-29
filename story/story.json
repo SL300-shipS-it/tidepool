@@ -54,7 +54,7 @@
     "sunflowers": { "yes": "Sunflower quest: YES", "no": "Sunflower quest: skip" },
     "dinner": { "coast": "Coastside Feast", "sf": "Hometown Feast" },
     "lunch": { "a": "TODO lunch A", "b": "TODO lunch B" },
-    "breakfast": { "a": "TODO breakfast A", "b": "TODO breakfast B" }
+    "breakfast": { "room": "In-room breakfast", "johnnys": "Johnny's", "mavericks": "Mavericks Creperie" }
   },
 
   "lists": {
@@ -162,9 +162,18 @@
       "speaker": "{partner}",
       "lines": ["TODO: Where should we stay tonight?"],
       "choices": [
-        { "label": "SEASIDE INN", "set": { "lodging": "inn" } },
-        { "label": "SECRET HIDEOUT", "set": { "lodging": "hideout" } }
+        { "label": "TODO: INN (OCEAN VIEWS)", "set": { "lodging": "inn" } },
+        { "label": "TODO: HIDEOUT (OWN KITCHEN)", "set": { "lodging": "hideout" } }
       ],
+      "next": [
+        { "if": { "cfg.fakeLodging": true }, "next": "pro_lodging_fake" },
+        { "next": "pro_sunflower" }
+      ]
+    },
+    "pro_lodging_fake": {
+      "bg": "inn", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["{partner} knocked the other brochure off the table!", "TODO: Looks like it's the SEASIDE INN!"],
+      "do": [{ "set": { "lodging": "inn" } }],
       "next": "pro_sunflower"
     },
     "pro_sunflower": {
@@ -234,17 +243,15 @@
     "ch2_start": {
       "bg": "inn", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
       "lines": ["TODO: Good morning, {name}!"],
-      "next": [
-        { "if": { "lodging": "hideout" }, "next": "ch2_breakfast" },
-        { "next": "ch2_obstacle" }
-      ]
+      "next": "ch2_breakfast"
     },
     "ch2_breakfast": {
-      "type": "choice", "bg": "hideout",
-      "lines": ["TODO: Hideout breakfast! What'll it be?"],
+      "type": "choice", "bg": "inn",
+      "lines": ["TODO: Breakfast time! What'll it be?"],
       "choices": [
-        { "label": "TODO BREAKFAST A", "set": { "breakfast": "a" } },
-        { "label": "TODO BREAKFAST B", "set": { "breakfast": "b" } }
+        { "label": "IN-ROOM BREAKFAST", "set": { "breakfast": "room" } },
+        { "label": "JOHNNY'S", "set": { "breakfast": "johnnys" } },
+        { "label": "MAVERICKS CREPERIE", "set": { "breakfast": "mavericks" } }
       ],
       "next": "ch2_obstacle"
     },
