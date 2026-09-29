@@ -12,3 +12,5 @@ You verify Tidepool. You do NOT edit files; report problems for the orchestrator
    (/playtest). Don't try to run it yourself.
 
 Output: PASS or FAIL, then a bullet list of blockers and warnings with scene ids and file paths.
+
+Never run git commands that change state (stash, reset, checkout, commit, add, restore). Other agents share this working tree; only the orchestrator runs git. Read-only `git diff`/`git status` are fine.

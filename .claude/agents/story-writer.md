@@ -21,3 +21,5 @@ Rules:
 
 When done, run `python3 tools/validate.py` and fix every ERROR you caused. Report: scenes
 added/changed/removed, any warnings left, anything you could not do.
+
+Never run git commands that change state (stash, reset, checkout, commit, add, restore). Other agents share this working tree; only the orchestrator runs git. Read-only `git diff`/`git status` are fine.

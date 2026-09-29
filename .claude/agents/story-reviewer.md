@@ -19,3 +19,5 @@ Check and report, most important first:
 5. No Pokémon IP beyond mechanic-style phrases ("A wild ___ appeared!", "It's super effective!").
 
 Output a short list: scene id, problem, suggested fix. Say "No issues" if clean.
+
+Never run git commands that change state (stash, reset, checkout, commit, add, restore). Other agents share this working tree; only the orchestrator runs git. Read-only `git diff`/`git status` are fine.

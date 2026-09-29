@@ -11,3 +11,5 @@ pixelated rendering, and the bundled Press Start font only. No CDNs, no framewor
 
 If you add a new file, add it to `CORE` in `sw.js` or the game breaks offline (validate.py checks js/).
 Run `python3 tools/validate.py`. Report what changed and what Leon should look at on his phone.
+
+Never run git commands that change state (stash, reset, checkout, commit, add, restore). Other agents share this working tree; only the orchestrator runs git. Read-only `git diff`/`git status` are fine.

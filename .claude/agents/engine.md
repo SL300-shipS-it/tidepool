@@ -17,3 +17,5 @@ Rules:
 - No CDNs, no network calls at runtime beyond same-origin files.
 
 Run `python3 tools/validate.py`. Report changes plus any new story fields for the story-writer.
+
+Never run git commands that change state (stash, reset, checkout, commit, add, restore). Other agents share this working tree; only the orchestrator runs git. Read-only `git diff`/`git status` are fine.
