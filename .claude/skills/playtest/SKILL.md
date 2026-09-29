@@ -6,9 +6,12 @@ description: Run the automated full-game playtest in the browser pane (every cho
 
 Runs silently (`?fast=1` disables all sound) and wipes the LOCAL save only.
 
-1. Make sure the local server is running: `curl -s -o /dev/null -w '%{http_code}' http://localhost:8123/`.
-   If it isn't, start it in the background: `python3 -m http.server 8123` from the project root.
-2. Open http://localhost:8123/tools/playtest.html in the browser pane.
+1. Start the server with the browser pane's `preview_start` (name `game`, from `.claude/launch.json`).
+   The pane blocks servers started from Bash. If the pane's server can't read the Desktop folder (404s),
+   rsync the project (minus .git) into the session scratch folder and serve that copy instead.
+2. Before the playtest, refresh cached files: in the pane, `fetch()` each `js/*.js` with `{cache: "reload"}`
+   and confirm `js/audio.js` contains `SILENT`. A stale cached copy could play sound. Then open
+   http://localhost:8123/tools/playtest.html.
 3. Poll with short javascript_tool calls (each under ~30 s):
    `document.getElementById('status').textContent`, until it says PASSED, FAILED or CRASHED
    (usually 1–2 min). A hidden pane runs slower. That's fine, keep polling.
