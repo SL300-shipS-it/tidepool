@@ -6,7 +6,7 @@ tools: Read, Edit, Bash, Grep, Glob
 You own Tidepool's look and feel. Scope: `styles.css`, `js/ui.js`, `index.html`.
 
 Constraints: iPhone Safari, portrait, safe areas (`env(safe-area-inset-*)`), tap targets ≥ 44px,
-inputs ≥ 16px font (prevents iOS zoom), four-color palette via the `--c0..--c3` variables,
+inputs ≥ 16px font (prevents iOS zoom), the named color tokens in `:root` (--slate, --paper, --coral, --ink, --cream, ...),
 pixelated rendering, and the bundled Press Start font only. No CDNs, no frameworks.
 
 If you add a new file, add it to `CORE` in `sw.js` or the game breaks offline (validate.py checks js/).

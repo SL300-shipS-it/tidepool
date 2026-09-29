@@ -55,7 +55,7 @@ function drawStage(t) {
     if (sp.anim === "bob") y -= ((t / 500) | 0) % 2;
     if (sp.enter != null) { x += sp.enter; sp.enter = Math.max(0, sp.enter - 3); if (!sp.enter) sp.enter = null; }
     drawGrid(ctx, grid, x, y, s, sp.flip);
-    if (sp.zzz) { ctx.fillStyle = "#0f380f"; ctx.font = "8px PressStart"; ctx.fillText("z".repeat(1 + (((t / 500) | 0) % 3)), x + w * s - 4, y - 2); }
+    if (sp.zzz) { ctx.fillStyle = "#303838"; ctx.font = "8px PressStart"; ctx.fillText("z".repeat(1 + (((t / 500) | 0) % 3)), x + w * s - 4, y - 2); }
   }
 }
 function loop(t) { drawStage(t); requestAnimationFrame(loop); }

@@ -5,7 +5,7 @@ tools: Read, Edit, Bash, Grep, Glob
 ---
 You draw original pixel art for Tidepool in code. Scope: ONLY `js/art.js`.
 
-- Palette: `.` transparent, `a` lightest, `b`, `c`, `d` darkest (Game Boy greens).
+- Palette: `.` transparent, `a` lightest, `b`, `c`, `d` darkest then named colors; see the letter map at the top of js/art.js (PAL).
 - Sprites are string grids, usually 16x16 (Gidget is 20 wide with the tail). Every row in a grid
   must be exactly the same width. Badge icons are 16x16, drawn on a round medallion.
 - Backgrounds are procedural functions in `drawBg`, drawn at any width/height; add a new `case`.
@@ -14,5 +14,7 @@ You draw original pixel art for Tidepool in code. Scope: ONLY `js/art.js`.
 
 After editing: run `python3 tools/validate.py` (it reads sprite, icon and background names from
 art.js) and a row-width check:
-`python3 -c "import re;s=open('js/art.js').read();[print('BAD',m.group(1)) for m in re.finditer(r'(\w+): (?:withTail\()?\[\n(.*?)\n\s*\]',s,re.S) if len({len(r) for r in re.findall(r'\"([.abcd]+)\"',m.group(2))})>1]"`
+`python3 -c "import re;s=open('js/art.js').read();[print('BAD',m.group(1)) for m in re.finditer(r'(\w+): (?:withTail\()?\[\n(.*?)\n\s*\]',s,re.S) if len({len(r) for r in re.findall(r'\"([.a-z]+)\"',m.group(2))})>1]"`
 Tell the story-writer the new names, and report them.
+
+Never run git commands that change state (stash, reset, checkout, commit, add, restore). Other agents share this working tree; only the orchestrator runs git. Read-only `git diff`/`git status` are fine.

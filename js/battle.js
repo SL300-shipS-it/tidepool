@@ -12,7 +12,8 @@ function setHp(el, name, hp, max, showNum) {
   const pct = Math.max(0, Math.round((hp / max) * 100));
   const bar = el.querySelector(".bar i");
   bar.style.width = pct + "%";
-  bar.classList.toggle("low", pct <= 25);
+  bar.classList.toggle("mid", pct > 20 && pct <= 50);
+  bar.classList.toggle("low", pct <= 20);
   const num = el.querySelector(".hpnum");
   if (num && showNum) num.textContent = `${Math.max(1, Math.ceil(hp))}/${max}`;
 }
