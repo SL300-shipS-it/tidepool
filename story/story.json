@@ -1,0 +1,364 @@
+{
+  "meta": {
+    "title": "TIDEPOOL",
+    "shareTitle": "TRAINER CARD — TIDEPOOL",
+    "note": "PLACEHOLDER CONTENT. Every line marked TODO gets replaced by the real script."
+  },
+
+  "chapters": [
+    { "id": "prologue", "prefix": "pro_", "title": "PROLOGUE", "start": "pro_start" },
+    { "id": "ch1", "prefix": "ch1_", "title": "CH.1 NIGHT ROUTE", "start": "ch1_start", "key": "gala",
+      "lockedText": "TODO: The Night Route is dark...\nA Gym Leader holds the badge that lights the way." },
+    { "id": "ch2", "prefix": "ch2_", "title": "CH.2 MORNING", "start": "ch2_start", "key": "matcha",
+      "lockedText": "TODO: Someone is still asleep...\nFind the badge that wakes the morning." },
+    { "id": "ch3", "prefix": "ch3_", "title": "CH.3 SUNFLOWER FIELD", "start": "ch3_start", "key": "sunflower",
+      "if": { "sunflowers": "yes" },
+      "lockedText": "TODO: Something golden is blooming nearby..." },
+    { "id": "ch4", "prefix": "ch4_", "title": "CH.4 ROUTE SOUTH", "start": "ch4_start", "key": "tide",
+      "lockedText": "TODO: The tide is out. Wait for the badge that brings it back." },
+    { "id": "ch5", "prefix": "ch5_", "title": "CH.5 REST STOP", "start": "ch5_start", "key": "brush",
+      "lockedText": "TODO: Which way now? A compass would help..." },
+    { "id": "ch6", "prefix": "ch6_", "title": "CH.6 HEAL OR EXPLORE", "start": "ch6_start", "key": "continue",
+      "intro": "TODO: Take a breath, {name}. Tap CONTINUE when you're ready." },
+    { "id": "ch7", "prefix": "ch7_", "title": "CH.7 THE CHAMPION", "start": "ch7_start", "key": "twoyear",
+      "lockedText": "TODO: The Champion is waiting.\nOnly the strongest badge opens this door." },
+    { "id": "post", "prefix": "post_", "title": "POST-GAME", "start": "post_start", "key": "legendary",
+      "lockedText": "TODO: Legends say a KEY is hidden somewhere nearby...\nLook inside something wrapped." }
+  ],
+
+  "badges": {
+    "gala":      { "name": "Glamour Badge", "icon": "glamour", "hint": "The Gym Leader holds the next badge...", "hash": "1aedf8b5a661c653b3d1ab0f4c63c98cec6026dd3619a1e665f673d8f239b393", "wordHash": "af46e73d43c9379bf192efe3f48776407739c5d2f4dd5bae57bdc38d51e80a47" },
+    "matcha":    { "name": "Snooze Badge",  "icon": "snooze",  "hint": "Earned by those who rise and shine.", "hash": "b901ff20ab4795729e04ba5ac474e7e1af0f1ac811485d0d3b2ddd8cdcf913ae", "wordHash": "625a2acb0717f82b2fd73a685229423c643c89336f1edee3a9133cbfc19837a8" },
+    "sunflower": { "name": "Bloom Badge",   "icon": "bloom",   "hint": "It grows where the sun looks back.", "if": { "sunflowers": "yes" }, "hash": "24037f944572d705161452b5ca782bf7a71c30a92d150ea5e7a31c6626fffc4a", "wordHash": "a24f4985aea73d5505abc5a1694a0fa61f788cb9881f6393756be6ff3da48a75" },
+    "tide":      { "name": "Tide Badge",    "icon": "tide",    "hint": "The ocean keeps this one.", "hash": "7adf6d28af16b4591e0a4abee145d5c51c2b8f5e8ec72080992597e9b91bc3eb", "wordHash": "04b35411c4bf0807be6a3b6b03a7cbce1e767898de7d1ef3e6650e7a4be691ae" },
+    "brush":     { "name": "Compass Badge", "icon": "compass", "hint": "For trainers who wander on purpose.", "hash": "f0fe7fbcbeb9f8448ad9fdc0980a88d1ecfa9df47a6553514baf642d77d3ef2d", "wordHash": "5f39bf28e14cb6bad3ad7da62f62a6009e8bab49020671fee69a4b5cb7311162" },
+    "twoyear":   { "name": "Sunset Badge",  "icon": "sunset",  "hint": "The Champion's badge.", "revealOn": "battle",
+                   "scanText": "The Champion accepts your challenge!", "hash": "3f08bfa900685793dc0a9416717eb9d25931af4d68c3c31b76dede895e3a55c9", "wordHash": "8efd9bae2fa3733e050157f21d79a846837a0d496fa6c7b845369b1eb13f3fd1" },
+    "legendary": { "name": "Canelé Key",    "icon": "canele",  "kind": "key", "hint": "A legendary key... wrapped up somewhere.", "hash": "131df5f0851065568cc90d09e8ac8e616388d70e81aa8b81b036863ace6f136d", "wordHash": "edd7fe8ccd2079f7021bbbcaefea887599283394909daf7c3b0f3ae0b72034c4" }
+  },
+
+  "items": {
+    "matcha": { "name": "MATCHA LATTE", "desc": "TODO: Restores 50 HP. Tastes like grass, lovingly." },
+    "sunflower": { "name": "SUNFLOWER", "desc": "TODO: It follows you around." },
+    "paintbrush": { "name": "PAINTBRUSH", "desc": "TODO: A key item for artists." }
+  },
+
+  "statuses": {
+    "puffed": { "name": "PUFFED", "desc": "TODO: Lips at maximum capacity." },
+    "lactosed": { "name": "LACTOSED", "desc": "TODO: Should have picked the pills." }
+  },
+
+  "labels": {
+    "starter": { "gidget": "GIDGET", "lactaid": "LACTAID", "tennis": "TENNIS BALLS" },
+    "lodging": { "inn": "Seaside Inn", "hideout": "Secret Hideout" },
+    "sunflowers": { "yes": "Sunflower quest: YES", "no": "Sunflower quest: skip" },
+    "dinner": { "coast": "Coastside Feast", "sf": "Hometown Feast" },
+    "lunch": { "a": "TODO lunch A", "b": "TODO lunch B" },
+    "breakfast": { "a": "TODO breakfast A", "b": "TODO breakfast B" }
+  },
+
+  "lists": {
+    "restaurants": [
+      { "id": "r1", "name": "TODO SF Place 1" },
+      { "id": "r2", "name": "TODO SF Place 2" },
+      { "id": "r3", "name": "TODO SF Place 3" },
+      { "id": "r4", "name": "TODO SF Place 4", "available": true }
+    ]
+  },
+
+  "card": [
+    { "label": "FIRST PICK", "value": "{L.starter}" },
+    { "label": "LODGING", "value": "{L.lodging}" },
+    { "label": "SIDE QUEST", "value": "{L.sunflowers}" },
+    { "label": "DINNER", "value": "{L.dinner}", "if": { "dinner": "coast" } },
+    { "label": "DINNER", "value": "{L.dinner}: {L.restaurant}", "if": { "dinner": "sf" } }
+  ],
+
+  "battles": {
+    "hiker": {
+      "foe": "HIKER", "foeSprite": "npc", "hp": 60, "damage": 20,
+      "intro": ["TODO: HIKER wants to battle!"],
+      "questions": [
+        { "q": "TODO: What's the tallest mountain you've climbed together?", "options": ["TODO right", "TODO wrong"], "answer": 0, "move": "TRAIL MIX" }
+      ],
+      "foeMoves": [{ "name": "LONG STORY", "text": "TODO: It dragged on for a while..." }],
+      "finisher": ["{partner} used POUNCE!", "It's super effective!"],
+      "win": ["TODO: HIKER was defeated!", "TODO: \"Nice partner you've got there.\""]
+    },
+    "champion": {
+      "foe": "CHAMPION LEON", "foeSprite": "leon", "hp": 100, "damage": 30,
+      "intro": ["TODO: CHAMPION LEON wants to battle!", "TODO: Two years of training led here."],
+      "questions": [
+        { "q": "TODO Q1: Where was our first date?", "options": ["TODO right", "TODO wrong", "TODO wrong"], "answer": 0, "move": "MEMORY LANE" },
+        { "q": "TODO Q2", "options": ["TODO wrong", "TODO right", "TODO wrong"], "answer": 1, "move": "INSIDE JOKE" },
+        { "q": "TODO Q3", "options": ["TODO wrong", "TODO wrong", "TODO right"], "answer": 2, "move": "CANELÉ CRUNCH" },
+        { "q": "TODO Q4", "options": ["TODO right", "TODO wrong"], "answer": 0, "move": "PURR" },
+        { "q": "TODO Q5", "options": ["TODO wrong", "TODO right"], "answer": 1, "move": "SUNSET GLARE" }
+      ],
+      "foeMoves": [
+        { "name": "DAD JOKE", "text": "TODO: It's not very effective... but it hurt a little." },
+        { "name": "LIP FILLER", "text": "TODO: LEON's lips grew. Somehow that hurt YOU." },
+        { "name": "SNORE", "text": "TODO: LEON fell asleep mid-battle. The noise did damage." }
+      ],
+      "revive": ["All letters received at 11:59 PM!", "{name} was revived!"],
+      "finisher": ["{partner} used TWO YEARS!", "It's super effective!"],
+      "win": ["CHAMPION LEON was defeated!", "TODO: \"You were always going to win.\""],
+      "award": "twoyear"
+    }
+  },
+
+  "scenes": {
+    "pro_start": {
+      "bg": "beach", "sprites": [],
+      "speaker": "???",
+      "lines": ["TODO: Welcome to the world of TIDEPOOL!", "TODO: This coast is full of creatures and snacks."],
+      "next": "pro_name"
+    },
+    "pro_name": {
+      "type": "input", "flag": "name", "speaker": "???",
+      "prompt": "TODO: First, what is your name?", "placeholder": "YOUR NAME", "max": 10,
+      "next": "pro_name_ok"
+    },
+    "pro_name_ok": {
+      "speaker": "???",
+      "lines": ["TODO: {name}! What a strong trainer name."],
+      "next": "pro_starter"
+    },
+    "pro_starter": {
+      "type": "choice", "bg": "town",
+      "sprites": [{ "art": "lactaid", "at": "left" }, { "art": "gidget", "at": "center", "anim": "bounce" }, { "art": "tennis", "at": "right" }],
+      "speaker": "???",
+      "lines": ["TODO: Choose your partner!"],
+      "choices": [
+        { "label": "LACTAID", "set": { "starter": "lactaid" }, "next": "pro_pick_lactaid" },
+        { "label": "GIDGET", "set": { "starter": "gidget" }, "next": "pro_pick_gidget" },
+        { "label": "TENNIS BALLS", "set": { "starter": "tennis" }, "next": "pro_pick_tennis" }
+      ]
+    },
+    "pro_pick_lactaid": {
+      "sprites": [{ "art": "lactaid", "at": "center" }],
+      "lines": ["TODO: LACTAID rattled sadly.", "TODO: It is a pill bottle. It cannot battle."],
+      "do": [{ "status": "lactosed" }],
+      "next": "pro_gidget_anyway"
+    },
+    "pro_pick_tennis": {
+      "sprites": [{ "art": "tennis", "at": "center" }],
+      "lines": ["TODO: TENNIS BALLS rolled away in three directions."],
+      "next": "pro_gidget_anyway"
+    },
+    "pro_pick_gidget": {
+      "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["TODO: {partner} purred happily!"],
+      "do": [{ "achievement": "TODO: Excellent Taste" }],
+      "next": "pro_lodging"
+    },
+    "pro_gidget_anyway": {
+      "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["TODO: ...wait! Something hopped out of the bushes!", "TODO: {partner} chose YOU."],
+      "next": "pro_lodging"
+    },
+    "pro_lodging": {
+      "type": "choice", "bg": "inn", "sprites": [{ "art": "gidget", "at": "right", "anim": "bounce" }],
+      "speaker": "{partner}",
+      "lines": ["TODO: Where should we stay tonight?"],
+      "choices": [
+        { "label": "SEASIDE INN", "set": { "lodging": "inn" } },
+        { "label": "SECRET HIDEOUT", "set": { "lodging": "hideout" } }
+      ],
+      "next": "pro_sunflower"
+    },
+    "pro_sunflower": {
+      "type": "choice", "bg": "field",
+      "lines": ["TODO: A side quest appeared: the SUNFLOWER FIELD. Accept?"],
+      "choices": [
+        { "label": "YES!", "set": { "sunflowers": "yes" } },
+        { "label": "MAYBE NEXT TIME", "set": { "sunflowers": "no" } }
+      ],
+      "next": "pro_dinner"
+    },
+    "pro_dinner": {
+      "type": "choice", "bg": "sunset",
+      "lines": ["TODO: Where should the celebration feast be?"],
+      "choices": [
+        { "label": "COASTSIDE FEAST", "set": { "dinner": "coast" }, "next": "pro_card_intro" },
+        { "label": "HOMETOWN FEAST", "set": { "dinner": "sf" }, "next": "pro_restaurant" }
+      ]
+    },
+    "pro_restaurant": {
+      "type": "choice",
+      "lines": ["TODO: Which hometown spot?"],
+      "choicesFrom": "restaurants", "choiceFlag": "restaurant",
+      "next": "pro_card_intro"
+    },
+    "pro_card_intro": {
+      "bg": "beach", "sprites": [{ "art": "jess", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
+      "lines": ["TODO: Your TRAINER CARD is ready!", "TODO: Send it to LEON so he can prepare."],
+      "next": "pro_card"
+    },
+    "pro_card": { "type": "trainerCard", "next": "pro_end" },
+    "pro_end": {
+      "lines": ["TODO: The adventure begins on October 10.", "TODO: Keep your badge case close..."],
+      "next": "@end"
+    },
+
+    "ch1_start": {
+      "bg": "night", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
+      "lines": ["TODO: The Night Route glitters..."],
+      "next": "ch1_wild"
+    },
+    "ch1_wild": {
+      "type": "encounter", "text": "A wild LEON appeared!",
+      "sprites": [{ "art": "leon_lips", "at": "right" }],
+      "lines": ["TODO: Its lips are at MAXIMUM SIZE."],
+      "do": [{ "status": "puffed" }],
+      "choices": [
+        { "label": "FIGHT", "fail": ["TODO: You can't fight him. Look at those lips."] },
+        { "label": "HUG", "lines": ["TODO: It's super effective!"], "next": "ch1_trainer" },
+        { "label": "RUN", "fail": ["TODO: Can't escape! He's holding your hand."] }
+      ]
+    },
+    "ch1_trainer": {
+      "type": "battle", "battle": "hiker",
+      "bg": "road", "sprites": [],
+      "lines": ["TODO: A trainer blocks the path!"],
+      "afterBg": "night",
+      "next": "ch1_end"
+    },
+    "ch1_end": {
+      "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["TODO: The night winds down. Time to rest."],
+      "do": [{ "clearStatus": "puffed" }],
+      "next": "@end"
+    },
+
+    "ch2_start": {
+      "bg": "inn", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
+      "lines": ["TODO: Good morning, {name}!"],
+      "next": [
+        { "if": { "lodging": "hideout" }, "next": "ch2_breakfast" },
+        { "next": "ch2_obstacle" }
+      ]
+    },
+    "ch2_breakfast": {
+      "type": "choice", "bg": "hideout",
+      "lines": ["TODO: Hideout breakfast! What'll it be?"],
+      "choices": [
+        { "label": "TODO BREAKFAST A", "set": { "breakfast": "a" } },
+        { "label": "TODO BREAKFAST B", "set": { "breakfast": "b" } }
+      ],
+      "next": "ch2_obstacle"
+    },
+    "ch2_obstacle": {
+      "type": "obstacle", "bg": "doorway",
+      "sprites": [{ "art": "leon_asleep", "at": "center", "zzz": true }],
+      "lines": ["TODO: A sleeping LEON is blocking the doorway!"],
+      "prompt": "TODO: What will you do?",
+      "choices": [
+        { "label": "SHOUT", "fail": ["TODO: LEON rolled over. Still asleep."] },
+        { "label": "STEP OVER", "fail": ["TODO: He grabbed your ankle in his sleep."] },
+        { "label": "OFFER MATCHA", "lines": ["TODO: LEON woke up! He smells matcha."], "next": "ch2_awake" }
+      ]
+    },
+    "ch2_awake": {
+      "sprites": [{ "art": "leon", "at": "right" }, { "art": "gidget", "at": "left", "anim": "bounce" }],
+      "lines": ["TODO: The path is clear!"],
+      "do": [{ "item": "matcha" }, { "achievement": "TODO: Early Bird" }],
+      "next": "ch2_lunch"
+    },
+    "ch2_lunch": {
+      "type": "choice", "bg": "town",
+      "lines": ["TODO: Lunch plans?"],
+      "choices": [
+        { "label": "TODO LUNCH A", "set": { "lunch": "a" } },
+        { "label": "TODO LUNCH B", "set": { "lunch": "b" } }
+      ],
+      "next": "@end"
+    },
+
+    "ch3_start": {
+      "bg": "field", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["TODO: A sea of sunflowers!"],
+      "do": [{ "item": "sunflower" }],
+      "next": "@end"
+    },
+
+    "ch4_start": {
+      "type": "choice", "bg": "beach", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
+      "lines": ["TODO: The coast road splits."],
+      "choices": [
+        { "label": "TODO OPTION A", "set": { "route4": "a" } },
+        { "label": "TODO OPTION B", "set": { "route4": "b" } }
+      ],
+      "next": "@end"
+    },
+
+    "ch5_start": {
+      "type": "choice", "bg": "road", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
+      "lines": ["TODO: A quiet rest stop. There's an easel here..."],
+      "choices": [
+        { "label": "PAINT SOMETHING", "set": { "painted": "yes" }, "next": "ch5_paint" },
+        { "label": "KEEP MOVING", "set": { "painted": "no" }, "next": "ch5_end" }
+      ]
+    },
+    "ch5_paint": {
+      "lines": ["TODO: Bonus scene: a masterpiece!"],
+      "do": [{ "item": "paintbrush" }, { "achievement": "TODO: Artist" }],
+      "next": "ch5_end"
+    },
+    "ch5_end": {
+      "lines": ["TODO: Onward."],
+      "next": "@end"
+    },
+
+    "ch6_start": {
+      "type": "choice", "bg": "inn", "sprites": [{ "art": "gidget_sleep", "at": "center" }],
+      "lines": ["TODO: {partner} looks tired. Heal or explore?"],
+      "choices": [
+        { "label": "HEAL", "set": { "ch6": "heal" }, "lines": ["TODO: Everyone feels rested."] },
+        { "label": "EXPLORE", "set": { "ch6": "explore" }, "lines": ["TODO: Adventure calls!"] }
+      ],
+      "next": "@end"
+    },
+
+    "ch7_start": {
+      "bg": "sunset", "sprites": [{ "art": "leon", "at": "center" }],
+      "speaker": "LEON",
+      "lines": ["TODO: So you've made it, {name}.", "TODO: I've been waiting two years for this."],
+      "next": "ch7_battle"
+    },
+    "ch7_battle": {
+      "type": "battle", "battle": "champion",
+      "afterBg": "sunset", "afterSprites": [{ "art": "leon", "at": "right" }, { "art": "jess", "at": "left" }],
+      "next": "ch7_letter"
+    },
+    "ch7_letter": {
+      "type": "letter", "title": "TODO: A LETTER",
+      "text": "TODO: Dear {name},\n\nThis is where the real letter goes. It can be as long as you like; each blank line starts a new paragraph that fades in.\n\nTODO: second paragraph.\n\nTODO: sign-off.",
+      "next": "ch7_photos"
+    },
+    "ch7_photos": {
+      "type": "photos",
+      "photos": [
+        { "src": "assets/photos/placeholder-1.svg", "caption": "TODO: caption 1" },
+        { "src": "assets/photos/placeholder-2.svg", "caption": "TODO: caption 2" }
+      ],
+      "next": "ch7_end"
+    },
+    "ch7_end": {
+      "bg": "sunset", "sprites": [{ "art": "jess", "at": "left" }, { "art": "gidget", "at": "center", "anim": "bounce" }, { "art": "leon", "at": "right" }],
+      "lines": ["TODO: Happy two years."],
+      "next": "@end"
+    },
+
+    "post_start": {
+      "bg": "night", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["TODO: The CANELÉ KEY glows..."],
+      "next": "post_credits"
+    },
+    "post_credits": {
+      "type": "credits",
+      "lines": ["# TIDEPOOL", "", "TODO: DIRECTED BY", "LEON", "", "TODO: STARRING", "{name}", "{partner}", "", "# THANK YOU FOR PLAYING"],
+      "next": "@end"
+    }
+  }
+}

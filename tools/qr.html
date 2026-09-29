@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Badge QR sheet</title>
+<style>
+  @font-face { font-family: "PressStart"; src: url("../assets/fonts/PressStart2P.woff2") format("woff2"); }
+  body { font-family: system-ui, sans-serif; margin: 20px; color: #0f380f; }
+  .controls { margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .controls input { width: 360px; padding: 6px; }
+  #sheet { display: grid; grid-template-columns: repeat(auto-fill, 2.4in); gap: 0.25in; }
+  .card { border: 1px dashed #999; padding: 0.12in; display: grid; grid-template-columns: 1in 1fr; gap: 0.1in; align-items: center; break-inside: avoid; }
+  .qr { width: 1in; height: 1in; image-rendering: pixelated; }
+  .icon { width: 0.6in; height: 0.6in; image-rendering: pixelated; }
+  .name { font-family: "PressStart", monospace; font-size: 7pt; line-height: 1.5; }
+  .word { font-family: "PressStart", monospace; font-size: 8pt; margin-top: 4px; }
+  .link { font-size: 7pt; word-break: break-all; color: #306230; }
+  .warn { background: #fee; border: 1px solid #c33; padding: 10px; }
+  @media print { .controls, .warn, .link { display: none; } body { margin: 0.3in; } }
+</style>
+</head>
+<body>
+<div class="controls">
+  <label>Game URL <input id="base" placeholder="https://USERNAME.github.io/REPO/"></label>
+  <button id="go">Build sheet</button>
+  <button onclick="print()">Print</button>
+  <label><input type="checkbox" id="showLinks" checked> show links (screen only)</label>
+</div>
+<div id="msg"></div>
+<div id="sheet"></div>
+
+<script src="../vendor/qrcode.js"></script>
+<script type="module">
+import { renderBadge } from "../js/art.js";
+import { CONFIG } from "../config.js";
+
+const $ = (id) => document.getElementById(id);
+$("base").value = CONFIG.BASE_URL || location.origin + location.pathname.replace(/tools\/qr\.html$/, "");
+
+async function build() {
+  const msg = $("msg"); msg.innerHTML = "";
+  let secrets;
+  try { secrets = await (await fetch("tokens.local.json", { cache: "no-store" })).json(); }
+  catch { msg.innerHTML = '<p class="warn">tools/tokens.local.json not found. Run <code>python3 tools/gen_tokens.py</code> and open this page from the local server (it is never deployed).</p>'; return; }
+  const story = await (await fetch("../story/story.json", { cache: "no-store" })).json();
+  let base = $("base").value.trim(); if (!base.endsWith("/")) base += "/";
+  const sheet = $("sheet"); sheet.innerHTML = "";
+  for (const [id, b] of Object.entries(story.badges)) {
+    const s = secrets[id]; if (!s) continue;
+    const url = `${base}#b=${s.token}`;
+    const qr = qrcode(0, "M"); qr.addData(url); qr.make();
+    const card = document.createElement("div"); card.className = "card";
+    const img = document.createElement("img"); img.className = "qr"; img.src = qr.createDataURL(8, 2);
+    const right = document.createElement("div");
+    const icon = document.createElement("canvas"); icon.className = "icon"; renderBadge(icon, b.icon, 64);
+    right.innerHTML = `<div class="name">${b.name.toUpperCase()}</div><div class="word">WORD: ${s.word.toUpperCase()}</div>` +
+      ($("showLinks").checked ? `<div class="link"><a href="${url}" target="_blank">${url}</a></div>` : "");
+    right.prepend(icon);
+    card.append(img, right);
+    sheet.appendChild(card);
+  }
+}
+$("go").onclick = build;
+build();
+</script>
+</body>
+</html>

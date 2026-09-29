@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f380f">
+<meta name="format-detection" content="telephone=no">
+<title>Tidepool</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- TITLE -->
+  <section id="title" class="screen">
+    <canvas id="titleArt" class="pix"></canvas>
+    <h1 id="titleText">TIDEPOOL</h1>
+    <p class="sub">A HALF MOON BAY ADVENTURE</p>
+    <div class="stack">
+      <button id="btnContinue" class="btn">CONTINUE</button>
+      <button id="btnNew" class="btn">NEW GAME</button>
+      <button id="btnMuteTitle" class="btn small">SOUND: ON</button>
+    </div>
+    <p class="tiny" id="versionText"></p>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" class="screen">
+    <div id="hud">
+      <button id="btnMenu" class="hudbtn">MENU</button>
+      <span id="hudChapter"></span>
+      <button id="btnMute" class="hudbtn">♪</button>
+    </div>
+    <div id="stageWrap">
+      <canvas id="stage" class="pix"></canvas>
+      <div id="hpFoe" class="hp hidden"><span class="hpname"></span><div class="bar"><i></i></div></div>
+      <div id="hpMe" class="hp hidden"><span class="hpname"></span><div class="bar"><i></i></div><span class="hpnum"></span></div>
+    </div>
+    <div id="box">
+      <div id="nameTag" class="hidden"></div>
+      <div id="text"></div>
+      <div id="more" class="hidden">▼</div>
+      <ul id="choices" class="hidden"></ul>
+      <div id="inputRow" class="hidden">
+        <input id="nameInput" maxlength="10" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button id="nameOk" class="btn small">OK</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HUB: chapter locked / next chapter -->
+  <section id="hub" class="screen">
+    <h2 id="hubTitle"></h2>
+    <p id="hubText"></p>
+    <div class="stack">
+      <button id="hubGo" class="btn hidden">START</button>
+      <button id="hubScan" class="btn">SCAN BADGE</button>
+      <button id="hubWord" class="btn small">ENTER CODE WORD</button>
+      <button id="hubCase" class="btn small">BADGE CASE</button>
+      <button id="hubCard" class="btn small">TRAINER CARD</button>
+    </div>
+  </section>
+
+  <!-- BADGE CASE -->
+  <section id="case" class="screen">
+    <h2>BADGE CASE</h2>
+    <div id="caseGrid"></div>
+    <p id="caseHint" class="tiny"></p>
+    <button class="btn small back">BACK</button>
+  </section>
+
+  <!-- TRAINER CARD -->
+  <section id="card" class="screen">
+    <div id="cardInner">
+      <h2>TRAINER CARD</h2>
+      <div class="cardrow"><canvas id="cardJess" class="pix"></canvas><canvas id="cardPartner" class="pix"></canvas></div>
+      <dl id="cardList"></dl>
+      <div id="cardBadges"></div>
+    </div>
+    <div class="stack">
+      <button id="cardShare" class="btn">SHARE</button>
+      <button id="cardDone" class="btn small">CONTINUE</button>
+    </div>
+    <p id="cardMsg" class="tiny"></p>
+  </section>
+
+  <!-- LETTER -->
+  <section id="letter" class="screen">
+    <h2 id="letterTitle"></h2>
+    <div id="letterBody"></div>
+    <button id="letterDone" class="btn hidden">CONTINUE</button>
+  </section>
+
+  <!-- PHOTOS -->
+  <section id="photos" class="screen">
+    <div id="photoFrame"><img id="photoImg" alt=""></div>
+    <p id="photoCaption"></p>
+    <p class="tiny">TAP TO CONTINUE</p>
+  </section>
+
+  <!-- CREDITS -->
+  <section id="credits" class="screen">
+    <div id="creditsRoll"></div>
+  </section>
+
+  <!-- SCANNER -->
+  <section id="scanner" class="screen">
+    <h2>SCAN BADGE</h2>
+    <div id="camWrap"><video id="cam" playsinline muted autoplay></video><div id="camBox"></div></div>
+    <p id="scanMsg" class="tiny">POINT THE CAMERA AT THE BADGE</p>
+    <button id="scanCancel" class="btn small">CANCEL</button>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu" class="screen overlay">
+    <div class="panel stack">
+      <h2>MENU</h2>
+      <button data-m="case" class="btn">BADGES</button>
+      <button data-m="bag" class="btn">BAG</button>
+      <button data-m="card" class="btn">TRAINER CARD</button>
+      <button data-m="scan" class="btn">SCAN BADGE</button>
+      <button data-m="save" class="btn small">SAVE CODE</button>
+      <button data-m="close" class="btn small">CLOSE</button>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="screen overlay">
+    <div class="panel" id="adminPanel"></div>
+  </section>
+
+  <!-- POPUP / MODAL -->
+  <div id="popup" class="hidden"><div class="panel"><canvas id="popIcon" class="pix"></canvas><p id="popTitle"></p><p id="popText"></p><div id="popExtra"></div><button id="popOk" class="btn small">OK</button></div></div>
+
+  <div id="fade"></div>
+  <div id="debug" class="hidden"></div>
+</div>
+<script src="vendor/jsQR.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

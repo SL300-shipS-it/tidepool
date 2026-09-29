@@ -1,0 +1,3 @@
+# Badge secrets: never commit or deploy
+tools/tokens.local.json
+.DS_Store

@@ -1,0 +1,212 @@
+#!/usr/bin/env python3
+"""Story checker. Run after every story edit:  python3 tools/validate.py
+
+Checks story/story.json for broken links, unknown art/backgrounds/items, flags that are read but
+never set, lines too long for the text box, and walks EVERY branch combination of the whole game
+to make sure each path reaches the end without getting stuck. Exit code 1 on errors.
+"""
+import json, re, sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+story = json.loads((ROOT / "story" / "story.json").read_text())
+art_js = (ROOT / "js" / "art.js").read_text()
+
+SPRITES = set(re.findall(r"^\s{2}(\w+): (?:withTail\(\[|\[)", art_js, re.M))
+BADGE_ICONS = set(re.findall(r"^\s{2}(\w+): \[", art_js.split("BADGE_ICONS = {")[1], re.M)) | {"canele"}
+BGS = set(re.findall(r'case "(\w+)"', art_js.split("export function drawBg")[1]))
+TYPES = {"dialogue", "choice", "input", "encounter", "obstacle", "battle", "trainerCard", "letter", "photos", "credits"}
+MAX_BOX = 90  # characters per text box (after {name} etc. expand to ~10 chars)
+
+errors, warnings = [], []
+err = errors.append
+warn = warnings.append
+
+scenes = story["scenes"]
+badges = story["badges"]
+items = story.get("items", {})
+statuses = story.get("statuses", {})
+battles = story.get("battles", {})
+lists = story.get("lists", {})
+
+flags_set, flags_read = {"name"}, set()
+
+def read_cond(cond, where):
+    for k in (cond or {}):
+        if k != "hasKey":
+            flags_read.add(k)
+
+def text_flags(s):
+    for m in re.findall(r"\{(?:L|f)\.(\w+)\}", s or ""):
+        flags_read.add(m)
+
+def check_line(line, where):
+    text_flags(line)
+    n = len(re.sub(r"\{[^}]+\}", "X" * 10, line))
+    if n > MAX_BOX:
+        warn(f"{where}: text box is {n} chars (max ~{MAX_BOX}); split it: {line[:40]}...")
+
+def targets(next_, where):
+    out = []
+    if next_ is None:
+        return out
+    if isinstance(next_, str):
+        out.append(next_)
+    else:
+        for n in next_:
+            read_cond(n.get("if"), where)
+            out.append(n["next"])
+    for t in out:
+        if t not in scenes and t not in ("@end", "@hub"):
+            err(f"{where}: next -> '{t}' does not exist")
+    return out
+
+def check_effects(do, where):
+    for e in do or []:
+        if "set" in e: flags_set.update(e["set"])
+        if "item" in e and e["item"] not in items: err(f"{where}: unknown item '{e['item']}'")
+        if "status" in e and e["status"] not in statuses: err(f"{where}: unknown status '{e['status']}'")
+        if "badge" in e and e["badge"] not in badges: err(f"{where}: unknown badge '{e['badge']}'")
+
+# ---------- static checks ----------
+for sid, s in scenes.items():
+    w = f"scene {sid}"
+    t = s.get("type", "dialogue")
+    if t not in TYPES: err(f"{w}: unknown type '{t}'")
+    if "bg" in s and s["bg"] not in BGS: err(f"{w}: unknown bg '{s['bg']}' (known: {', '.join(sorted(BGS))})")
+    for key in ("sprites", "afterSprites"):
+        for sp in s.get(key) or []:
+            if sp.get("art") not in SPRITES: err(f"{w}: unknown sprite '{sp.get('art')}' (known: {', '.join(sorted(SPRITES))})")
+    read_cond(s.get("if"), w)
+    for i, line in enumerate(s.get("lines", [])): check_line(line, f"{w} line {i+1}")
+    if s.get("prompt"): check_line(s["prompt"], f"{w} prompt")
+    if s.get("text") and t == "encounter": check_line(s["text"], f"{w} text")
+    check_effects(s.get("do"), w)
+    targets(s.get("next"), w)
+    targets(s.get("else"), w)
+    if t == "input": flags_set.add(s.get("flag", "name"))
+    if t == "battle" and s.get("battle") not in battles: err(f"{w}: unknown battle '{s.get('battle')}'")
+    if s.get("choicesFrom"):
+        if s["choicesFrom"] not in lists: err(f"{w}: choicesFrom list '{s['choicesFrom']}' missing")
+        if not s.get("choiceFlag"): err(f"{w}: choicesFrom needs choiceFlag")
+        flags_set.add(s.get("choiceFlag"))
+    for c in s.get("choices") or []:
+        cw = f"{w} choice '{c.get('label')}'"
+        if len(c.get("label", "")) > 28: warn(f"{cw}: label longer than 28 chars")
+        read_cond(c.get("if"), cw)
+        if c.get("set"): flags_set.update(c["set"])
+        check_effects(c.get("do"), cw)
+        for i, line in enumerate(c.get("lines", []) + c.get("fail", [])): check_line(line, f"{cw} line {i+1}")
+        targets(c.get("next"), cw)
+        if not c.get("fail") and not c.get("next") and not s.get("next"):
+            err(f"{cw}: no next (and scene has no next)")
+    if t in ("choice", "obstacle") and not s.get("choices") and not s.get("choicesFrom"):
+        err(f"{w}: type {t} needs choices")
+    if s.get("choices") and all(c.get("fail") for c in s["choices"]):
+        err(f"{w}: every choice fails, player would be stuck")
+    if t == "photos":
+        for p in s.get("photos", []):
+            if not (ROOT / p["src"]).exists(): err(f"{w}: photo file missing: {p['src']}")
+
+for bid, b in battles.items():
+    for i, q in enumerate(b.get("questions", [])):
+        if not (0 <= q.get("answer", -1) < len(q.get("options", []))):
+            err(f"battle {bid} Q{i+1}: answer index out of range")
+    if b.get("award") and b["award"] not in badges: err(f"battle {bid}: unknown award badge")
+    if b.get("foeSprite") and b["foeSprite"] not in SPRITES: err(f"battle {bid}: unknown foeSprite")
+
+for bid, b in badges.items():
+    if b.get("icon") not in BADGE_ICONS: err(f"badge {bid}: unknown icon '{b.get('icon')}'")
+    if not re.fullmatch(r"[0-9a-f]{64}", b.get("hash", "")): err(f"badge {bid}: missing hash (run tools/gen_tokens.py)")
+    read_cond(b.get("if"), f"badge {bid}")
+
+for ch in story["chapters"]:
+    if ch["start"] not in scenes: err(f"chapter {ch['id']}: start '{ch['start']}' missing")
+    k = ch.get("key")
+    if k and k != "continue" and k not in badges: err(f"chapter {ch['id']}: key '{k}' is not a badge")
+    read_cond(ch.get("if"), f"chapter {ch['id']}")
+for r in story.get("card", []):
+    read_cond(r.get("if"), "card"); text_flags(r.get("value"))
+
+for f in sorted(flags_read - flags_set):
+    err(f"flag '{f}' is read somewhere but never set")
+
+# ---------- walk every branch of the whole game ----------
+def test(cond, flags):
+    for k, want in (cond or {}).items():
+        if k == "hasKey": continue
+        have = flags.get(k)
+        if isinstance(want, list):
+            if have not in want: return False
+        elif isinstance(want, str) and want.startswith("!"):
+            if have == want[1:]: return False
+        elif have != want: return False
+    return True
+
+def resolve(next_, flags):
+    if next_ is None: return None
+    if isinstance(next_, str): return next_
+    for n in next_:
+        if test(n.get("if"), flags): return n["next"]
+    return None
+
+def successors(sid, flags):
+    """Yield (next_scene, new_flags) for each way out of a scene."""
+    s = scenes[sid]
+    if s.get("if") and not test(s["if"], flags):
+        yield resolve(s.get("else") or s.get("next"), flags), flags; return
+    f = dict(flags)
+    for e in s.get("do") or []:
+        if "set" in e: f.update(e["set"])
+    if s.get("type") == "input" and s.get("flag", "name") != "name":
+        f[s["flag"]] = "TEXT"
+    choices = s.get("choices")
+    if s.get("choicesFrom"):
+        choices = [{"set": {s["choiceFlag"]: x["id"]}} for x in lists.get(s["choicesFrom"], []) if x.get("available", True) is not False]
+    if choices and s.get("type") not in ("battle", "input", "trainerCard", "letter", "photos", "credits"):
+        vis = [c for c in choices if test(c.get("if"), f) and not c.get("fail")]
+        if not vis:
+            yield "__STUCK__", f; return
+        for c in vis:
+            g = dict(f); g.update(c.get("set") or {})
+            for e in c.get("do") or []:
+                if "set" in e: g.update(e["set"])
+            yield resolve(c.get("next") or s.get("next"), g), g
+    else:
+        yield resolve(s.get("next"), f), f
+
+chapters = story["chapters"]
+reached, endings, seen = set(), 0, set()
+stack = [(0, chapters[0]["start"], ())]
+steps = 0
+while stack:
+    ci, sid, fl = stack.pop()
+    key = (ci, sid, fl)
+    if key in seen: continue
+    seen.add(key); steps += 1
+    if steps > 200000: err("branch walk exploded (>200k states); check for loops"); break
+    flags = dict(fl)
+    if sid in ("@end", "@hub"):
+        nxt = ci + 1
+        while nxt < len(chapters) and not test(chapters[nxt].get("if"), flags): nxt += 1
+        if nxt >= len(chapters): endings += 1
+        else: stack.append((nxt, chapters[nxt]["start"], fl))
+        continue
+    if sid is None:
+        err(f"dead end: a scene in chapter {chapters[ci]['id']} has no next (flags {flags})"); continue
+    if sid == "__STUCK__":
+        err(f"stuck: all visible choices fail in chapter {chapters[ci]['id']} (flags {flags})"); continue
+    if sid not in scenes: continue  # already reported
+    reached.add(sid)
+    for n, f in successors(sid, flags):
+        stack.append((ci, n, tuple(sorted(f.items()))))
+
+for sid in scenes:
+    if sid not in reached: warn(f"scene {sid} is never reached in normal play")
+
+# ---------- report ----------
+for w in warnings: print("WARN ", w)
+for e in errors: print("ERROR", e)
+print(f"\n{len(scenes)} scenes, {len(reached)} reachable, {endings} distinct complete playthroughs, {steps} states walked.")
+print("OK" if not errors else f"{len(errors)} error(s)")
+sys.exit(1 if errors else 0)
