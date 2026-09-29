@@ -158,12 +158,12 @@
       "next": "pro_lodging"
     },
     "pro_lodging": {
-      "type": "choice", "bg": "inn", "sprites": [{ "art": "gidget", "at": "right", "anim": "bounce" }],
+      "type": "choice", "bg": "town", "sprites": [{ "art": "gidget", "at": "right", "anim": "bounce" }],
       "speaker": "{partner}",
-      "lines": ["TODO: Where should we stay tonight?"],
+      "lines": ["TODO: Two brochures on the table! Where should we stay in Half Moon Bay?"],
       "choices": [
-        { "label": "TODO: INN (OCEAN VIEWS)", "set": { "lodging": "inn" } },
-        { "label": "TODO: HIDEOUT (OWN KITCHEN)", "set": { "lodging": "hideout" } }
+        { "label": "SEASIDE INN: OCEAN VIEWS", "set": { "lodging": "inn" } },
+        { "label": "SECRET HIDEOUT: OWN KITCHEN", "set": { "lodging": "hideout" } }
       ],
       "next": [
         { "if": { "cfg.fakeLodging": true }, "next": "pro_lodging_fake" },
@@ -172,7 +172,7 @@
     },
     "pro_lodging_fake": {
       "bg": "inn", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
-      "lines": ["{partner} knocked the other brochure off the table!", "TODO: Looks like it's the SEASIDE INN!"],
+      "lines": ["{partner} knocked the HIDEOUT brochure off the table!", "TODO: {partner} has decided. It's the SEASIDE INN!"],
       "do": [{ "set": { "lodging": "inn" } }],
       "next": "pro_sunflower"
     },
@@ -241,13 +241,19 @@
     },
 
     "ch2_start": {
+      "if": { "lodging": "hideout" }, "else": "ch2_start_inn",
+      "bg": "hideout", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
+      "lines": ["TODO: Good morning, {name}!"],
+      "next": "ch2_breakfast"
+    },
+    "ch2_start_inn": {
       "bg": "inn", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
       "lines": ["TODO: Good morning, {name}!"],
       "next": "ch2_breakfast"
     },
     "ch2_breakfast": {
-      "type": "choice", "bg": "inn",
-      "lines": ["TODO: Breakfast time! What'll it be?"],
+      "type": "choice",
+      "lines": ["TODO: Breakfast time! Where should we eat?"],
       "choices": [
         { "label": "IN-ROOM BREAKFAST", "set": { "breakfast": "room" } },
         { "label": "JOHNNY'S", "set": { "breakfast": "johnnys" } },
