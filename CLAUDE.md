@@ -36,7 +36,7 @@ Commands: `/intake`, `/deploy` (checks, version bump, tag, push, verify), `/play
 
 ## Checks (run after every change)
 1. `python3 tools/validate.py` must print OK.
-2. Serve: `python3 -m http.server 8123` in the project root, open http://localhost:8123 in the browser pane at mobile size.
+2. Preview: rsync the project to ~/.tidepool-preview (see /playtest), then `preview_start` name `game` → http://localhost:8123 at mobile size.
 3. `/playtest` before any deploy (silent; `?fast=1` mutes audio). Leon may be on calls: never play the game
    with sound in the browser pane unless he asks.
 4. The desktop browser pane can't register service workers; test offline on the phone.

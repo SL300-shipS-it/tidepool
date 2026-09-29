@@ -6,9 +6,9 @@ description: Run the automated full-game playtest in the browser pane (every cho
 
 Runs silently (`?fast=1` disables all sound) and wipes the LOCAL save only.
 
-1. Start the server with the browser pane's `preview_start` (name `game`, from `.claude/launch.json`).
-   The pane blocks servers started from Bash. If the pane's server can't read the Desktop folder (404s),
-   rsync the project (minus .git) into the session scratch folder and serve that copy instead.
+1. The pane's server can't read ~/Desktop (macOS privacy), so it serves a copy. Refresh the copy from Bash:
+   `rsync -a --delete --exclude .git /Users/leonS/Desktop/Personal/tidepool/ ~/.tidepool-preview/`
+   then `preview_start` name `game` (serves ~/.tidepool-preview on :8123; the pane blocks Bash-started servers).
 2. Before the playtest, refresh cached files: in the pane, `fetch()` each `js/*.js` with `{cache: "reload"}`
    and confirm `js/audio.js` contains `SILENT`. A stale cached copy could play sound. Then open
    http://localhost:8123/tools/playtest.html.
