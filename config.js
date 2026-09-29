@@ -8,5 +8,5 @@ export const CONFIG = {
   PARTNER: "GIDGET",
   TEXT_SPEED_MS: 28,       // typewriter delay per character
   SAVE_KEY: "tp_save_v1",
-  VERSION: "0.1.0",
+  VERSION: "0.1.1",
 };
