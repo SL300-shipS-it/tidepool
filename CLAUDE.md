@@ -42,6 +42,11 @@ When Leon says "intake" (or pastes change requests):
 3. For flow changes, play the affected chapter (admin mode → Jump to scene). For engine changes, play the whole game.
 4. Note: the desktop browser pane can't register service workers; test offline on the phone.
 
+## Deploy
+- Live: https://sl300-ships-it.github.io/tidepool/ · Repo: github.com/SL300-shipS-it/tidepool (public; Pages from `main` /root)
+- Steps: bump `VERSION` in `sw.js` and `config.js` → validate → commit → `git push`. Pages rebuilds in ~1 min.
+- `gh` is installed at /usr/local/bin and logged in as SL300-shipS-it. No Homebrew or Node on this Mac; use Python.
+
 ## Map
 - `index.html`, `styles.css`, `config.js` (PIN, base URL, version)
 - `js/main.js` boot + `#b=` / `#r=` links · `js/core.js` state, save, flags, text placeholders
