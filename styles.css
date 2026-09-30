@@ -92,7 +92,8 @@ h2 { font-size: calc(var(--fs) * 1.15); }
 /* ---------- TITLE ---------- */
 #title { justify-content: center; }
 #titleArt { width: 192px; height: 192px; }
-#titleText { cursor: default; }
+#titleText { cursor: default; font-size: calc(var(--fs) * 2.3); line-height: 1.35; margin: .4em 0 .3em; }
+#titleText span { display: block; } /* TRAINER / QUEST on two lines so it fits at 320-375px */
 #title .stack { margin-top: 16px; }
 
 /* ---------- PLAY ---------- */

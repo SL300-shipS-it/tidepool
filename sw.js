@@ -11,6 +11,7 @@ const CORE = [
   "js/minigames/index.js", "js/minigames/tap.js",
   "vendor/jsQR.js", "assets/fonts/PressStart2P.woff2",
   "story/story.json",
+  "manifest.webmanifest", "assets/icons/apple-touch-icon.png", "assets/icons/icon-512.png", "assets/icons/favicon-32.png",
 ];
 
 // Bypass the browser's HTTP cache so a new version never picks up stale files.

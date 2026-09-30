@@ -1,0 +1,24 @@
+{
+  "name": "TRAINER QUEST: AN ANNIVERSARY ADVENTURE",
+  "short_name": "TRAINER QUEST",
+  "description": "A letter from DR. JOSEPHSON has arrived.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "orientation": "portrait",
+  "background_color": "#e0f0f8",
+  "theme_color": "#e0f0f8",
+  "icons": [
+    {
+      "src": "assets/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

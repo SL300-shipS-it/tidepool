@@ -2,7 +2,12 @@
 export const CONFIG = {
   // Full public URL of the game, with trailing slash. Used for share/restore links and QR codes.
   // Leave "" to use whatever address the page was opened from.
-  BASE_URL: "https://sl300-ships-it.github.io/tidepool/",
+  BASE_URL: "https://sl300-ships-it.github.io/tq/",
+  // Game title (CR-018). tools/build_meta.py copies these into index.html (tab title, link preview
+  // tags, title screen) and manifest.webmanifest. Rerun it after changing them.
+  GAME_TITLE: "TRAINER QUEST: AN ANNIVERSARY ADVENTURE",
+  SHORT_TITLE: "TRAINER QUEST",   // Home Screen label (must be short)
+  SUBTITLE: "AN ANNIVERSARY ADVENTURE",
   ADMIN_PIN: "9713",
   ADMIN_TAPS: 7,           // taps on the title text to open the PIN prompt
   PARTNER: "GIDGET",
