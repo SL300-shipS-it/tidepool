@@ -23,12 +23,19 @@ export function chapterNumber(ch) {
 }
 export const LOCKED_TEXT = "Your next badge will find you.";
 
+// An unlock can trigger a start from two places at once (the keys-changed event and the button
+// handler). Only the first counts; a second concurrent run would fight over the text box.
+let starting = false;
 export async function startChapter(ch) {
-  G.state.replaying = false; G.state.replayReturn = null;  // a normal start always ends any replay
-  G.state.chapter = ch.id;
-  G.state.scene = ch.start;
-  saveState();
-  await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch.title); });
+  if (starting) return;
+  starting = true;
+  try {
+    G.state.replaying = false; G.state.replayReturn = null;  // a normal start always ends any replay
+    G.state.chapter = ch.id;
+    G.state.scene = ch.start;
+    saveState();
+    await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch.title); });
+  } finally { starting = false; }
   await runFrom(ch.start);
 }
 
