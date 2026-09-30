@@ -21,14 +21,14 @@
   ],
 
   "badges": {
-    "gala":      { "name": "Glamour Badge", "icon": "glamour", "hash": "1aedf8b5a661c653b3d1ab0f4c63c98cec6026dd3619a1e665f673d8f239b393", "wordHash": "af46e73d43c9379bf192efe3f48776407739c5d2f4dd5bae57bdc38d51e80a47" },
-    "matcha":    { "name": "Snooze Badge",  "icon": "snooze",  "hash": "b901ff20ab4795729e04ba5ac474e7e1af0f1ac811485d0d3b2ddd8cdcf913ae", "wordHash": "625a2acb0717f82b2fd73a685229423c643c89336f1edee3a9133cbfc19837a8" },
-    "sunflower": { "name": "Bloom Badge",   "icon": "bloom",   "if": { "sunflowers": "yes" }, "hash": "24037f944572d705161452b5ca782bf7a71c30a92d150ea5e7a31c6626fffc4a", "wordHash": "a24f4985aea73d5505abc5a1694a0fa61f788cb9881f6393756be6ff3da48a75" },
-    "tide":      { "name": "Tide Badge",    "icon": "tide",    "hash": "7adf6d28af16b4591e0a4abee145d5c51c2b8f5e8ec72080992597e9b91bc3eb", "wordHash": "04b35411c4bf0807be6a3b6b03a7cbce1e767898de7d1ef3e6650e7a4be691ae" },
-    "brush":     { "name": "Compass Badge", "icon": "compass", "hash": "f0fe7fbcbeb9f8448ad9fdc0980a88d1ecfa9df47a6553514baf642d77d3ef2d", "wordHash": "5f39bf28e14cb6bad3ad7da62f62a6009e8bab49020671fee69a4b5cb7311162" },
+    "gala":      { "name": "Glamour Badge", "icon": "glamour", "hash": "1aedf8b5a661c653b3d1ab0f4c63c98cec6026dd3619a1e665f673d8f239b393", "wordHash": "62d32210c45709f137725d03f93ba00b08c44c3e7ab183c3f0d7ba7b33b11cbd" },
+    "matcha":    { "name": "Snooze Badge",  "icon": "snooze",  "hash": "b901ff20ab4795729e04ba5ac474e7e1af0f1ac811485d0d3b2ddd8cdcf913ae", "wordHash": "c767032128007b22f58c7c87ab44f23efa7b02957c8f28fb5e514349abb205d4" },
+    "sunflower": { "name": "Bloom Badge",   "icon": "bloom",   "if": { "sunflowers": "yes" }, "hash": "24037f944572d705161452b5ca782bf7a71c30a92d150ea5e7a31c6626fffc4a", "wordHash": "062c6acf88b2aad80f03e14f16f4286fa972c462f972cd0d1370c01f6b8f1f55" },
+    "tide":      { "name": "Tide Badge",    "icon": "tide",    "hash": "7adf6d28af16b4591e0a4abee145d5c51c2b8f5e8ec72080992597e9b91bc3eb", "wordHash": "9d3b4324a1ebf2c8343ce51c71f8cb98ea50e0ed9d7f6323aa8117556964bc32" },
+    "brush":     { "name": "Compass Badge", "icon": "compass", "hash": "f0fe7fbcbeb9f8448ad9fdc0980a88d1ecfa9df47a6553514baf642d77d3ef2d", "wordHash": "3a452b9640633821321bc7c0eca5f67105002dd12135acae1fc11c6a3a71b4b2" },
     "twoyear":   { "name": "Sunset Badge",  "icon": "sunset",  "revealOn": "battle",
-                   "scanText": "The Champion accepts your challenge!", "hash": "3f08bfa900685793dc0a9416717eb9d25931af4d68c3c31b76dede895e3a55c9", "wordHash": "8efd9bae2fa3733e050157f21d79a846837a0d496fa6c7b845369b1eb13f3fd1" },
-    "legendary": { "name": "Canele Key",    "icon": "canele",  "kind": "key", "hash": "131df5f0851065568cc90d09e8ac8e616388d70e81aa8b81b036863ace6f136d", "wordHash": "edd7fe8ccd2079f7021bbbcaefea887599283394909daf7c3b0f3ae0b72034c4" }
+                   "scanText": "The Champion accepts your challenge!", "hash": "3f08bfa900685793dc0a9416717eb9d25931af4d68c3c31b76dede895e3a55c9", "wordHash": "c80db93cc8d6aa836d0d2bfb6c3fc47b5f4376d4f0a1a4cf333fd89d498f418d" },
+    "legendary": { "name": "Canele Key",    "icon": "canele",  "kind": "key", "hash": "131df5f0851065568cc90d09e8ac8e616388d70e81aa8b81b036863ace6f136d", "wordHash": "92bd9e4c70e288e4473b4199e3409084a4d5d51c67724fc81559fc9301e17935" }
   },
 
   "items": {
