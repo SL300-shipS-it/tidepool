@@ -1,41 +1,34 @@
 {
   "meta": {
-    "title": "TIDEPOOL",
-    "shareTitle": "TRAINER CARD — TIDEPOOL",
-    "shareText": "Trainer {name} chose GIDGET! Picks are in. Keeping Oct 10–11 free... LEON, I'm onto you. 👀",
-    "note": "PLACEHOLDER CONTENT. Every line marked TODO gets replaced by the real script."
+    "title": "TRAINER QUEST",
+    "shareTitle": "TRAINER CARD — TRAINER QUEST",
+    "shareText": "Trainer {name} chose GIDGET! Picks are in. Keeping Oct 10–11 free... LEON, I'm onto you. 👀"
   },
 
   "chapters": [
     { "id": "prologue", "prefix": "pro_", "title": "PROLOGUE", "start": "pro_intro" },
     { "id": "ch1", "prefix": "ch1_", "title": "CH.1 NIGHT ROUTE", "start": "ch1_start", "key": "gala",
       "lockedText": "Your first badge awaits at the GALA." },
-    { "id": "ch2", "prefix": "ch2_", "title": "CH.2 MORNING", "start": "ch2_start", "key": "matcha",
-      "lockedText": "TODO: Someone is still asleep...\nFind the badge that wakes the morning." },
+    { "id": "ch2", "prefix": "ch2_", "title": "CH.2 MORNING", "start": "ch2_start", "key": "matcha" },
     { "id": "ch3", "prefix": "ch3_", "title": "CH.3 SUNFLOWER FIELD", "start": "ch3_start", "key": "sunflower",
-      "if": { "sunflowers": "yes" },
-      "lockedText": "TODO: Something golden is blooming nearby..." },
-    { "id": "ch4", "prefix": "ch4_", "title": "CH.4 ROUTE SOUTH", "start": "ch4_start", "key": "tide",
-      "lockedText": "TODO: The tide is out. Wait for the badge that brings it back." },
-    { "id": "ch5", "prefix": "ch5_", "title": "CH.5 REST STOP", "start": "ch5_start", "key": "brush",
-      "lockedText": "TODO: Which way now? A compass would help..." },
+      "if": { "sunflowers": "yes" } },
+    { "id": "ch4", "prefix": "ch4_", "title": "CH.4 ROUTE SOUTH", "start": "ch4_start", "key": "tide" },
+    { "id": "ch5", "prefix": "ch5_", "title": "CH.5 REST STOP", "start": "ch5_start", "key": "brush" },
     { "id": "ch6", "prefix": "ch6_", "title": "CH.6 HEAL OR EXPLORE", "start": "ch6_start", "key": "continue",
       "intro": "TODO: Take a breath, {name}. Tap CONTINUE when you're ready." },
-    { "id": "ch7", "prefix": "ch7_", "title": "CH.7 THE CHAMPION", "start": "ch7_start", "key": "twoyear",
-      "lockedText": "TODO: The Champion is waiting.\nOnly the strongest badge opens this door." },
-    { "id": "post", "prefix": "post_", "title": "POST-GAME", "start": "post_start", "key": "legendary",
-      "lockedText": "TODO: Legends say a KEY is hidden somewhere nearby...\nLook inside something wrapped." }
+    { "id": "ch7", "prefix": "ch7_", "title": "CH.7 THE CHAMPION", "start": "ch7_start", "key": "twoyear" },
+    { "id": "post", "prefix": "post_", "title": "POST-GAME", "start": "post_start", "key": "legendary" }
   ],
 
   "badges": {
-    "gala":      { "name": "Glamour Badge", "icon": "glamour", "hint": "The Gym Leader holds the next badge...", "hash": "1aedf8b5a661c653b3d1ab0f4c63c98cec6026dd3619a1e665f673d8f239b393", "wordHash": "af46e73d43c9379bf192efe3f48776407739c5d2f4dd5bae57bdc38d51e80a47" },
-    "matcha":    { "name": "Snooze Badge",  "icon": "snooze",  "hint": "Earned by those who rise and shine.", "hash": "b901ff20ab4795729e04ba5ac474e7e1af0f1ac811485d0d3b2ddd8cdcf913ae", "wordHash": "625a2acb0717f82b2fd73a685229423c643c89336f1edee3a9133cbfc19837a8" },
-    "sunflower": { "name": "Bloom Badge",   "icon": "bloom",   "hint": "It grows where the sun looks back.", "if": { "sunflowers": "yes" }, "hash": "24037f944572d705161452b5ca782bf7a71c30a92d150ea5e7a31c6626fffc4a", "wordHash": "a24f4985aea73d5505abc5a1694a0fa61f788cb9881f6393756be6ff3da48a75" },
-    "tide":      { "name": "Tide Badge",    "icon": "tide",    "hint": "The ocean keeps this one.", "hash": "7adf6d28af16b4591e0a4abee145d5c51c2b8f5e8ec72080992597e9b91bc3eb", "wordHash": "04b35411c4bf0807be6a3b6b03a7cbce1e767898de7d1ef3e6650e7a4be691ae" },
-    "brush":     { "name": "Compass Badge", "icon": "compass", "hint": "For trainers who wander on purpose.", "hash": "f0fe7fbcbeb9f8448ad9fdc0980a88d1ecfa9df47a6553514baf642d77d3ef2d", "wordHash": "5f39bf28e14cb6bad3ad7da62f62a6009e8bab49020671fee69a4b5cb7311162" },
-    "twoyear":   { "name": "Sunset Badge",  "icon": "sunset",  "hint": "The Champion's badge.", "revealOn": "battle",
+    "gala":      { "name": "Glamour Badge", "icon": "glamour", "hash": "1aedf8b5a661c653b3d1ab0f4c63c98cec6026dd3619a1e665f673d8f239b393", "wordHash": "af46e73d43c9379bf192efe3f48776407739c5d2f4dd5bae57bdc38d51e80a47" },
+    "matcha":    { "name": "Snooze Badge",  "icon": "snooze",  "hash": "b901ff20ab4795729e04ba5ac474e7e1af0f1ac811485d0d3b2ddd8cdcf913ae", "wordHash": "625a2acb0717f82b2fd73a685229423c643c89336f1edee3a9133cbfc19837a8" },
+    "sunflower": { "name": "Bloom Badge",   "icon": "bloom",   "if": { "sunflowers": "yes" }, "hash": "24037f944572d705161452b5ca782bf7a71c30a92d150ea5e7a31c6626fffc4a", "wordHash": "a24f4985aea73d5505abc5a1694a0fa61f788cb9881f6393756be6ff3da48a75" },
+    "tide":      { "name": "Tide Badge",    "icon": "tide",    "hash": "7adf6d28af16b4591e0a4abee145d5c51c2b8f5e8ec72080992597e9b91bc3eb", "wordHash": "04b35411c4bf0807be6a3b6b03a7cbce1e767898de7d1ef3e6650e7a4be691ae" },
+    "brush":     { "name": "Compass Badge", "icon": "compass", "hash": "f0fe7fbcbeb9f8448ad9fdc0980a88d1ecfa9df47a6553514baf642d77d3ef2d", "wordHash": "5f39bf28e14cb6bad3ad7da62f62a6009e8bab49020671fee69a4b5cb7311162" },
+    "twoyear":   { "name": "Sunset Badge",  "icon": "sunset",  "revealOn": "battle",
                    "scanText": "The Champion accepts your challenge!", "hash": "3f08bfa900685793dc0a9416717eb9d25931af4d68c3c31b76dede895e3a55c9", "wordHash": "8efd9bae2fa3733e050157f21d79a846837a0d496fa6c7b845369b1eb13f3fd1" },
-    "legendary": { "name": "Canelé Key",    "icon": "canele",  "kind": "key", "hint": "A legendary key... wrapped up somewhere.", "hash": "131df5f0851065568cc90d09e8ac8e616388d70e81aa8b81b036863ace6f136d", "wordHash": "edd7fe8ccd2079f7021bbbcaefea887599283394909daf7c3b0f3ae0b72034c4" }
+    "legendary": { "name": "Canele Key",    "icon": "canele",  "kind": "key", "hash": "131df5f0851065568cc90d09e8ac8e616388d70e81aa8b81b036863ace6f136d", "wordHash": "edd7fe8ccd2079f7021bbbcaefea887599283394909daf7c3b0f3ae0b72034c4" }
   },
 
   "items": {
@@ -100,7 +93,7 @@
       "questions": [
         { "q": "TODO Q1: Where was our first date?", "options": ["TODO right", "TODO wrong", "TODO wrong"], "answer": 0, "move": "MEMORY LANE" },
         { "q": "TODO Q2", "options": ["TODO wrong", "TODO right", "TODO wrong"], "answer": 1, "move": "INSIDE JOKE" },
-        { "q": "TODO Q3", "options": ["TODO wrong", "TODO wrong", "TODO right"], "answer": 2, "move": "CANELÉ CRUNCH" },
+        { "q": "TODO Q3", "options": ["TODO wrong", "TODO wrong", "TODO right"], "answer": 2, "move": "CANELE CRUNCH" },
         { "q": "TODO Q4", "options": ["TODO right", "TODO wrong"], "answer": 0, "move": "PURR" },
         { "q": "TODO Q5", "options": ["TODO wrong", "TODO right"], "answer": 1, "move": "SUNSET GLARE" }
       ],
@@ -226,6 +219,31 @@
     },
     "pro_starter_gidget_joined": {
       "lines": ["GIDGET joined your team!"],
+      "next": "pro_starter_charm"
+    },
+    "pro_starter_charm": {
+      "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["One more thing! Every partner needs a keepsake."],
+      "next": "pro_starter_charm_pick"
+    },
+    "pro_starter_charm_pick": {
+      "type": "obstacle", "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["He hands you a tiny golden CANELE CHARM."],
+      "prompt": "What will you do?",
+      "choices": [
+        { "label": "EAT IT", "fail": ["It's a charm, not a pastry. (Also, you'd need a LACTAID.)"] },
+        { "label": "PUT IT ON GIDGET", "next": "pro_starter_charm_done" }
+      ]
+    },
+    "pro_starter_charm_done": {
+      "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["You clip the CANELE CHARM onto GIDGET's collar.", "It jingles. GIDGET looks extremely proud of herself."],
+      "next": "pro_starter_charm_safe"
+    },
+    "pro_starter_charm_safe": {
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Keep it safe. Caneles have a way of unlocking things..."],
       "next": "pro_lodging"
     },
     "pro_lodging": {
@@ -324,7 +342,9 @@
         "Now... about LEON's secret.",
         "I'm sworn to silence. But I can tell you three things.",
         "ONE: Keep the night of OCT 10 through OCT 11 free.",
-        "TWO: Pack something fancy... and something cozy.",
+        "TWO: Have a bag packed by Saturday afternoon.",
+        "Inside: something fancy, something cozy, and something to sleep in.",
+        "LEON will take it from there.",
         "THREE: Your first badge awaits at the GALA.",
         "The rest? You'll discover it one badge at a time."
       ],
@@ -487,12 +507,12 @@
 
     "post_start": {
       "bg": "night", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
-      "lines": ["TODO: The CANELÉ KEY glows..."],
+      "lines": ["TODO: The CANELE KEY glows..."],
       "next": "post_credits"
     },
     "post_credits": {
       "type": "credits",
-      "lines": ["# TIDEPOOL", "", "TODO: DIRECTED BY", "LEON", "", "TODO: STARRING", "{name}", "{partner}", "", "# THANK YOU FOR PLAYING"],
+      "lines": ["# TRAINER QUEST", "", "TODO: DIRECTED BY", "LEON", "", "TODO: STARRING", "{name}", "{partner}", "", "# THANK YOU FOR PLAYING"],
       "next": "@end"
     },
 
