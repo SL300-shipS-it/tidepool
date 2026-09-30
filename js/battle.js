@@ -45,12 +45,13 @@ export async function runBattle(def) {
     const fg = gridSize(foeG);
     const fx = Math.round(W * 0.73 - fg.w), fy = Math.round(H * 0.34 - fg.h * 2 + 4);
     if (!(foeHurt && ((t / 80) | 0) % 2)) drawGrid(ctx, foeG, fx, fy, 2);
-    const jx = Math.round(W * 0.08), jy = Math.round(H * 0.84 - 32 + 4);
+    const floor = Math.round(H * 0.84 + 4); // player platform line; sprites stand on it whatever their height
+    const jx = Math.round(W * 0.08), jy = floor - gridSize(SPRITES.jess).h * 2;
     // Only Jess blinks on a hit; Gidget is never shown as hurt.
     if (!(meHurt && ((t / 80) | 0) % 2)) drawGrid(ctx, SPRITES.jess, jx, jy, 2, true);
     const gidG = SPRITES.gidget, napG = SPRITES.gidget_sleep || gidG;
     const g = cat === "nap" ? napG : gidG;
-    const gx = jx + 32, gy = jy + (gridSize(gidG).h - gridSize(g).h) * 2; // bottom-aligned
+    const gx = jx + 32, gy = floor - gridSize(g).h * 2; // bottom-aligned
     if (cat === "nap") {
       drawGrid(ctx, g, gx, gy, 2, true);
       ctx.fillStyle = "#303838"; ctx.font = "8px PressStart";

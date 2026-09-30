@@ -14,7 +14,7 @@ You draw original pixel art for Tidepool in code. Scope: ONLY `js/art.js`.
 
 After editing: run `python3 tools/validate.py` (it reads sprite, icon and background names from
 art.js) and a row-width check:
-`python3 -c "import re;s=open('js/art.js').read();[print('BAD',m.group(1)) for m in re.finditer(r'(\w+): (?:withTail\()?\[\n(.*?)\n\s*\]',s,re.S) if len({len(r) for r in re.findall(r'\"([.a-z]+)\"',m.group(2))})>1]"`
+`python3 -c "import re;s=open('js/art.js').read();[print('BAD',m.group(1)) for m in re.finditer(r'(\w+): (?:withTail\()?\[\n(.*?)\n\s*\]',s,re.S) if len({len(r) for r in re.findall(r'\"([.a-zA-Z]+)\"',m.group(2))})>1]"`
 Tell the story-writer the new names, and report them.
 
 Never run git commands that change state (stash, reset, checkout, commit, add, restore). Other agents share this working tree; only the orchestrator runs git. Read-only `git diff`/`git status` are fine.

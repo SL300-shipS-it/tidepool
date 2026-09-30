@@ -124,7 +124,7 @@
 
   "scenes": {
     "pro_intro": {
-      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
       "lines": [
         "Ah! A new trainer on the coast. Welcome!",
@@ -139,7 +139,7 @@
       "next": "pro_recognize"
     },
     "pro_recognize": {
-      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
       "lines": [
         "{name}?! Of course! The LOVEBOAT!",
@@ -154,13 +154,13 @@
       "next": "pro_starter"
     },
     "pro_starter": {
-      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
       "lines": ["Every trainer needs a partner.", "I've prepared THREE for you. Choose wisely!"],
       "next": "pro_starter_pick"
     },
     "pro_starter_pick": {
-      "type": "choice", "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "prompt": "Which partner will you choose?",
       "choices": [
         { "label": "LACTAID", "next": "pro_starter_lactaid", "if": { "triedLactaid": "!yes" } },
@@ -200,14 +200,14 @@
       "next": "pro_starter_pick_last"
     },
     "pro_starter_pick_last": {
-      "type": "choice", "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "prompt": "Hm? Someone's peeking out from under the table...",
       "choices": [
         { "label": "GIDGET", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
       ]
     },
     "pro_starter_mystery_locked": {
-      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
       "lines": ["Hmm. That one's hiding under the table.", "She's shy. Try the others first."],
       "next": "pro_starter_pick"
