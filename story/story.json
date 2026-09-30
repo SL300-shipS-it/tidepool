@@ -208,7 +208,7 @@
       "next": "pro_starter_pick"
     },
     "pro_starter_gidget": {
-      "bg": "town", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "bg": "town", "sprites": [{ "art": "gidget_plain", "at": "center", "anim": "bounce" }],
       "lines": ["Something crawls out from under the table...", "It's GIDGET!", "GIDGET sat directly on your foot."],
       "next": "pro_starter_gidget_chosen"
     },
@@ -222,13 +222,13 @@
       "next": "pro_starter_charm"
     },
     "pro_starter_charm": {
-      "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "bg": "town", "sprites": [{ "art": "gidget_plain", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
       "lines": ["One more thing! Every partner needs a keepsake."],
       "next": "pro_starter_charm_pick"
     },
     "pro_starter_charm_pick": {
-      "type": "obstacle", "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "type": "obstacle", "bg": "town", "sprites": [{ "art": "gidget_plain", "at": "center" }],
       "lines": ["He hands you a tiny golden CANELE CHARM."],
       "prompt": "What will you do?",
       "choices": [

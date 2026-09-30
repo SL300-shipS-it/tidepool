@@ -44,26 +44,50 @@ export const PAL = {
 };
 
 // ---------- sprites (16x16 unless noted) ----------
-// Gidget (CR-009): Jess's childhood cat, a black cat, wearing a small canele (caramel sides,
-// dark caramelized crown) as a hat between her ears. Near-black fur A with sheen F and a blue-gray
-// rim light R on the upper-left edges, ears and tail so she reads on night/dark backgrounds.
-// Yellow-green eyes (w), pink nose and inner ears (p), whiskers (b).
+// Gidget (CR-009, CR-014): Jess's childhood cat, a black cat with cat ears only (no hat). Near-black
+// fur A with sheen F and a blue-gray rim light R on the upper-left edges, ears and tail so she reads on
+// night/dark backgrounds. Yellow-green eyes (w), pink nose and inner ears (p), whiskers (b).
+// Coral collar (p highlight, r, q shadow) with a tiny gold canele charm at the throat (y/x, glint a).
+// gidget_plain is the same cat before she receives the charm (collar only).
 export const SPRITES = {
-  // 20x20: sitting, tail curled up on the right.
+  // 20x20: sitting, tail curled up on the right. Shown at 8x on the title screen.
   gidget: [
-    "......kkkk..........",
-    ".....konnok.........",
-    "..k.kzmnmnnk.k......",
-    ".kRkkzmnmnnkkFk.....",
-    ".kRpknnnnnnkpFk.....",
-    ".kRAAAAAAAAAAFk.....",
+    "....................",
+    "..k..........k......",
+    ".kRk........kFk.....",
+    ".kRpk......kpFk.....",
+    ".kRpAkkkkkkApFk.....",
+    ".kRARRFFAAAAAFk.....",
     ".kRAAAAAAAAAAFk.....",
     ".kRAawAAAAawAFk.....",
     ".kRAwkAAAAkwAFk.....",
     "bkRAAAAppAAAAFkbkRFk",
     ".bkFAAkAAkAAFkb.kRk.",
     "..kFAAAkkAAAFk..kRk.",
-    "...kkAAAAAAkk...kRk.",
+    "...kprrrrrrqk...kRk.",
+    "...kRAAayAAAFk..kRk.",
+    "..kRAAAyxAAAAFk.kRk.",
+    "..kRAAAxxAAAAFkkRAk.",
+    "..kRAAAAAAAAAAFRAk..",
+    "..kRAAAFFAAAAAAAk...",
+    "..kRAkAAAAkAAAkk....",
+    "...kkRkkkkRkkkk.....",
+  ],
+  // 20x20: identical to gidget, collar but no charm yet.
+  gidget_plain: [
+    "....................",
+    "..k..........k......",
+    ".kRk........kFk.....",
+    ".kRpk......kpFk.....",
+    ".kRpAkkkkkkApFk.....",
+    ".kRARRFFAAAAAFk.....",
+    ".kRAAAAAAAAAAFk.....",
+    ".kRAawAAAAawAFk.....",
+    ".kRAwkAAAAkwAFk.....",
+    "bkRAAAAppAAAAFkbkRFk",
+    ".bkFAAkAAkAAFkb.kRk.",
+    "..kFAAAkkAAAFk..kRk.",
+    "...kprrrrrrqk...kRk.",
     "...kRAAAAAAAFk..kRk.",
     "..kRAAAAAAAAAFk.kRk.",
     "..kRAAAAAAAAAFkkRAk.",
@@ -72,21 +96,21 @@ export const SPRITES = {
     "..kRAkAAAAkAAAkk....",
     "...kkRkkkkRkkkk.....",
   ],
-  // 20x14: curled up asleep, eyes closed, canele hat slipped askew over one ear.
+  // 20x14: curled up asleep, eyes closed, collar under the chin with the charm resting on her tail.
   gidget_sleep: [
-    ".......kkk..........",
-    ".....kkonnk.........",
-    ".k..kzmnmnok........",
-    "kRkkzmnmnnnkk.......",
-    "kRpknnnnnnkFk.kkkk..",
-    "kRAAkkkkkkAAFkRRRRk.",
+    "....................",
+    "....................",
+    ".k.........k........",
+    "kRk.......kFk.......",
+    "kRpkkkkkkkpFk.kkkk..",
+    "kRAARRFFAAAAFkRRRRk.",
     "kRAAAAAAAAAAAFAAAAAk",
     "kRARRAAAARRAAFAAAAAk",
     "bkAAAAppAAAAFAAAAAAk",
     ".kFAAAkkAAAFAAAAAAAk",
-    "..kFAAAAAAFAAAAAAAAk",
-    ".kRRRRRRRRRRRRRRAAk.",
-    "kRAAAAAAAAAAAAAAAk..",
+    "..kprrrrrqFAAAAAAAAk",
+    ".kRRRRayRRRRRRRRAAk.",
+    "kRAAAAyxAAAAAAAAAk..",
     ".kkkkkkkkkkkkkkkk...",
   ],
   // Jess (CR-006, refined from Leon's photos; 16x20): long straight glossy black hair (I/J) parted
@@ -431,23 +455,44 @@ export const BADGE_ICONS = {
     "................",
     "................",
   ],
-  // Canele Key (CR-009): Gidget's head wearing her canele hat.
+  // Canele Key (CR-014): a large glossy canele in 3/4 view. Dark caramelized crust rim (o/i) with a
+  // gloss glint (a/y), small sunken crater on top (k, lit lip n), fluted sides shaded caramel to
+  // mahogany (m/n/h/o, grooves i), a bright gloss streak down the left flute.
   canele: [
+    ".....kkkkkk.....",
+    "...kkaoooookk...",
+    "..kyohhhhhooik..",
+    ".kyohhikkihooik.",
+    ".kmohhhnnhhooik.",
+    ".knnoooooooooik.",
+    ".konoinoihiiiik.",
+    ".kmaoyninhihoik.",
+    ".kmaoyninhihoik.",
+    ".kmyomninhihoik.",
+    ".kmmomninhihoik.",
+    ".kmmomninhihoik.",
+    ".knmonnihoiooik.",
+    "..knoionoiiiik..",
+    "...kkkkkkkkkk...",
     "................",
-    "......kkkk......",
-    ".....koonok.....",
-    "..k..kzmnnk..k..",
-    ".kRk.kzmnnk.kFk.",
-    ".kRpkknnnnkkpFk.",
-    ".kRAAkkkkkkAAFk.",
-    ".kRAAAAAAAAAAFk.",
-    ".kRAawAAAAawAFk.",
-    ".kRAwkAAAAkwAFk.",
-    "bkRAAAAppAAAAFkb",
-    ".bkFAAkAAkAAFkb.",
-    "..kFAAAkkAAAFk..",
-    "...kkFAAAAFkk...",
-    "....kkkkkkkk....",
+  ],
+  // Locked (CR-015): shared icon for every unearned badge. Plain gray disc with a "?", no color hints.
+  locked: [
+    "................",
+    ".....cccccc.....",
+    "...ccaaabbbcc...",
+    "..ccaaabbbbbcc..",
+    "..caabccccbbbc..",
+    ".caabccbbccbbbc.",
+    ".caabbbbbccbbbc.",
+    ".cabbbbbccbbbbc.",
+    ".cbbbbbccbbbbbc.",
+    ".cbbbbbbbbbbbbc.",
+    ".cbbbbbccbbbbbc.",
+    "..cbbbbbbbbbbc..",
+    "..ccbbbbbbbbcc..",
+    "...ccbbbbbbcc...",
+    ".....cccccc.....",
     "................",
   ],
 };
