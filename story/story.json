@@ -126,7 +126,7 @@
         "I'm DR. JOSEPHSON. Around here they call me the TEA PROFESSOR.",
         "I study this region's creatures... but mostly its gossip."
       ],
-      "next": "pro_name"
+      "next": [{ "if": { "@replaying": true }, "next": "pro_recognize" }, { "next": "pro_name" }]
     },
     "pro_name": {
       "type": "input", "flag": "name", "speaker": "DR. JOSEPHSON",
@@ -349,6 +349,16 @@
         "The rest? You'll discover it one badge at a time."
       ],
       "next": "pro_card"
+    },
+    "pro_replay_start": {
+      "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Back for another look? Splendid!", "A word of warning: any new picks replace your old ones.", "If you change anything, be sure to tell LEON!"],
+      "prompt": "Replay the prologue?",
+      "choices": [
+        { "label": "REPLAY", "next": "@replay" },
+        { "label": "NEVER MIND", "next": "@cancel" }
+      ]
     },
     "pro_card": { "type": "trainerCard", "shareText": "Trainer {name} chose GIDGET! Picks are in. Keeping Oct 10–11 free... LEON, I'm onto you. 👀", "next": "@end" },
 
