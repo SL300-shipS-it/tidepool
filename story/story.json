@@ -2,6 +2,7 @@
   "meta": {
     "title": "TIDEPOOL",
     "shareTitle": "TRAINER CARD — TIDEPOOL",
+    "shareText": "Trainer {name} chose GIDGET! Picks are in. Keeping Oct 10–11 free... LEON, I'm onto you. 👀",
     "note": "PLACEHOLDER CONTENT. Every line marked TODO gets replaced by the real script."
   },
 
@@ -52,25 +53,26 @@
   "labels": {
     "lodging": { "inn": "Seaside Inn", "hideout": "Secret Hideout" },
     "sunflowers": { "yes": "Sunflower detour: yes", "no": "Sunflower detour: no" },
-    "dinner": { "coast": "Coastside Feast", "sf": "Hometown Feast" },
+    "dinner": { "coastside": "Coastside Feast (Pasta Moon)", "hometown": "Hometown Feast" },
     "lunch": { "a": "TODO lunch A", "b": "TODO lunch B" },
     "breakfast": { "room": "In-room breakfast", "johnnys": "Johnny's", "mavericks": "Mavericks Creperie" }
   },
 
   "lists": {
     "restaurants": [
-      { "id": "r1", "name": "TODO SF Place 1" },
-      { "id": "r2", "name": "TODO SF Place 2" },
-      { "id": "r3", "name": "TODO SF Place 3" },
-      { "id": "r4", "name": "TODO SF Place 4", "available": true }
+      { "id": "lardoise", "name": "L'ARDOISE", "lines": ["Velvet curtains, candlelight, and duck confit that's won first dates for 15 years.", "(Pack the LACTAID.)"] },
+      { "id": "mijote", "name": "MIJOTÉ", "line": "A tiny French room where the menu changes weekly and sauces are finished at your table." },
+      { "id": "pearl6101", "name": "PEARL 6101", "line": "Leather booths and low lights, at the edge of the city closest to the ocean." },
+      { "id": "richtable", "name": "RICH TABLE", "line": "Cocktails first, then a late table. A night that keeps going." },
+      { "id": "rokaakor", "name": "ROKA AKOR", "line": "Robata grill, sushi and steak in a sleek Jackson Square room." }
     ]
   },
 
   "card": [
     { "label": "LODGING", "value": "{L.lodging}" },
     { "label": "SIDE QUEST", "value": "{L.sunflowers}" },
-    { "label": "DINNER", "value": "{L.dinner}", "if": { "dinner": "coast" } },
-    { "label": "DINNER", "value": "{L.dinner}: {L.restaurant}", "if": { "dinner": "sf" } }
+    { "label": "DINNER", "value": "{L.dinner}", "if": { "dinner": "coastside" } },
+    { "label": "DINNER", "value": "{L.dinner}: {L.restaurant}", "if": { "dinner": "hometown" } }
   ],
 
   "battles": {
@@ -283,29 +285,52 @@
       "next": "pro_dinner"
     },
     "pro_dinner": {
+      "if": { "cfg.coastsideFeast": true }, "else": "pro_dinner_city_only",
       "type": "choice", "bg": "sunset",
-      "lines": ["TODO: Where should the celebration feast be?"],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Now, the grand finale: an anniversary FEAST.", "Stay on the coast... or head home to the city?"],
+      "prompt": "Where's the feast?",
       "choices": [
-        { "label": "COASTSIDE FEAST", "set": { "dinner": "coast" }, "next": "pro_card_intro" },
-        { "label": "HOMETOWN FEAST", "set": { "dinner": "sf" }, "next": "pro_restaurant" }
+        { "label": "COASTSIDE FEAST", "set": { "dinner": "coastside" }, "next": "pro_dinner_coastside" },
+        { "label": "HOMETOWN FEAST", "set": { "dinner": "hometown" }, "next": "pro_dinner_city" }
       ]
     },
-    "pro_restaurant": {
-      "type": "choice",
-      "lines": ["TODO: Which hometown spot?"],
-      "choicesFrom": "restaurants", "choiceFlag": "restaurant",
-      "next": "pro_card_intro"
+    "pro_dinner_city_only": {
+      "bg": "sunset",
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Now, the grand finale: an anniversary FEAST in the city!"],
+      "do": [{ "set": { "dinner": "hometown" } }],
+      "next": "pro_dinner_city"
     },
-    "pro_card_intro": {
-      "bg": "beach", "sprites": [{ "art": "jess", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
-      "lines": ["TODO: Your TRAINER CARD is ready!", "TODO: Send it to LEON so he can prepare."],
+    "pro_dinner_coastside": {
+      "bg": "sunset",
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["PASTA MOON! Handmade pasta, right here on the coast.", "No drive home. Just dinner and the ocean air."],
+      "next": "pro_ending"
+    },
+    "pro_dinner_city": {
+      "type": "choice", "bg": "town",
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["The city has some fine tables. Choose one!"],
+      "prompt": "Which table?",
+      "choicesFrom": "restaurants", "choiceFlag": "restaurant",
+      "next": "pro_ending"
+    },
+    "pro_ending": {
+      "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": [
+        "Splendid! Your choices have been recorded.",
+        "Now... about LEON's secret.",
+        "I'm sworn to silence. But I can tell you three things.",
+        "ONE: Keep the night of OCT 10 through OCT 11 free.",
+        "TWO: Pack something fancy... and something cozy.",
+        "THREE: Your first badge awaits at the GALA.",
+        "The rest? You'll discover it one badge at a time."
+      ],
       "next": "pro_card"
     },
-    "pro_card": { "type": "trainerCard", "next": "pro_end" },
-    "pro_end": {
-      "lines": ["TODO: The adventure begins on October 10.", "TODO: Keep your badge case close..."],
-      "next": "@end"
-    },
+    "pro_card": { "type": "trainerCard", "shareText": "Trainer {name} chose GIDGET! Picks are in. Keeping Oct 10–11 free... LEON, I'm onto you. 👀", "next": "@end" },
 
     "ch1_start": {
       "bg": "night", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
