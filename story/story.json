@@ -6,7 +6,7 @@
   },
 
   "chapters": [
-    { "id": "prologue", "prefix": "pro_", "title": "PROLOGUE", "start": "pro_start" },
+    { "id": "prologue", "prefix": "pro_", "title": "PROLOGUE", "start": "pro_intro" },
     { "id": "ch1", "prefix": "ch1_", "title": "CH.1 NIGHT ROUTE", "start": "ch1_start", "key": "gala",
       "lockedText": "TODO: The Night Route is dark...\nA Gym Leader holds the badge that lights the way." },
     { "id": "ch2", "prefix": "ch2_", "title": "CH.2 MORNING", "start": "ch2_start", "key": "matcha",
@@ -40,16 +40,16 @@
   "items": {
     "matcha": { "name": "MATCHA LATTE", "desc": "TODO: Restores 50 HP. Tastes like grass, lovingly." },
     "sunflower": { "name": "SUNFLOWER", "desc": "TODO: It follows you around." },
-    "paintbrush": { "name": "PAINTBRUSH", "desc": "TODO: A key item for artists." }
+    "paintbrush": { "name": "PAINTBRUSH", "desc": "TODO: A key item for artists." },
+    "lactaid": { "name": "LACTAID", "desc": "Blocks all DAIRY-type attacks. Just in case." },
+    "tennis": { "name": "TENNIS BALLS", "desc": "Fast, bouncy, a little fuzzy. For old times' sake." }
   },
 
   "statuses": {
-    "puffed": { "name": "PUFFED", "desc": "TODO: Lips at maximum capacity." },
-    "lactosed": { "name": "LACTOSED", "desc": "TODO: Should have picked the pills." }
+    "puffed": { "name": "PUFFED", "desc": "TODO: Lips at maximum capacity." }
   },
 
   "labels": {
-    "starter": { "gidget": "GIDGET", "lactaid": "LACTAID", "tennis": "TENNIS BALLS" },
     "lodging": { "inn": "Seaside Inn", "hideout": "Secret Hideout" },
     "sunflowers": { "yes": "Sunflower quest: YES", "no": "Sunflower quest: skip" },
     "dinner": { "coast": "Coastside Feast", "sf": "Hometown Feast" },
@@ -67,7 +67,6 @@
   },
 
   "card": [
-    { "label": "FIRST PICK", "value": "{L.starter}" },
     { "label": "LODGING", "value": "{L.lodging}" },
     { "label": "SIDE QUEST", "value": "{L.sunflowers}" },
     { "label": "DINNER", "value": "{L.dinner}", "if": { "dinner": "coast" } },
@@ -108,53 +107,107 @@
   },
 
   "scenes": {
-    "pro_start": {
-      "bg": "beach", "sprites": [],
-      "speaker": "???",
-      "lines": ["TODO: Welcome to the world of TIDEPOOL!", "TODO: This coast is full of creatures and snacks."],
+    "pro_intro": {
+      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": [
+        "Ah! A new trainer on the coast. Welcome!",
+        "I'm DR. JOSEPHSON. Around here they call me the TEA PROFESSOR.",
+        "I study this region's creatures... but mostly its gossip."
+      ],
       "next": "pro_name"
     },
     "pro_name": {
-      "type": "input", "flag": "name", "speaker": "???",
-      "prompt": "TODO: First, what is your name?", "placeholder": "YOUR NAME", "max": 10,
-      "next": "pro_name_ok"
+      "type": "input", "flag": "name", "speaker": "DR. JOSEPHSON",
+      "prompt": "Hmm. You look familiar. Remind me of your name?", "placeholder": "YOUR NAME", "max": 10,
+      "next": "pro_recognize"
     },
-    "pro_name_ok": {
-      "speaker": "???",
-      "lines": ["TODO: {name}! What a strong trainer name."],
+    "pro_recognize": {
+      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": [
+        "{name}?! Of course! The LOVEBOAT!",
+        "Back in BMB, rumors reached me about a certain new couple.",
+        "So I called LEON. Told him I knew, and that I had plans.",
+        "He checked with you first. Very responsible of him.",
+        "Then I gave you two an award in front of the whole class!",
+        "Back then, I was the sneaky one.",
+        "This time... it's LEON who's up to something.",
+        "But I've said too much! Let's find you a partner."
+      ],
       "next": "pro_starter"
     },
     "pro_starter": {
-      "type": "choice", "bg": "town",
-      "sprites": [{ "art": "lactaid", "at": "left" }, { "art": "gidget", "at": "center", "anim": "bounce" }, { "art": "tennis", "at": "right" }],
-      "speaker": "???",
-      "lines": ["TODO: Choose your partner!"],
+      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Every trainer needs a partner.", "I've prepared THREE for you. Choose wisely!"],
+      "next": "pro_starter_pick"
+    },
+    "pro_starter_pick": {
+      "type": "choice", "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "prompt": "Which partner will you choose?",
       "choices": [
-        { "label": "LACTAID", "set": { "starter": "lactaid" }, "next": "pro_pick_lactaid" },
-        { "label": "GIDGET", "set": { "starter": "gidget" }, "next": "pro_pick_gidget" },
-        { "label": "TENNIS BALLS", "set": { "starter": "tennis" }, "next": "pro_pick_tennis" }
+        { "label": "LACTAID", "next": "pro_starter_lactaid", "if": { "triedLactaid": "!yes" } },
+        { "label": "TENNIS BALLS", "next": "pro_starter_tennis", "if": { "triedTennis": "!yes" } },
+        { "label": "???", "next": "pro_starter_mystery_locked", "if": { "bothTried": "!yes" } },
+        { "label": "GIDGET", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
       ]
     },
-    "pro_pick_lactaid": {
-      "sprites": [{ "art": "lactaid", "at": "center" }],
-      "lines": ["TODO: LACTAID rattled sadly.", "TODO: It is a pill bottle. It cannot battle."],
-      "do": [{ "status": "lactosed" }],
-      "next": "pro_gidget_anyway"
+    "pro_starter_lactaid": {
+      "bg": "town", "sprites": [{ "art": "lactaid", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["LACTAID! A classic defensive partner.", "It blocks all DAIRY-type attacks. Ice cream fears it."],
+      "next": "pro_starter_lactaid_gone"
     },
-    "pro_pick_tennis": {
-      "sprites": [{ "art": "tennis", "at": "center" }],
-      "lines": ["TODO: TENNIS BALLS rolled away in three directions."],
-      "next": "pro_gidget_anyway"
+    "pro_starter_lactaid_gone": {
+      "sprites": [],
+      "lines": ["...LACTAID is only needed occasionally. It rolled away."],
+      "do": [{ "set": { "triedLactaid": "yes" } }, { "item": "lactaid" }],
+      "next": "pro_starter_both"
     },
-    "pro_pick_gidget": {
-      "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
-      "lines": ["TODO: {partner} purred happily!"],
-      "do": [{ "achievement": "TODO: Excellent Taste" }],
-      "next": "pro_lodging"
+    "pro_starter_tennis": {
+      "bg": "town", "sprites": [{ "art": "tennis", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["TENNIS BALLS! A veteran of college tennis.", "Fast, bouncy, and a little fuzzy."],
+      "next": "pro_starter_tennis_gone"
     },
-    "pro_gidget_anyway": {
-      "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
-      "lines": ["TODO: ...wait! Something hopped out of the bushes!", "TODO: {partner} chose YOU."],
+    "pro_starter_tennis_gone": {
+      "sprites": [],
+      "lines": ["...TENNIS BALLS served itself right out the window."],
+      "do": [{ "set": { "triedTennis": "yes" } }, { "item": "tennis" }],
+      "next": "pro_starter_both"
+    },
+    "pro_starter_both": {
+      "if": { "triedLactaid": "yes", "triedTennis": "yes" }, "else": "pro_starter_pick",
+      "lines": [],
+      "do": [{ "set": { "bothTried": "yes" } }],
+      "next": "pro_starter_pick_last"
+    },
+    "pro_starter_pick_last": {
+      "type": "choice", "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "prompt": "Hm? Someone's peeking out from under the table...",
+      "choices": [
+        { "label": "GIDGET", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
+      ]
+    },
+    "pro_starter_mystery_locked": {
+      "bg": "town", "sprites": [{ "art": "npc", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Hmm. That one's hiding under the table.", "She's shy. Try the others first."],
+      "next": "pro_starter_pick"
+    },
+    "pro_starter_gidget": {
+      "bg": "town", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["Something crawls out from under the table...", "It's GIDGET!", "GIDGET sat directly on your foot."],
+      "next": "pro_starter_gidget_chosen"
+    },
+    "pro_starter_gidget_chosen": {
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Well! It seems she's chosen YOU."],
+      "next": "pro_starter_gidget_joined"
+    },
+    "pro_starter_gidget_joined": {
+      "lines": ["GIDGET joined your team!"],
       "next": "pro_lodging"
     },
     "pro_lodging": {
