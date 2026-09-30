@@ -15,7 +15,7 @@
 <iframe id="game"></iframe>
 <div>
   <h3 id="status">Playtest: starting...</h3>
-  <p>Plays the whole game several times, varying every choice and battle answer so each option is taken
+  <p>Plays the whole game several times (the first run then checks REPLAY PROLOGUE: NEVER MIND, then a replay with other picks), varying every choice and battle answer so each option is taken
   at least once. Unlocks badges with their code words from <code>tools/tokens.local.json</code>.
   <b>Local only; this wipes the local save.</b> Result JSON is also on <code>window.__result</code>.</p>
   <pre id="out"></pre>
@@ -99,7 +99,11 @@ async function playOnce(k, story, secrets, visited) {
     if (on("credits")) { g("credits").click(); continue; }
     if (on("case")) { d.querySelector("#case .back").click(); continue; }
     if (on("hub")) {
-      if (g("hubTitle").textContent === "THE END") { summary.push("END"); return { problems, summary }; }
+      if (g("hubTitle").textContent === "THE END") {
+        summary.push("END");
+        if (k === 0) await replayTest(d, problems, summary, visited);
+        return { problems, summary };
+      }
       if (!hidden(g("hubGo"))) { g("hubGo").click(); await wait(100); continue; }
       const ch = nextChapter(story, st);
       if (!ch || !ch.key || !secrets[ch.key]) { problems.push(`hub locked with no way forward (next chapter: ${ch && ch.id})`); break; }
@@ -122,6 +126,67 @@ async function playOnce(k, story, secrets, visited) {
   }
   if (!problems.length) problems.push("did not reach THE END within the step limit");
   return { problems, summary };
+}
+
+// CR-019: after THE END, REPLAY PROLOGUE -> NEVER MIND must change nothing; REPLAY with different picks
+// must return to the hub with done, name, badges and Bag intact and no name input.
+async function replayTest(d, problems, summary, visited) {
+  const g = (id) => d.getElementById(id);
+  const hidden = (el) => el.classList.contains("hidden");
+  const load = () => JSON.parse(localStorage.getItem(SAVE) || "{}");
+  const btn = g("hubReplay");
+  if (!btn || hidden(btn)) { problems.push("replay: REPLAY PROLOGUE not shown on the hub after THE END"); return; }
+  for (const want of ["NEVER MIND", "REPLAY"]) {
+    const before = load();
+    btn.click(); await wait(500);
+    const seen = {};
+    let ok = false, left = false, declined = false;  // hub counts only after leaving it (or a declined popup)
+    for (let step = 0; step < 3000; step++) {
+      await wait(15);
+      const st = load();
+      if (st.scene) visited.add(st.scene);
+      if (!hidden(g("popup"))) {
+        const t = g("popTitle").textContent;
+        if (/MISSING|UNKNOWN|ERROR/.test(t)) problems.push(`replay popup "${t}: ${g("popText").textContent}"`);
+        if (t === "REPLAY PROLOGUE" && want === "NEVER MIND") { [...g("popExtra").querySelectorAll("button")].find((b) => b.textContent === "NEVER MIND")?.click(); declined = true; }
+        else g("popOk").click();
+        continue;
+      }
+      const onS = (id) => g(id).classList.contains("on");
+      if (onS("play")) left = true;
+      if (onS("hub")) { if (!left && !declined) continue; ok = g("hubTitle").textContent === "THE END"; break; }
+      if (onS("card")) { g("cardDone").click(); continue; }
+      if (onS("letter")) { g("letter").click(); if (!hidden(g("letterDone"))) g("letterDone").click(); continue; }
+      if (onS("photos")) { g("photos").click(); continue; }
+      if (onS("credits")) { g("credits").click(); continue; }
+      if (!hidden(g("inputRow"))) { problems.push("replay: name input shown during a replay"); g("nameInput").value = "WRONG"; g("nameOk").click(); continue; }
+      const lis = [...g("choices").querySelectorAll("li")];
+      if (!hidden(g("choices")) && lis.length) {
+        let pick = lis.findIndex((li) => li.textContent === want);
+        if (st.scene !== "pro_replay_start" || pick < 0) {
+          const key = st.scene + ":" + g("text").textContent;
+          seen[key] = (seen[key] || 0) + 1;
+          pick = seen[key] % lis.length;  // differs from run 1's first pick
+        }
+        summary.push(`replay ${st.scene}→${lis[pick].textContent}`);
+        lis[pick].click(); await wait(200); continue;
+      }
+      g("text").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    }
+    if (!ok) { problems.push(`replay (${want}): did not return to the hub`); return; }
+    const after = load();
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    if (!same(after.done, before.done)) problems.push(`replay (${want}): done changed ${before.done} -> ${after.done}`);
+    if (after.name !== before.name) problems.push(`replay (${want}): name changed`);
+    if (!same(Object.keys(after.badges).sort(), Object.keys(before.badges).sort())) problems.push(`replay (${want}): badges changed`);
+    if (!before.items.every((i) => after.items.includes(i))) problems.push(`replay (${want}): Bag lost items`);
+    if (after.replaying) problems.push(`replay (${want}): still replaying after returning`);
+    if (want === "NEVER MIND" && !same(after.flags, before.flags)) problems.push("replay (NEVER MIND): flags changed");
+    if (want === "REPLAY") {
+      const changed = Object.keys(after.flags).filter((f) => !same(after.flags[f], before.flags[f]));
+      summary.push(`replay changed: ${changed.join(",") || "(nothing)"}`);
+    }
+  }
 }
 
 main().catch((e) => { $("status").textContent = "PLAYTEST CRASHED: " + e.message; window.__result = { ok: false, problems: [String(e)] }; });

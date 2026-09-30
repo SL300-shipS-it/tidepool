@@ -16,8 +16,15 @@ export function nextChapter() {
 function chapterOpen(ch) {
   return !ch.key || ch.key === "continue" || !!G.state.keys[ch.key];
 }
+// Chapter number shown on a locked hub: ch1 = 1. The prologue (no key) isn't numbered and chapters
+// hidden by `if` are skipped, so the count never hints at a hidden side quest.
+export function chapterNumber(ch) {
+  return G.story.chapters.filter((c) => c.key && test(c.if)).indexOf(ch) + 1;
+}
+export const LOCKED_TEXT = "Your next badge will find you.";
 
 export async function startChapter(ch) {
+  G.state.replaying = false; G.state.replayReturn = null;  // a normal start always ends any replay
   G.state.chapter = ch.id;
   G.state.scene = ch.start;
   saveState();
@@ -28,6 +35,15 @@ export async function startChapter(ch) {
 // Resume wherever the save says.
 export async function resume() {
   const s = G.state;
+  if (s.replaying) {
+    // Closed Safari mid-replay: keep replaying (the prologue is already done, so skip that check).
+    const pro = chapterOf(s.chapter) || prologue();
+    s.chapter = pro.id;
+    const from = G.story.scenes[s.scene] ? s.scene : pro.start;
+    await transition(() => { show("play"); $("hudChapter").textContent = fmt(pro.title || ""); });
+    await runFrom(from);
+    return;
+  }
   const ch = s.chapter && chapterOf(s.chapter);
   if (ch && !s.done.includes(s.chapter)) {
     // If a story edit removed the saved scene, restart the chapter instead of breaking.
@@ -43,6 +59,7 @@ export async function openHub({ autoStart = true } = {}) {
   const ch = nextChapter();
   const go = $("hubGo"), title = $("hubTitle"), text = $("hubText");
   $("hudChapter").textContent = "";
+  refreshReplayButtons();
   if (!ch) {
     title.textContent = "THE END";
     text.textContent = fmt("Thanks for playing, {name}.");
@@ -61,9 +78,9 @@ export async function openHub({ autoStart = true } = {}) {
     if (autoStart && ch.key && ch.key !== "continue" && G.justUnlocked === ch.key) { G.justUnlocked = null; startChapter(ch); }
     return;
   }
-  const b = G.story.badges[ch.key];
-  title.textContent = fmt(ch.lockedTitle || "ROUTE LOCKED");
-  text.textContent = fmt(ch.lockedText || b?.hint || "You need a badge to continue.");
+  // Locked: reveal nothing (CR-015). No chapter title, no badge name or hint, no background.
+  title.textContent = `CHAPTER ${chapterNumber(ch)}: ???`;
+  text.textContent = fmt(ch.lockedText || LOCKED_TEXT);
   go.classList.add("hidden");
   show("hub");
 }
@@ -74,13 +91,22 @@ on("keys-changed", (id) => {
 });
 
 // ---------- scene runner ----------
+// Special targets: @end (finish chapter; during a replay, return instead), @hub, and for the prologue
+// replay @replay (restart the current chapter from its start) and @cancel (end the replay, change nothing).
+let runGen = 0;
 export async function runFrom(id) {
+  const gen = ++runGen;  // starting a new run (e.g. a replay from the menu) retires the old loop
   while (id) {
-    if (id === "@end") { await endChapter(); return; }
-    if (id === "@hub") { await openHub(); return; }
+    if (gen !== runGen) return;
+    const replaying = G.state.replaying;
+    if (id === "@end") { if (replaying) await finishReplay(); else await endChapter(); return; }
+    if (id === "@hub" || id === "@cancel") { if (replaying) await finishReplay(); else await openHub(); return; }
+    if (id === "@replay") { id = (chapterOf(G.state.chapter) || prologue()).start; continue; }
     const scene = G.story.scenes[id];
-    if (!scene) { await popup({ title: "MISSING SCENE", text: id }); await openHub(); return; }
+    if (!scene) { await popup({ title: "MISSING SCENE", text: id }); if (replaying) await finishReplay(); else await openHub(); return; }
     if (scene.if && !test(scene.if)) { id = resolveNext(scene.else || scene.next); continue; }
+    // A replay keeps her name: the name input is skipped even if a path reaches it.
+    if (replaying && scene.type === "input" && (scene.flag || "name") === "name") { id = resolveNext(scene.next); continue; }
     G.state.scene = id;
     saveState();
     id = await play(id, scene);
@@ -276,6 +302,55 @@ async function endChapter() {
   await transition(() => openHub({ autoStart: false }));
 }
 
+// ---------- prologue replay (CR-019) ----------
+// REPLAY PROLOGUE (menu + hub, once the prologue is done) plays REPLAY_SCENE. Its choices lead to
+// @replay (play the prologue from the top, name input skipped, picks overwrite as she makes them) or
+// @cancel. Both @cancel and the prologue's @end return to where she was, with `done` untouched.
+export const REPLAY_SCENE = "pro_replay_start";
+function prologue() { return G.story.chapters.find((c) => !c.key) || G.story.chapters[0]; }
+export function canReplay() { return !!G.state && G.state.done.includes(prologue().id) && !G.state.replaying; }
+
+export async function startReplay() {
+  if (!canReplay()) return;
+  const s = G.state, pro = prologue();
+  let first = REPLAY_SCENE;
+  if (!G.story.scenes[REPLAY_SCENE]) {
+    // Story has no replay scene yet: ask here instead.
+    const r = await popup({ title: "REPLAY PROLOGUE", text: "Play the prologue again? Your name, Bag and badges stay.", buttons: ["REPLAY", "NEVER MIND"] });
+    if (r !== 0) return;
+    first = pro.start;
+  }
+  const mid = s.chapter && chapterOf(s.chapter) && !s.done.includes(s.chapter);
+  s.replayReturn = mid ? { chapter: s.chapter, scene: s.scene } : { chapter: null, scene: null };
+  s.replaying = true;
+  s.chapter = pro.id; s.scene = first;
+  saveState();
+  await transition(() => { show("play"); $("hudChapter").textContent = fmt(pro.title || ""); });
+  await runFrom(first);
+}
+
+// Ends a replay: back to the chapter scene she left (if that chapter still applies), else the hub.
+async function finishReplay() {
+  const s = G.state, ret = s.replayReturn || {};
+  s.replaying = false; s.replayReturn = null;
+  const ch = ret.chapter && chapterOf(ret.chapter);
+  if (ch && !s.done.includes(ch.id) && test(ch.if)) {
+    s.chapter = ch.id; s.scene = G.story.scenes[ret.scene] ? ret.scene : ch.start;
+    saveState();
+    await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch.title || ""); });
+    await runFrom(s.scene);
+  } else {
+    s.chapter = null; s.scene = null;
+    saveState();
+    await transition(() => openHub({ autoStart: false }));
+  }
+}
+
+function refreshReplayButtons() {
+  const ok = canReplay();
+  document.querySelectorAll("[data-replay]").forEach((b) => b.classList.toggle("hidden", !ok));
+}
+
 // ---------- trainer card ----------
 export function renderCard() {
   const s = G.state;
@@ -286,8 +361,9 @@ export function renderCard() {
   if (s.statuses.length) rows.push(["STATUS", s.statuses.map((x) => G.story.statuses?.[x]?.name || x).join(", ")]);
   $("cardList").innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
   const bw = $("cardBadges"); bw.innerHTML = "";
+  // Earned badges only (CR-015); badges hidden by `if` stay hidden here too.
   for (const [id, b] of Object.entries(G.story.badges)) {
-    if (!G.state.badges[id]) continue;
+    if (!G.state.badges[id] || !badgeVisible(id)) continue;
     const cv = document.createElement("canvas"); cv.className = "pix"; renderBadge(cv, b.icon, 32); bw.appendChild(cv);
   }
   return rows;
@@ -387,7 +463,16 @@ export function initMenus() {
   $("hubScan").onclick = async () => { const id = await scan(); if (!id) openHub({ autoStart: false }); else { G.justUnlocked = id; openHub(); } };
   $("hubWord").onclick = async () => { const id = await promptWord(); if (id) { G.justUnlocked = id; openHub(); } };
 
-  $("btnMenu").onclick = () => { sfx("move"); $("menu").classList.add("on"); };
+  // REPLAY PROLOGUE: added here (not in index.html), in the menu and on the hub.
+  const mkReplay = (cls) => { const b = document.createElement("button"); b.className = cls; b.textContent = "REPLAY PROLOGUE"; b.dataset.replay = "1"; return b; };
+  const mb = mkReplay("btn small hidden"); mb.dataset.m = "replay";
+  const mSave = document.querySelector('#menu [data-m="save"]');
+  if (mSave) mSave.before(mb); else document.querySelector("#menu .panel")?.appendChild(mb);
+  const hb = mkReplay("btn small hidden"); hb.id = "hubReplay";
+  hb.onclick = () => { sfx("select"); startReplay(); };
+  $("hubCard").after(hb);
+
+  $("btnMenu").onclick = () => { sfx("move"); refreshReplayButtons(); $("menu").classList.add("on"); };
   $("menu").onclick = async (e) => {
     const m = e.target.dataset?.m;
     if (!m) return;
@@ -400,6 +485,7 @@ export function initMenus() {
       await popup({ title: "BAG", text: items.length ? items.join("\n") : "Nothing here yet.", icon: { sprite: "item" } });
     }
     if (m === "scan") { const id = await scan(); show("play"); if (id) popup({ title: "NICE!", text: "Finish this chapter to use it." }); }
+    if (m === "replay") { await startReplay(); return; }
     if (m === "save") {
       await popup({ title: "SAVE CODE", text: "If your save ever disappears, open this link to get it back.", textarea: restoreLink(), buttons: ["DONE"] });
     }

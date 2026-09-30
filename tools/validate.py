@@ -26,6 +26,13 @@ TYPES = {"dialogue", "choice", "input", "encounter", "obstacle", "battle", "trai
 _mg = ROOT / "js" / "minigames" / "index.js"
 _mg_block = re.search(r"GAMES\s*=\s*\{(.*?)\};", _mg.read_text(), re.S) if _mg.exists() else None
 MINIGAMES = set(re.findall(r"^\s*(\w+)\s*:", _mg_block.group(1), re.M)) if _mg_block else set()
+REPLAY_SCENE = "pro_replay_start"  # CR-019: the menu's REPLAY PROLOGUE opens this scene
+SPECIAL_TARGETS = ("@end", "@hub", "@replay", "@cancel")
+LOCKED_TEXT = "Your next badge will find you."  # js/scenes.js fallback for a locked chapter
+# CR-015: words that would give away the destination. Case-insensitive.
+BLOCKLIST = ["Half Moon Bay", "HMB", "Miramar", "Montara", "El Granada", "Princeton", "Pillar Point",
+             "Cypress", "Pasta Moon", "Mavericks", "Johnny's", "tidepool"]
+BLOCK_RE = re.compile(r"\b(?:%s)\b" % "|".join(re.escape(w).replace("'", "['’]") for w in BLOCKLIST), re.I)
 EXAMPLE_PREFIX = "ex_"  # admin-only example scenes: not warned about when unreachable
 MAX_BOX = 90  # characters per text box (after {name} etc. expand to ~10 chars)
 
@@ -41,14 +48,23 @@ battles = story.get("battles", {})
 lists = story.get("lists", {})
 
 flags_set, flags_read = {"name"}, set()
+PRO = next((c for c in story["chapters"] if not c.get("key")), story["chapters"][0])
+PRO_PREFIX = PRO.get("prefix", PRO["id"])
 
 def read_cond(cond, where):
     for k, want in (cond or {}).items():
         if k.startswith("cfg."):
             if k[4:] not in TOGGLES: err(f"{where}: condition uses toggle '{k}' but config.js TOGGLES has no '{k[4:]}'")
             elif not isinstance(want, bool): err(f"{where}: toggle condition '{k}' must be true or false")
+        elif k.startswith("@"):
+            check_cond_keys({k: want}, where)
         elif k != "hasKey":
             flags_read.add(k)
+
+def check_cond_keys(cond, where):
+    for k, want in (cond or {}).items():
+        if k == "@replaying" and not isinstance(want, bool): err(f"{where}: '@replaying' must be true or false")
+        elif k.startswith("@") and k != "@replaying": err(f"{where}: unknown reserved condition key '{k}'")
 
 def text_flags(s):
     for m in re.findall(r"\{(?:L|f)\.(\w+)\}", s or ""):
@@ -71,8 +87,10 @@ def targets(next_, where):
             read_cond(n.get("if"), where)
             out.append(n["next"])
     for t in out:
-        if t not in scenes and t not in ("@end", "@hub"):
+        if t not in scenes and t not in SPECIAL_TARGETS:
             err(f"{where}: next -> '{t}' does not exist")
+        if t in ("@replay", "@cancel") and not where.startswith(f"scene {PRO_PREFIX}"):
+            err(f"{where}: '{t}' only works in prologue scenes ({PRO_PREFIX}*)")
     return out
 
 def check_effects(do, where):
@@ -206,12 +224,48 @@ for bid, b in badges.items():
     if b.get("icon") not in BADGE_ICONS: err(f"badge {bid}: unknown icon '{b.get('icon')}'")
     if not re.fullmatch(r"[0-9a-f]{64}", b.get("hash", "")): err(f"badge {bid}: missing hash (run tools/gen_tokens.py)")
     read_cond(b.get("if"), f"badge {bid}")
+    if "hint" in b: err(f"badge {bid}: 'hint' is no longer allowed (locked badges reveal nothing, CR-015); remove it")
 
 for ch in story["chapters"]:
     if ch["start"] not in scenes: err(f"chapter {ch['id']}: start '{ch['start']}' missing")
     k = ch.get("key")
     if k and k != "continue" and k not in badges: err(f"chapter {ch['id']}: key '{k}' is not a badge")
     read_cond(ch.get("if"), f"chapter {ch['id']}")
+    if "lockedTitle" in ch: warn(f"chapter {ch['id']}: lockedTitle is ignored (locked chapters show CHAPTER N: ???)")
+
+# ---------- locked screens reveal nothing (CR-015) ----------
+# A locked chapter shows "CHAPTER N: ???" and its lockedText (or LOCKED_TEXT). That text may not name a
+# badge, a chapter title, or a blocklisted place.
+badge_names = [b["name"] for b in badges.values() if b.get("name")]
+ch_titles = [c["title"] for c in story["chapters"] if c.get("title")]
+def locked_leaks(text):
+    low = text.lower()
+    out = [f"badge name '{n}'" for n in badge_names if n.lower() in low]
+    out += [f"chapter title '{n}'" for n in ch_titles if n.lower() in low]
+    out += [f"blocklisted '{m}'" for m in BLOCK_RE.findall(text)]
+    return out
+for leak in locked_leaks(LOCKED_TEXT): err(f"locked-chapter fallback text: contains {leak}")
+for ch in story["chapters"]:
+    if not ch.get("key") or ch["key"] == "continue": continue
+    lt = ch.get("lockedText")
+    if lt is None: continue
+    if not isinstance(lt, str): err(f"chapter {ch['id']}: lockedText must be a string"); continue
+    for leak in locked_leaks(lt): err(f"chapter {ch['id']}: lockedText contains {leak} (a locked screen must reveal nothing)")
+
+# Prologue-era text she sees before anything unlocks: warn on destination words.
+def block_warn(node, where):
+    if isinstance(node, str):
+        for m in BLOCK_RE.findall(node): warn(f"{where}: contains '{m}' (gives away the destination before it unlocks)")
+    elif isinstance(node, list):
+        for i, x in enumerate(node): block_warn(x, f"{where}[{i}]")
+    elif isinstance(node, dict):
+        for k, x in node.items():
+            if k not in ("hash", "wordHash", "src"): block_warn(x, f"{where}.{k}")
+for sid, s in scenes.items():
+    if sid.startswith(PRO_PREFIX): block_warn(s, f"scene {sid}")
+block_warn(story.get("meta", {}), "meta")
+block_warn(story.get("card", []), "card")
+block_warn(story.get("lists", {}), "lists")
 for r in story.get("card", []):
     read_cond(r.get("if"), "card"); text_flags(r.get("value"))
 
@@ -224,6 +278,9 @@ TG = {}  # toggle values for the current walk
 def test(cond, flags):
     for k, want in (cond or {}).items():
         if k == "hasKey": continue
+        if k == "@replaying":
+            if bool(flags.get("@replaying")) != want: return False
+            continue
         have = TG.get(k[4:], False) if k.startswith("cfg.") else flags.get(k)
         if isinstance(want, list):
             if have not in want: return False
@@ -272,10 +329,15 @@ def successors(sid, flags):
 
 chapters = story["chapters"]
 
+PRO_CI = chapters.index(PRO)
+
 def walk(prefix):
-    """Walk every branch of the whole game with the current TG. Returns (reached, endings, steps)."""
+    """Walk every branch of the whole game with the current TG. Returns (reached, endings, steps).
+    Also walks the prologue replay (CR-019) from REPLAY_SCENE with "@replaying" set: @replay restarts
+    the chapter, @cancel/@end/@hub end the replay (back to where she was)."""
     reached, endings, seen = set(), 0, set()
     stack = [(0, chapters[0]["start"], ())]
+    if REPLAY_SCENE in scenes: stack.append((PRO_CI, REPLAY_SCENE, (("@replaying", True),)))
     steps = 0
     while stack:
         ci, sid, fl = stack.pop()
@@ -284,6 +346,11 @@ def walk(prefix):
         seen.add(key); steps += 1
         if steps > 200000: err(f"{prefix}branch walk exploded (>200k states); check for loops"); break
         flags = dict(fl)
+        if flags.get("@replaying"):
+            if sid in ("@end", "@hub", "@cancel"): continue  # replay over: back to where she was
+            if sid == "@replay": sid = chapters[ci]["start"]
+        elif sid == "@replay": sid = chapters[ci]["start"]
+        elif sid == "@cancel": sid = "@hub"
         if sid in ("@end", "@hub"):
             nxt = ci + 1
             while nxt < len(chapters) and not test(chapters[nxt].get("if"), flags): nxt += 1

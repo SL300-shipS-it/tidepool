@@ -30,6 +30,8 @@ export function freshState() {
     done: [],           // finished chapter ids
     chapter: null,      // chapter in progress
     scene: null,        // scene to resume at
+    replaying: false,   // true while replaying the prologue (CR-019)
+    replayReturn: null, // where a replay goes back to: { chapter, scene } (chapter null = the hub)
     started: Date.now(),
   };
 }
@@ -54,9 +56,12 @@ export function getPref(k, d) { const v = storageGet("tp_pref_" + k); return v =
 export function setPref(k, v) { storageSet("tp_pref_" + k, JSON.stringify(v)); }
 
 // ---------- restore codes (base64url JSON) ----------
+// A code made mid-replay carries the replay (`rp`: where it returns to), so a restore continues the
+// replay and still goes back there at the end. Codes made outside a replay have no `rp`.
 export function exportCode(state = G.state) {
   const s = state;
   const compact = { v: s.v, n: s.name, f: s.flags, k: Object.keys(s.keys), b: Object.keys(s.badges), i: s.items, s: s.statuses, a: s.ach, d: s.done, c: s.chapter, sc: s.scene };
+  if (s.replaying) compact.rp = { c: s.replayReturn?.chapter || null, sc: s.replayReturn?.scene || null };
   const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
   return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
@@ -71,6 +76,7 @@ export function importCode(code) {
     keys: Object.fromEntries((c.k || []).map((k) => [k, t])),
     badges: Object.fromEntries((c.b || []).map((k) => [k, t])),
   });
+  if (c.rp && typeof c.rp === "object") { st.replaying = true; st.replayReturn = { chapter: c.rp.c || null, scene: c.rp.sc || null }; }
   return st;
 }
 
@@ -80,14 +86,16 @@ export function baseUrl() {
 export function restoreLink() { return baseUrl() + "#r=" + exportCode(); }
 
 // ---------- conditions + text ----------
-// cond: { flag: "value" | ["a","b"] | "!value", "cfg.toggle": true|false }  (all must match)
-// "cfg.x" keys read CONFIG.TOGGLES.x (deploy-time switches in config.js; missing = false).
+// cond: { flag: "value" | ["a","b"] | "!value", "cfg.toggle": true|false, "@replaying": true|false }
+// (all must match). "cfg.x" keys read CONFIG.TOGGLES.x (deploy-time switches in config.js; missing =
+// false). "@replaying" is true while the prologue is being replayed from the menu (CR-019).
 export function toggle(name) { return (CONFIG.TOGGLES || {})[name] ?? false; }
 export function test(cond) {
   if (!cond) return true;
   const f = G.state.flags;
   return Object.entries(cond).every(([k, want]) => {
     const have = k === "hasKey" ? (G.state.keys[want] ? want : null)
+      : k === "@replaying" ? !!G.state.replaying
       : k.startsWith("cfg.") ? toggle(k.slice(4)) : f[k];
     if (k === "hasKey") return !!have;
     if (Array.isArray(want)) return want.includes(have);
@@ -120,5 +128,5 @@ export function debugUpdate() {
   el.classList.toggle("hidden", !G.debug);
   if (!G.debug || !G.state) return;
   const s = G.state;
-  el.textContent = `scene: ${s.scene}\nchapter: ${s.chapter}\nflags: ${JSON.stringify(s.flags)}\nkeys: ${Object.keys(s.keys).join(",")}\ndone: ${s.done.join(",")}`;
+  el.textContent = `scene: ${s.scene}\nchapter: ${s.chapter}\nflags: ${JSON.stringify(s.flags)}\nkeys: ${Object.keys(s.keys).join(",")}\ndone: ${s.done.join(",")}` + (s.replaying ? `\nREPLAY -> ${JSON.stringify(s.replayReturn)}` : "");
 }

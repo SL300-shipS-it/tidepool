@@ -1,7 +1,7 @@
 // Unlock keys: token hashing, the three unlock paths, badge case, camera scanner.
 import { G, $, emit, saveState, test, sleep } from "./core.js";
 import { popup, show } from "./ui.js";
-import { renderBadge } from "./art.js";
+import { renderBadge, BADGE_ICONS } from "./art.js";
 import { sfx } from "./audio.js";
 
 const SALT = "tidepool:";
@@ -52,7 +52,8 @@ export async function grantKey(id, { quiet = false } = {}) {
   const next = G.story.chapters.find((c) => !G.state.done.includes(c.id) && test(c.if));
   const mine = G.story.chapters.find((c) => c.key === id);
   if (next && mine && next.id !== mine.id && !G.state.done.includes(mine.id)) {
-    await popup({ title: "SAVED FOR LATER", text: `The ${b.name} opens a route further ahead. Finish the current route first!` });
+    // Never name the future chapter (CR-015). The badge itself is fine: she has earned it.
+    await popup({ title: "SAVED FOR LATER", text: `Keep the ${b.name} safe. It's for later. Finish the current route first!` });
   }
   emit("keys-changed", id);
 }
@@ -81,23 +82,34 @@ export async function promptWord() {
 }
 
 // ---------- badge case ----------
+// Locked slots reveal nothing (CR-015): one shared "locked" icon, "???", no hint text. Earned slots
+// show the badge. Badges hidden by `if` (e.g. Bloom when sunflowers = no) have no slot at all.
+export function renderLockedIcon(cv, size = 64) {
+  if (BADGE_ICONS.locked) { renderBadge(cv, "locked", size); return; }
+  // Fallback until the art has a locked icon: an empty gray medallion.
+  cv.width = cv.height = size;
+  const ctx = cv.getContext("2d");
+  const s = size / 32;
+  for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) {
+    const d = Math.hypot(x - 15.5, y - 15.5);
+    if (d <= 14) { ctx.fillStyle = d > 12.5 ? "#606868" : "#a8b0b0"; ctx.fillRect(x * s, y * s, s, s); }
+  }
+}
+
 export function renderCase() {
   const grid = $("caseGrid"); grid.innerHTML = "";
-  let nextHint = "";
   for (const [id, b] of Object.entries(G.story.badges)) {
     if (!badgeVisible(id)) continue;
     const got = !!G.state.badges[id];
     const slot = document.createElement("div");
     slot.className = "slot" + (got ? "" : " locked");
     const cv = document.createElement("canvas"); cv.className = "pix";
-    renderBadge(cv, b.icon, 64);
+    if (got) renderBadge(cv, b.icon, 64); else renderLockedIcon(cv, 64);
     slot.appendChild(cv);
     slot.appendChild(document.createTextNode(got ? b.name : "???"));
-    if (!got) slot.addEventListener("click", () => { $("caseHint").textContent = b.hint || ""; });
-    if (!got && !nextHint) nextHint = b.hint || "";
     grid.appendChild(slot);
   }
-  $("caseHint").textContent = nextHint;
+  const hint = $("caseHint"); if (hint) hint.textContent = "";
 }
 
 // ---------- camera scanner ----------

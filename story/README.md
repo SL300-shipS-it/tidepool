@@ -21,8 +21,8 @@ that are too long.
 
 | Key | What it holds |
 | --- | --- |
-| `chapters` | Ordered list. `id`, `prefix` (scene id prefix), `title`, `start` scene, `key` (badge id, `"continue"` for a tap-to-continue chapter, or omitted for the prologue), optional `if` (chapter only exists when flags match), `lockedText`, `intro`. |
-| `badges` | Unlock keys by id: `name`, `icon` (glamour, snooze, bloom, tide, compass, sunset, canele), `hint` (badge case tease), optional `if`, `kind: "key"` (says "obtained the ... Key"), `revealOn: "battle"` + `scanText` (scan starts the chapter; the badge itself is awarded by a battle). `hash`/`wordHash` are written by `tools/gen_tokens.py`; never edit them by hand. |
+| `chapters` | Ordered list. `id`, `prefix` (scene id prefix), `title`, `start` scene, `key` (badge id, `"continue"` for a tap-to-continue chapter, or omitted for the prologue), optional `if` (chapter only exists when flags match), `lockedText` (see "Locked screens"), `intro`. |
+| `badges` | Unlock keys by id: `name`, `icon` (glamour, snooze, bloom, tide, compass, sunset, canele), optional `if`, `kind: "key"` (says "obtained the ... Key"), `revealOn: "battle"` + `scanText` (scan starts the chapter; the badge itself is awarded by a battle). `hash`/`wordHash` are written by `tools/gen_tokens.py`; never edit them by hand. No `hint` field: the validator errors on it (locked badges reveal nothing). |
 | `items` | `{ id: { name, desc } }` |
 | `statuses` | `{ id: { name, desc } }` (flavor conditions like PUFFED) |
 | `labels` | Display names for flag values: `{ lodging: { inn: "Seaside Inn" } }` |
@@ -43,10 +43,61 @@ that are too long.
 | `lines` | Array of text boxes. |
 | `do` | Effects after the lines: `{ "item": id }`, `{ "status": id }`, `{ "clearStatus": id }`, `{ "achievement": "Text" }`, `{ "badge": id }`, `{ "set": { flag: value } }`, `{ "sfx": name }`, `{ "wait": ms }`. |
 | `if` / `else` | Skip this scene unless flags match; go to `else` (or `next`) instead. |
-| `next` | Scene id, `"@end"` (finish chapter), or a conditional list: `[{ "if": { "lodging": "hideout" }, "next": "a" }, { "next": "b" }]`. |
+| `next` | Scene id, `"@end"` (finish chapter), `"@hub"`, `"@replay"` / `"@cancel"` (prologue replay only, see below), or a conditional list: `[{ "if": { "lodging": "hideout" }, "next": "a" }, { "next": "b" }]`. |
 
 Conditions (`if`): `{ "flag": "value" }`, `{ "flag": ["a", "b"] }` (any of), `{ "flag": "!value" }` (not),
-`{ "cfg.toggle": true }` (a deploy-time toggle, see below). All keys must match.
+`{ "cfg.toggle": true }` (a deploy-time toggle, see below), `{ "@replaying": true }` (true only while the
+prologue is being replayed, see below). All keys must match.
+
+## Locked screens reveal nothing (CR-015)
+
+- **Badge case:** an unearned badge shows one shared `locked` icon and `???`, never its name, icon or a hint.
+  Earned badges show normally. A badge hidden by `if` (Bloom when `sunflowers` = no) has no slot.
+- **Hub:** a locked chapter shows `CHAPTER N: ???` and its `lockedText`, or `Your next badge will find you.`
+  if it has none. No chapter title, time of day or background; the HUD shows no title either. N counts
+  chapters that have a `key` (ch1 = 1), skipping chapters hidden by `if`; the prologue has no number.
+  Set `lockedText` only on ch1 ("Your first badge awaits at the GALA."); leave it off later chapters.
+- **Trainer Card:** the badge row shows earned (and visible) badges only.
+- **Scanned early:** the SAVED FOR LATER popup names the badge but never the chapter.
+- Validator: errors if any `lockedText` (or the fallback) contains a badge name, a chapter title, or a
+  blocklisted word (Half Moon Bay, HMB, Miramar, Montara, El Granada, Princeton, Pillar Point, Cypress,
+  Pasta Moon, Mavericks, Johnny's, tidepool), and if any badge has `hint`. It warns if prologue scenes,
+  `meta`, `card` or `lists` contain a blocklisted word.
+- Unlock links use random tokens (`#b=<hex>`), never key ids. Backup words are neutral words
+  (`python3 tools/gen_tokens.py --new-words` redraws only the words; tokens and QR links stay the same).
+
+## Prologue replay (CR-019)
+
+Once the prologue is done, the menu and the hub show **REPLAY PROLOGUE**. It opens the scene
+`pro_replay_start` (if the story lacks it, a built-in REPLAY / NEVER MIND popup is used instead).
+
+| Target / key | Meaning |
+| --- | --- |
+| `"@replay"` | Play the prologue from its `start` scene in replay mode. |
+| `"@cancel"` | End the replay; nothing changes. Back to where she was. |
+| `{ "@replaying": true }` | Condition that is true only during a replay (e.g. `pro_intro` skips to `pro_recognize`). |
+
+- Her name, Bag, badges, keys and achievements are kept. The name input is skipped automatically
+  during a replay (any `input` scene with `flag: "name"` just follows `next`).
+- Each pick overwrites the old value the moment she chooses it; picks she doesn't reach keep their old
+  value. Quitting mid-replay keeps the new picks so far.
+- The prologue's `@end` (or `@hub`/`@cancel`) during a replay does not touch `done`: it returns to where
+  she was (the chapter scene she left, if that chapter still applies, else the hub).
+- Closing Safari mid-replay: CONTINUE resumes the replay and still returns there at the end.
+- Restore links made mid-replay carry the replay (save field `replayReturn`), so a restore continues it.
+- `@replay` / `@cancel` only work in prologue scenes (validator). The validator also walks the replay
+  from `pro_replay_start` with `@replaying` true.
+
+Example:
+
+```json
+"pro_replay_start": {
+  "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
+  "speaker": "DR. JOSEPHSON", "lines": ["Back already? Want to redo your picks?"],
+  "choices": [{ "label": "REPLAY", "next": "@replay" }, { "label": "NEVER MIND", "next": "@cancel" }]
+},
+"pro_intro": { "...": "...", "next": [{ "if": { "@replaying": true }, "next": "pro_recognize" }, { "next": "pro_name" }] }
+```
 
 ## Toggles (`cfg.` conditions)
 

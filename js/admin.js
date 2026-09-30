@@ -1,4 +1,4 @@
-// Hidden admin panel: tap the title N times, then enter the PIN from config.js.
+// Hidden admin panel: tap the title N times, then enter the PIN from config.js (prompt says "Enter code").
 import { G, $, saveState, resetState, exportCode, importCode, debugUpdate, restoreLink } from "./core.js";
 import { CONFIG } from "../config.js";
 import { popup, show } from "./ui.js";
@@ -15,7 +15,8 @@ export function initAdmin() {
     clearTimeout(tapTimer); tapTimer = setTimeout(() => (taps = 0), 2500);
     if (taps < CONFIG.ADMIN_TAPS) return;
     taps = 0;
-    const r = await popup({ title: "ADMIN", text: "PIN?", input: { placeholder: "PIN" }, buttons: ["OK", "CANCEL"] });
+    // Says only "Enter code": nothing on screen hints at an admin panel (CR-015).
+    const r = await popup({ title: "Enter code", text: "", input: { placeholder: "" }, buttons: ["OK", "CANCEL"] });
     if (r.button === 0 && r.value === CONFIG.ADMIN_PIN) openAdmin();
     else if (r.button === 0) sfx("fail");
   });
@@ -50,9 +51,9 @@ export function openAdmin() {
   p.appendChild(chSel);
   p.appendChild(row(
     btn("PLAY CHAPTER", () => { close(); const ch = chapterOf(chSel.value); st.done = st.done.filter((d) => d !== ch.id); startChapter(ch); }),
-    btn("MARK DONE", () => { if (!st.done.includes(chSel.value)) st.done.push(chSel.value); st.chapter = null; st.scene = null; saveState(); openAdmin(); }),
+    btn("MARK DONE", () => { if (!st.done.includes(chSel.value)) st.done.push(chSel.value); st.chapter = null; st.scene = null; st.replaying = false; st.replayReturn = null; saveState(); openAdmin(); }),
     btn("UN-DONE", () => { st.done = st.done.filter((d) => d !== chSel.value); saveState(); openAdmin(); }),
-    btn("GO TO HUB", () => { close(); st.chapter = null; st.scene = null; saveState(); transition(() => openHub({ autoStart: false })); }),
+    btn("GO TO HUB", () => { close(); st.chapter = null; st.scene = null; st.replaying = false; st.replayReturn = null; saveState(); transition(() => openHub({ autoStart: false })); }),
   ));
 
   // scenes
@@ -63,7 +64,7 @@ export function openAdmin() {
   p.appendChild(row(btn("PLAY SCENE", () => {
     close();
     const ch = G.story.chapters.find((c) => scSel.value.startsWith(c.prefix || c.id)) || G.story.chapters[0];
-    st.chapter = ch.id; saveState();
+    st.chapter = ch.id; st.replaying = false; st.replayReturn = null; saveState();
     transition(() => show("play")).then(() => runFrom(scSel.value));
   })));
 
