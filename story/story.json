@@ -51,7 +51,7 @@
 
   "labels": {
     "lodging": { "inn": "Seaside Inn", "hideout": "Secret Hideout" },
-    "sunflowers": { "yes": "Sunflower quest: YES", "no": "Sunflower quest: skip" },
+    "sunflowers": { "yes": "Sunflower detour: yes", "no": "Sunflower detour: no" },
     "dinner": { "coast": "Coastside Feast", "sf": "Hometown Feast" },
     "lunch": { "a": "TODO lunch A", "b": "TODO lunch B" },
     "breakfast": { "room": "In-room breakfast", "johnnys": "Johnny's", "mavericks": "Mavericks Creperie" }
@@ -227,31 +227,59 @@
       "next": "pro_lodging"
     },
     "pro_lodging": {
-      "type": "choice", "bg": "town", "sprites": [{ "art": "gidget", "at": "right", "anim": "bounce" }],
-      "speaker": "{partner}",
-      "lines": ["TODO: Two brochures on the table! Where should we stay in Half Moon Bay?"],
+      "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Every adventure needs a place to rest.", "Two brochures landed on my desk this morning. Curious!"],
+      "prompt": "Where will you stay?",
       "choices": [
-        { "label": "SEASIDE INN: OCEAN VIEWS", "set": { "lodging": "inn" } },
-        { "label": "SECRET HIDEOUT: OWN KITCHEN", "set": { "lodging": "hideout" } }
-      ],
-      "next": [
-        { "if": { "cfg.fakeLodging": true }, "next": "pro_lodging_fake" },
-        { "next": "pro_sunflower" }
+        { "label": "SEASIDE INN", "set": { "lodging": "inn" }, "next": [
+          { "if": { "cfg.fakeLodging": true }, "next": "pro_lodging_fake" },
+          { "next": "pro_lodging_inn" }
+        ] },
+        { "label": "SECRET HIDEOUT", "set": { "lodging": "hideout" }, "next": [
+          { "if": { "cfg.fakeLodging": true }, "next": "pro_lodging_fake" },
+          { "next": "pro_lodging_hideout" }
+        ] }
       ]
     },
     "pro_lodging_fake": {
       "bg": "inn", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
       "lines": ["{partner} knocked the HIDEOUT brochure off the table!", "TODO: {partner} has decided. It's the SEASIDE INN!"],
       "do": [{ "set": { "lodging": "inn" } }],
+      "next": "pro_lodging_inn"
+    },
+    "pro_lodging_inn": {
+      "bg": "inn", "sprites": [{ "art": "professor", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["The SEASIDE INN! Right on the beach, with a fireplace in every room.", "Wine and homemade desserts each evening. GIDGET has questions about the desserts.", "And breakfast is on the house."],
+      "next": "pro_sunflower"
+    },
+    "pro_lodging_hideout": {
+      "bg": "hideout", "sprites": [{ "art": "professor", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["The SECRET HIDEOUT! A retro loft, a short walk from the beach.", "Sunsets from the bed. A record player. An ARCADE MACHINE.", "GIDGET is already going for the high score."],
       "next": "pro_sunflower"
     },
     "pro_sunflower": {
-      "type": "choice", "bg": "field",
-      "lines": ["TODO: A side quest appeared: the SUNFLOWER FIELD. Accept?"],
+      "type": "choice", "bg": "field", "sprites": [{ "art": "professor", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Rumor has it there's a sunflower field along your route.", "A detour could be... blooming lovely."],
+      "prompt": "Take the sunflower detour?",
       "choices": [
-        { "label": "YES!", "set": { "sunflowers": "yes" } },
-        { "label": "MAYBE NEXT TIME", "set": { "sunflowers": "no" } }
-      ],
+        { "label": "YES, FLOWERS!", "set": { "sunflowers": "yes" }, "next": "pro_sunflower_yes" },
+        { "label": "MAYBE NEXT TIME", "set": { "sunflowers": "no" }, "next": "pro_sunflower_no" }
+      ]
+    },
+    "pro_sunflower_yes": {
+      "bg": "field",
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["Wonderful! You may come home with an armful.", "GIDGET is practicing her sitting-in-flowers pose."],
+      "next": "pro_dinner"
+    },
+    "pro_sunflower_no": {
+      "bg": "town",
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["No problem. More time for the coast!"],
       "next": "pro_dinner"
     },
     "pro_dinner": {
