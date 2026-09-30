@@ -71,7 +71,8 @@ async function handleHash() {
 
 window.addEventListener("hashchange", handleHash);
 
-if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+// No offline cache in playtest mode (?fast=1), so tests always run the current files.
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost") && !new URLSearchParams(location.search).has("fast")) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 

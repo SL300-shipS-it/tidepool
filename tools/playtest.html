@@ -26,6 +26,9 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const SAVE = "tp_save_v1";
 
 async function main() {
+  // A service worker left over from normal play would serve stale cached files. Remove it first.
+  if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+  if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
   const story = await (await fetch("../story/story.json", { cache: "no-store" })).json();
   const secrets = await (await fetch("tokens.local.json", { cache: "no-store" })).json();
   const maxOpts = Math.max(2, ...Object.values(story.scenes).map((s) => (s.choices || []).length),
