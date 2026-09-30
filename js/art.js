@@ -20,6 +20,7 @@
 //     L #d4e4f4 pale blue linen                 M #a4bcd4 linen shadow
 //     T #c8a070 brown paper (kraft)             U #94704a kraft shadow
 //     P #5a80b8 plaid mid blue
+//     A #2a2838 Gidget black fur          F #46485f fur sheen      R #8090b8 fur rim light (CR-009)
 // Sprite style (CR-002): dark outline k, 2-3 shades per material, light from the upper left.
 export const PAL = {
   a: "#f8f8f8", b: "#b8c0c8", c: "#607080", d: "#303838",
@@ -35,51 +36,55 @@ export const PAL = {
   B: "#a8704a", C: "#7a4c30", S: "#dce4ec",
   G: "#8c9c7c", H: "#647258", D: "#9a7a52", E: "#6a5034",
   L: "#d4e4f4", M: "#a4bcd4", T: "#c8a070", U: "#94704a", P: "#5a80b8",
+  A: "#2a2838", F: "#46485f", R: "#8090b8",
 };
 
 // ---------- sprites (16x16 unless noted) ----------
-// Gidget: a canele (fluted caramel body, dark caramelized crown) with cat ears and a tail.
-// The tail is 4 columns appended on the right (20 wide total); body column 15 joins it.
-const GIDGET_TAIL = ["....", "....", "....", ".kk.", "kmmk", "kmnk", "kmnk", "kmnk", "kmnk", "kmnk", "kmnk", "mmnk", "nnk.", "kk..", "....", "...."];
-function withTail(rows) { return rows.map((r, i) => r + GIDGET_TAIL[i]); }
-
+// Gidget (CR-009): Jess's childhood cat, a black cat, wearing a small canele (caramel sides,
+// dark caramelized crown) as a hat between her ears. Near-black fur A with sheen F and a blue-gray
+// rim light R on the upper-left edges, ears and tail so she reads on night/dark backgrounds.
+// Yellow-green eyes (w), pink nose and inner ears (p), whiskers (b).
 export const SPRITES = {
-  gidget: withTail([
-    "..k..........k..",
-    ".kok........kok.",
-    ".kpok......kopk.",
-    ".kppokkkkkkoppk.",
-    ".kooonnnnnnoook.",
-    ".kooooooooooook.",
-    ".kzmmmmmmmmmmnk.",
-    ".kzmkammmmkamnk.",
-    ".kzmkkmmmmkkmnk.",
-    ".kzppmmkkmmppnk.",
-    ".kzmnmmnmmnmnnkk",
-    ".kzmnmmnmmnmnnkm",
-    ".kzmnmmnmmnmnnkn",
-    "kzmnmmnmmnmmnnok",
-    ".kkkkkkkkkkkkkk.",
-    "..kmk......kmk..",
-  ]),
-  gidget_sleep: withTail([
-    "..k..........k..",
-    ".kok........kok.",
-    ".kpok......kopk.",
-    ".kppokkkkkkoppk.",
-    ".kooonnnnnnoook.",
-    ".kooooooooooook.",
-    ".kzmmmmmmmmmmnk.",
-    ".kzmmmmmmmmmmnk.",
-    ".kzmkkmmmmkkmnk.",
-    ".kzppmmkkmmppnk.",
-    ".kzmnmmnmmnmnnkk",
-    ".kzmnmmnmmnmnnkm",
-    ".kzmnmmnmmnmnnkn",
-    "kzmnmmnmmnmmnnok",
-    ".kkkkkkkkkkkkkk.",
-    "..kmk......kmk..",
-  ]),
+  // 20x20: sitting, tail curled up on the right.
+  gidget: [
+    "......kkkk..........",
+    ".....konnok.........",
+    "..k.kzmnmnnk.k......",
+    ".kRkkzmnmnnkkFk.....",
+    ".kRpknnnnnnkpFk.....",
+    ".kRAAAAAAAAAAFk.....",
+    ".kRAAAAAAAAAAFk.....",
+    ".kRAawAAAAawAFk.....",
+    ".kRAwkAAAAkwAFk.....",
+    "bkRAAAAppAAAAFkbkRFk",
+    ".bkFAAkAAkAAFkb.kRk.",
+    "..kFAAAkkAAAFk..kRk.",
+    "...kkAAAAAAkk...kRk.",
+    "...kRAAAAAAAFk..kRk.",
+    "..kRAAAAAAAAAFk.kRk.",
+    "..kRAAAAAAAAAFkkRAk.",
+    "..kRAAAAAAAAAAFRAk..",
+    "..kRAAAFFAAAAAAAk...",
+    "..kRAkAAAAkAAAkk....",
+    "...kkRkkkkRkkkk.....",
+  ],
+  // 20x14: curled up asleep, eyes closed, canele hat slipped askew over one ear.
+  gidget_sleep: [
+    ".......kkk..........",
+    ".....kkonnk.........",
+    ".k..kzmnmnok........",
+    "kRkkzmnmnnnkk.......",
+    "kRpknnnnnnkFk.kkkk..",
+    "kRAAkkkkkkAAFkRRRRk.",
+    "kRAAAAAAAAAAAFAAAAAk",
+    "kRARRAAAARRAAFAAAAAk",
+    "bkAAAAppAAAAFAAAAAAk",
+    ".kFAAAkkAAAFAAAAAAAk",
+    "..kFAAAAAAFAAAAAAAAk",
+    ".kRRRRRRRRRRRRRRAAk.",
+    "kRAAAAAAAAAAAAAAAk..",
+    ".kkkkkkkkkkkkkkkk...",
+  ],
   // Jess (CR-006, from Leon's reference; 16x20): long straight dark hair past the shoulders,
   // sunglasses pushed up on her head, small gold hoops, fitted black sleeveless top, long pale
   // blue linen maxi skirt, brown paper tote in one hand, slight smile. Skin tone s/t unchanged
@@ -417,9 +422,26 @@ export const BADGE_ICONS = {
     "................",
     "................",
   ],
+  // Canele Key (CR-009): Gidget's head wearing her canele hat.
+  canele: [
+    "................",
+    "......kkkk......",
+    ".....koonok.....",
+    "..k..kzmnnk..k..",
+    ".kRk.kzmnnk.kFk.",
+    ".kRpkknnnnkkpFk.",
+    ".kRAAkkkkkkAAFk.",
+    ".kRAAAAAAAAAAFk.",
+    ".kRAawAAAAawAFk.",
+    ".kRAwkAAAAkwAFk.",
+    "bkRAAAAppAAAAFkb",
+    ".bkFAAkAAkAAFkb.",
+    "..kFAAAkkAAAFk..",
+    "...kkFAAAAFkk...",
+    "....kkkkkkkk....",
+    "................",
+  ],
 };
-// Gidget's head and body without the tail.
-BADGE_ICONS.canele = SPRITES.gidget.map((r, i) => (i >= 10 && i <= 12 ? r.slice(0, 15) + "." : r.slice(0, 16)));
 
 // ---------- drawing ----------
 export function drawGrid(ctx, grid, x, y, scale = 1, flip = false) {
