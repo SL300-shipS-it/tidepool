@@ -53,7 +53,7 @@
   "labels": {
     "lodging": { "inn": "Seaside Inn", "hideout": "Secret Hideout" },
     "sunflowers": { "yes": "Sunflower detour: yes", "no": "Sunflower detour: no" },
-    "dinner": { "coastside": "Coastside Feast (Pasta Moon)", "hometown": "Hometown Feast" },
+    "dinner": { "coastside": "Coastside Feast", "hometown": "Hometown Feast" },
     "lunch": { "a": "TODO lunch A", "b": "TODO lunch B" },
     "breakfast": { "room": "In-room breakfast", "johnnys": "Johnny's", "mavericks": "Mavericks Creperie" }
   },
@@ -305,7 +305,7 @@
     "pro_dinner_coastside": {
       "bg": "sunset",
       "speaker": "DR. JOSEPHSON",
-      "lines": ["PASTA MOON! Handmade pasta, right here on the coast.", "No drive home. Just dinner and the ocean air."],
+      "lines": ["A pasta house right here on the coast! Handmade pasta.", "No drive home. Just dinner and the ocean air."],
       "next": "pro_ending"
     },
     "pro_dinner_city": {

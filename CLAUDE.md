@@ -1,12 +1,12 @@
 # Tidepool — orchestrator guide
 
-A retro Game Boy–style adventure game Leon is making for Jess (2-year anniversary trip, Half Moon Bay,
-Oct 10–12). She plays it in Safari on her iPhone. Chapters unlock with physical QR badges.
+A retro Game Boy–style adventure game Leon is making for Jess (2-year anniversary trip on the coast,
+Oct 10–11). She plays it in Safari on her iPhone. Chapters unlock with physical QR badges.
 
 ## Deadlines
 - Tue Sep 30: engine working with placeholder content (done Sep 28)
 - Thu Oct 1: real prologue loaded, deployed, phone-tested
-- Oct 10–12: live play. Nothing risky ships after Oct 9.
+- Oct 10–11 (Sat–Sun): live play. Nothing risky ships after Oct 9.
 
 ## Handoff: the Build Log doc
 Brainstorming happens in Claude chat. Approved changes land in the Inbox of the **Build Log** doc:

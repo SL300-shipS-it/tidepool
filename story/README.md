@@ -65,7 +65,7 @@ in the story, run the validator.
 
 | Toggle | Default | Effect |
 | --- | --- | --- |
-| `coastsideFeast` | `true` | Offer the Half Moon Bay dinner (Pasta Moon) as a choice. Off: skip straight to the city restaurant list. Story reads it as `{ "cfg.coastsideFeast": true }`. |
+| `coastsideFeast` | `true` | Offer the coastside dinner as a choice. Off: skip straight to the city restaurant list. Story reads it as `{ "cfg.coastsideFeast": true }`. |
 | `fakeLodging` | `false` | Off: the prologue lodging pick is real (`lodging` = `inn` or `hideout`, shown on the Trainer Card). On: after either pick, `pro_lodging_fake` plays ({partner} knocks the other brochure off the table) and sets `lodging` = `inn`. Nothing later depends on `lodging`. |
 
 ## Scene types
