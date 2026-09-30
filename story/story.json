@@ -9,7 +9,7 @@
   "chapters": [
     { "id": "prologue", "prefix": "pro_", "title": "PROLOGUE", "start": "pro_intro" },
     { "id": "ch1", "prefix": "ch1_", "title": "CH.1 NIGHT ROUTE", "start": "ch1_start", "key": "gala",
-      "lockedText": "TODO: The Night Route is dark...\nA Gym Leader holds the badge that lights the way." },
+      "lockedText": "Your first badge awaits at the GALA." },
     { "id": "ch2", "prefix": "ch2_", "title": "CH.2 MORNING", "start": "ch2_start", "key": "matcha",
       "lockedText": "TODO: Someone is still asleep...\nFind the badge that wakes the morning." },
     { "id": "ch3", "prefix": "ch3_", "title": "CH.3 SUNFLOWER FIELD", "start": "ch3_start", "key": "sunflower",
@@ -61,7 +61,7 @@
   "lists": {
     "restaurants": [
       { "id": "lardoise", "name": "L'ARDOISE", "lines": ["Velvet curtains, candlelight, and duck confit that's won first dates for 15 years.", "(Pack the LACTAID.)"] },
-      { "id": "mijote", "name": "MIJOTÉ", "line": "A tiny French room where the menu changes weekly and sauces are finished at your table." },
+      { "id": "mijote", "name": "MIJOTE", "line": "A tiny French room where the menu changes weekly and sauces are finished at your table." },
       { "id": "pearl6101", "name": "PEARL 6101", "line": "Leather booths and low lights, at the edge of the city closest to the ocean." },
       { "id": "richtable", "name": "RICH TABLE", "line": "Cocktails first, then a late table. A night that keeps going." },
       { "id": "rokaakor", "name": "ROKA AKOR", "line": "Robata grill, sushi and steak in a sleek Jackson Square room." }
@@ -245,8 +245,8 @@
       ]
     },
     "pro_lodging_fake": {
-      "bg": "inn", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
-      "lines": ["{partner} knocked the HIDEOUT brochure off the table!", "TODO: {partner} has decided. It's the SEASIDE INN!"],
+      "bg": "town", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
+      "lines": ["{partner} knocked the HIDEOUT brochure off the table!", "{partner} has decided. It's the SEASIDE INN!"],
       "do": [{ "set": { "lodging": "inn" } }],
       "next": "pro_lodging_inn"
     },
