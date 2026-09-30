@@ -81,6 +81,14 @@
         { "q": "TODO: What's the tallest mountain you've climbed together?", "options": ["TODO right", "TODO wrong"], "answer": 0, "move": "TRAIL MIX" }
       ],
       "foeMoves": [{ "name": "LONG STORY", "text": "TODO: It dragged on for a while..." }],
+      "distracted": [
+        "{partner} got distracted by a bug!",
+        "{partner} started grooming mid-battle.",
+        "{partner} is staring at absolutely nothing.",
+        "{partner} is chasing a sunbeam!"
+      ],
+      "nap": ["{partner} curled up for a nap..."],
+      "wake": ["{partner} woke up and stretched! Ready to go!"],
       "finisher": ["{partner} used POUNCE!", "It's super effective!"],
       "win": ["TODO: HIKER was defeated!", "TODO: \"Nice partner you've got there.\""]
     },
@@ -95,11 +103,19 @@
         { "q": "TODO Q5", "options": ["TODO wrong", "TODO right"], "answer": 1, "move": "SUNSET GLARE" }
       ],
       "foeMoves": [
-        { "name": "DAD JOKE", "text": "TODO: It's not very effective... but it hurt a little." },
+        { "name": "DAD JOKE", "text": "TODO: It's not very effective... but it hurt {name} a little." },
         { "name": "LIP FILLER", "text": "TODO: LEON's lips grew. Somehow that hurt YOU." },
-        { "name": "SNORE", "text": "TODO: LEON fell asleep mid-battle. The noise did damage." }
+        { "name": "SNORE", "text": "TODO: LEON fell asleep mid-battle. The noise did damage to {name}." }
       ],
+      "distracted": [
+        "{partner} got distracted by a bug!",
+        "{partner} started grooming mid-battle.",
+        "{partner} is staring at absolutely nothing.",
+        "{partner} is chasing a sunbeam!"
+      ],
+      "nap": ["{partner} curled up for a nap..."],
       "revive": ["All letters received at 11:59 PM!", "{name} was revived!"],
+      "wake": ["{partner} woke up and stretched! Ready to go!"],
       "finisher": ["{partner} used TWO YEARS!", "It's super effective!"],
       "win": ["CHAMPION LEON was defeated!", "TODO: \"You were always going to win.\""],
       "award": "twoyear"
