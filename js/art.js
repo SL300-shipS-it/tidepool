@@ -166,20 +166,20 @@ export const SPRITES = {
     "..kGaGGkkGGaGk..",
     ".kGGGGHkkHGGGGk.",
   ],
-  // 24x10: Leon asleep on his back across a doorway (head left, bare feet right), naked for a story
+  // 24x10: Leon asleep on his back across a doorway (head left, feet right), naked for a story
   // gag but cartoon-tasteful: bare skin (B/C), arms at his sides with one hand on his belly, a coral
   // blanket (p/r, fold line q) covering hips to mid-thigh. Same curly hair and beard, sunglasses off,
-  // eyes closed, silver chain and earring.
+  // eyes closed, silver chain and earring. Still wearing white socks (a/b) with a bit of shin showing.
   leon_asleep: [
     ".kkkkkkkk..kkkkkkkkk....",
-    "kJIJBBBiikkBBBBBprrrkkk.",
-    "kIIJBkBiikBCCCCkprqrBBCk",
-    "kJIIBkBiikSBBBBBprqrBBCk",
-    "kIIJBBCiikSBBBCBprqrkkk.",
-    "kIJIBBCiikSBBBBCprqrkkk.",
-    "kJIJBkBiikSBBBkBprqrBBCk",
-    "kIIIBkBiikBCCkBBprqrBBCk",
-    "kJIJBBBiikkBBBBCprrrkkk.",
+    "kJIJBBBiikkBBBBBprrrkkkk",
+    "kIIJBkBiikBCCCCkprqrBaak",
+    "kJIIBkBiikSBBBBBprqrBabk",
+    "kIIJBBCiikSBBBCBprqrkkkk",
+    "kIJIBBCiikSBBBBCprqrkkkk",
+    "kJIJBkBiikSBBBkBprqrBaak",
+    "kIIIBkBiikBCCkBBprqrBabk",
+    "kJIJBBBiikkBBBBCprrrkkkk",
     ".kkkkkSkk..kkkkkkkkk....",
   ],
   // Dr. Andy Josephson, the "Tea Professor" (16x20, from Leon's photo): short grey hair combed back
