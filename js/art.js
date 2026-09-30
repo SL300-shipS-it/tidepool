@@ -585,8 +585,8 @@ function cloud(p, x, y, w) {
   p.ell("#f8f8f8", x - w / 6, y - 2, w / 4, 2);
   p.ell("#f8f8f8", x + w / 8, y - 3, w / 5, 2);
 }
-// Monterey cypress: flat, wind-swept canopy on a crooked trunk.
-function cypress(p, x, base, dk, mid, trunk) {
+// Wind-swept tree: flat canopy on a crooked trunk.
+function windTree(p, x, base, dk, mid, trunk) {
   p.R(trunk, x, base - 8, 2, 8); p.R(trunk, x + 1, base - 11, 2, 4); p.R(trunk, x - 2, base - 7, 2, 1);
   p.ell(dk, x + 3, base - 12, 9, 2.5); p.ell(mid, x + 2, base - 13, 7, 1.5);
   p.ell(dk, x - 4, base - 8, 5, 1.5); p.ell(mid, x - 4, base - 9, 3, 1);
@@ -680,7 +680,7 @@ const SCENES = {
       p.R("#88a048", 0, bl, W, 6); p.speck("#a8c060", 0, bl, W, 6, W * 0.3, 2); p.speck("#f8d048", 0, bl + 2, W, 4, W * 0.06, 3);
       for (let x = Math.round(W * 0.46); x < W; x += 7) p.R("#805838", x, rt - 5, 1, 5); // guardrail
       p.R("#e8e0d0", W * 0.46, rt - 4, W, 1);
-      cypress(p, Math.round(W * 0.84), rt - 5, "#2f5a38", "#407848", "#5a3a28");
+      windTree(p, Math.round(W * 0.84), rt - 5, "#2f5a38", "#407848", "#5a3a28");
       p.R("#5c5c6c", 0, rt, W, rb - rt);
       p.speck("#6c6c7c", 0, rt, W, rb - rt, W * 0.5, 13); p.speck("#50505e", 0, rt, W, rb - rt, W * 0.4, 14);
       p.R("#e8e8e8", 0, rt + 1, W, 1); p.R("#e8e8e8", 0, rb - 2, W, 1);
@@ -713,7 +713,7 @@ const SCENES = {
         const k = x / (W * 0.34), top = Math.round(hz - H * 0.13 * Math.sqrt(1 - k * k) - (x % 5 === 0 ? 1 : 0));
         p.R("#3c2a58", x, top, 1, hz + 2 - top);
       }
-      cypress(p, Math.round(W * 0.12), Math.round(hz - H * 0.12), "#2a1c40", "#2a1c40", "#2a1c40");
+      windTree(p, Math.round(W * 0.12), Math.round(hz - H * 0.12), "#2a1c40", "#2a1c40", "#2a1c40");
       p.R("#a87078", 0, shore, W, 2);
       p.bands(["#c88878", "#d09880", "#d8a888"], 0, shore + 2, W, H);
       p.speck("#b87c70", 0, shore + 3, W, H - shore - 3, W * 0.4, 5);
