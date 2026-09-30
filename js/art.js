@@ -15,12 +15,15 @@
 //   Uppercase letters (added once a-z ran out; CR-005/006/007):
 //     B #a8704a Leon skin (warm medium brown)   C #7a4c30 Leon skin shadow
 //     S #dce4ec silver (chain, hoop, bracelet)
-//     G #8c9c7c gray-green suede                H #647258 suede shadow
+//     G #6c7c64 dark gray-green suede           H #4c5846 suede shadow
 //     D #9a7a52 brown canvas                    E #6a5034 canvas shadow
-//     L #d4e4f4 pale blue linen                 M #a4bcd4 linen shadow
+//     L #e4eef8 pale blue-white linen/satin     M #b4c8dc skirt shadow
 //     T #c8a070 brown paper (kraft)             U #94704a kraft shadow
-//     P #5a80b8 plaid mid blue
+//     P #5a80b8 plaid mid blue (currently unused; kept for future sprites)
 //     A #2a2838 Gidget black fur          F #46485f fur sheen      R #8090b8 fur rim light (CR-009)
+//     I #24222c black hair (Jess, Leon)   J #4c4e66 black-hair gloss / curl highlight
+//     N #fcdab4 Jess skin (golden beige)  O #e2b284 Jess skin shadow
+//     Q #243058 plaid navy
 // Sprite style (CR-002): dark outline k, 2-3 shades per material, light from the upper left.
 export const PAL = {
   a: "#f8f8f8", b: "#b8c0c8", c: "#607080", d: "#303838",
@@ -34,9 +37,10 @@ export const PAL = {
   g: "#58a848", f: "#307838", j: "#384850",
   w: "#d0e050",
   B: "#a8704a", C: "#7a4c30", S: "#dce4ec",
-  G: "#8c9c7c", H: "#647258", D: "#9a7a52", E: "#6a5034",
-  L: "#d4e4f4", M: "#a4bcd4", T: "#c8a070", U: "#94704a", P: "#5a80b8",
+  G: "#6c7c64", H: "#4c5846", D: "#9a7a52", E: "#6a5034",
+  L: "#e4eef8", M: "#b4c8dc", T: "#c8a070", U: "#94704a", P: "#5a80b8",
   A: "#2a2838", F: "#46485f", R: "#8090b8",
+  I: "#24222c", J: "#4c4e66", N: "#fcdab4", O: "#e2b284", Q: "#243058",
 };
 
 // ---------- sprites (16x16 unless noted) ----------
@@ -85,93 +89,95 @@ export const SPRITES = {
     "kRAAAAAAAAAAAAAAAk..",
     ".kkkkkkkkkkkkkkkk...",
   ],
-  // Jess (CR-006, from Leon's reference; 16x20): long straight dark hair past the shoulders,
-  // sunglasses pushed up on her head, small gold hoops, fitted black sleeveless top, long pale
-  // blue linen maxi skirt, brown paper tote in one hand, slight smile. Skin tone s/t unchanged
-  // (the reference doesn't specify it).
+  // Jess (CR-006, refined from Leon's photos; 16x20): long straight glossy black hair (I/J) parted
+  // in the middle and past the shoulders, black sunglasses pushed up on her head, small gold hoops,
+  // golden-beige skin (N/O), calm closed-mouth smile, fitted black sleeveless top with a high round
+  // neck, long pale blue-white satin/linen maxi skirt (L/M, a sheen), gold bracelet, brown paper
+  // tote (T/U) held low by its handles.
   jess: [
     "....kkkkkkkk....",
-    "...kihiiiiiik...",
-    "..kidbdkkdbdik..",
-    "..kihhiiiiiiik..",
-    "..khiissssiiik..",
-    "..khissssssiik..",
-    "..kiskssssksik..",
-    "..kiskssssksik..",
-    "..kipstsstspik..",
-    "..kiyssqqssyik..",
-    "..kiiktsstkiik..",
-    ".kiisddddddsiik.",
-    "kskiidjddddiiksk",
-    "kskidjddddddiksk",
-    "ktkkLLLLLLLMkktk",
-    "kUUkLLLLLLLMk...",
+    "...kIJIIIIJIk...",
+    "..kIdbdkkdbdIk..",
+    "..kIJIINNIIJIk..",
+    "..kIIINNNNIIIk..",
+    "..kIINNNNNNIIk..",
+    "..kINkNNNNkNIk..",
+    "..kINkNNNNkNIk..",
+    "..kIpNONNONpIk..",
+    "..kIyNNOONNyIk..",
+    "..kIIkONNOkIIk..",
+    ".kIINddddddNIIk.",
+    "kNkIIdJddddIIkNk",
+    "kNkIddJdddddIkyk",
+    "kOkkLLLLLLLMkkOk",
+    "U.UkLaLLLLLMk...",
+    "kUUkLaMLLLMMk...",
     "kTUkLLMLLLMMk...",
-    "kTUkLLMLLLMMk...",
-    "kkkkLLMLLLMMMk..",
-    "...kkktkkkktkk..",
+    "kTUkLLMLLLMMMk..",
+    "kkkkkkOkkkkOkk..",
   ],
-  // Leon (CR-007, from Leon's reference; 16x20): warm medium-brown skin (B/C), short dark curly
-  // hair with volume, full trimmed beard, black rectangular sunglasses, silver hoop earring, chain
-  // and bracelet (S), boxy cropped blue/gray plaid short-sleeve shirt (P v c b), baggy brown
-  // canvas pants (D/E), gray-green suede low-tops (G/H) with a white side stripe.
+  // Leon (CR-007, refined from Leon's photos; 16x20): warm medium-brown skin (B/C), rounded tight-curly
+  // black hair (I with J curl highlights) with slightly receding temples, full dark beard and
+  // mustache (i), black rectangular sunglasses, silver hoop earring, curb chain and bracelet (S),
+  // oversized short-sleeve navy/blue/gray tartan shirt (Q v b c), baggy brown canvas pants (D/E),
+  // white socks, dark gray-green suede low-tops (G/H) with a plain white side stripe.
   leon: [
-    ".....kkkkkk.....",
-    "...kkikiikikk...",
-    "..kiikiikiikik..",
-    "..kikiikiikiik..",
-    "..kiBBBBBBBBik..",
+    "....kkkkkkkk....",
+    "...kJIIJIIJIk...",
+    "..kIIJIIJIIJIk..",
+    "..kIBIJIIJIBIk..",
+    "..kBBBBBBBBBBk..",
     "..kBkkkkkkkkBk..",
     "..kBkcdkkcdkBk..",
     "..kiBBBCCBBBiS..",
     "..kiiiiiiiiiik..",
     "...kiiaaaaiik...",
     "....kiiiiiik....",
-    ".kPvPkBBBBkPvPk.",
-    "kPvPPvkSSkvPPvPk",
+    ".kvQvkBBBBkvQvk.",
+    "kvQvvQkSSkQvvQvk",
     "kbcbbcbccbcbbcbk",
-    "kBkPvPPccPPvPkBk",
+    "kBkvQvvccvvQvkBk",
     "kBkDDDDDDDDDDkSk",
     "kCkDDDDEDDDDEkCk",
-    ".kDDDDEkkDDDDEk.",
-    "..kGGaGkkGaGGk..",
+    "..kaaakkkkaaak..",
+    "..kGaGGkkGGaGk..",
     ".kGGGGHkkHGGGGk.",
   ],
   // Leon with a comically swollen upper lip (pink highlight, coral, dark red underside).
   leon_lips: [
-    ".....kkkkkk.....",
-    "...kkikiikikk...",
-    "..kiikiikiikik..",
-    "..kikiikiikiik..",
-    "..kiBBBBBBBBik..",
+    "....kkkkkkkk....",
+    "...kJIIJIIJIk...",
+    "..kIIJIIJIIJIk..",
+    "..kIBIJIIJIBIk..",
+    "..kBBBBBBBBBBk..",
     "..kBkkkkkkkkBk..",
     "..kBkcdkkcdkBk..",
     ".kkkkkkkkkkkkkS.",
     ".kpppprrrrpppqk.",
     ".krrrrrrrrrrrqk.",
     "..kqqkiiiikqqk..",
-    ".kPvPkBBBBkPvPk.",
-    "kPvPPvkSSkvPPvPk",
+    ".kvQvkBBBBkvQvk.",
+    "kvQvvQkSSkQvvQvk",
     "kbcbbcbccbcbbcbk",
-    "kBkPvPPccPPvPkBk",
+    "kBkvQvvccvvQvkBk",
     "kBkDDDDDDDDDDkSk",
     "kCkDDDDEDDDDEkCk",
-    ".kDDDDEkkDDDDEk.",
-    "..kGGaGkkGaGGk..",
+    "..kaaakkkkaaak..",
+    "..kGaGGkkGGaGk..",
     ".kGGGGHkkHGGGGk.",
   ],
   // 24x10: Leon asleep on his back across a doorway (head left, sneakers right), sunglasses off,
-  // eyes closed. Silver chain across the collar, earring at the ear.
+  // eyes closed. Silver chain across the collar, earring at the ear, white socks above the sneakers.
   leon_asleep: [
     ".kkkkkkkk..kkkkkkkkkkkk.",
-    "kikiBBBiikkPvPPvDDDDkGGk",
-    "kiikBkBiikBbcbbcDDDEkaHk",
-    "kkiiBkBiikSPvPPvDDDEkGHk",
-    "kiikBBCiikSPvPPvDDDDkkk.",
-    "kikiBBCiikSPvPPvDDDDkkk.",
-    "kiikBkBiikSbcbbcDDDEkGGk",
-    "kkiiBkBiikBPvPPvDDDEkaHk",
-    "kikiBBBiikkPvPPvDDDDkGHk",
+    "kJIJBBBiikkvQvvQDDDakGGk",
+    "kIIJBkBiikBbcbbcDDEakaHk",
+    "kJIIBkBiikSvQvvQDDEakGHk",
+    "kIIJBBCiikSvQvvQDDDkkkk.",
+    "kIJIBBCiikSvQvvQDDDkkkk.",
+    "kJIJBkBiikSbcbbcDDEakGGk",
+    "kIIIBkBiikBvQvvQDDEakaHk",
+    "kJIJBBBiikkvQvvQDDDakGHk",
     ".kkkkkSkk..kkkkkkkkkkkk.",
   ],
   // Dr. Andy Josephson, the "Tea Professor" (16x20, from Leon's photo): short grey hair combed back
