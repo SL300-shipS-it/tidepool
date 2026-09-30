@@ -12,6 +12,14 @@
 //     z #e8d098 sand         y #f8d048 sunflower     x #c89830 gold dark
 //     g #58a848 leaf green   f #307838 leaf dark     j #384850 slate (UI)
 //     w #d0e050 tennis lime  (CR-002)
+//   Uppercase letters (added once a-z ran out; CR-005/006/007):
+//     B #a8704a Leon skin (warm medium brown)   C #7a4c30 Leon skin shadow
+//     S #dce4ec silver (chain, hoop, bracelet)
+//     G #8c9c7c gray-green suede                H #647258 suede shadow
+//     D #9a7a52 brown canvas                    E #6a5034 canvas shadow
+//     L #d4e4f4 pale blue linen                 M #a4bcd4 linen shadow
+//     T #c8a070 brown paper (kraft)             U #94704a kraft shadow
+//     P #5a80b8 plaid mid blue
 // Sprite style (CR-002): dark outline k, 2-3 shades per material, light from the upper left.
 export const PAL = {
   a: "#f8f8f8", b: "#b8c0c8", c: "#607080", d: "#303838",
@@ -24,6 +32,9 @@ export const PAL = {
   z: "#e8d098", y: "#f8d048", x: "#c89830",
   g: "#58a848", f: "#307838", j: "#384850",
   w: "#d0e050",
+  B: "#a8704a", C: "#7a4c30", S: "#dce4ec",
+  G: "#8c9c7c", H: "#647258", D: "#9a7a52", E: "#6a5034",
+  L: "#d4e4f4", M: "#a4bcd4", T: "#c8a070", U: "#94704a", P: "#5a80b8",
 };
 
 // ---------- sprites (16x16 unless noted) ----------
@@ -69,76 +80,119 @@ export const SPRITES = {
     ".kkkkkkkkkkkkkk.",
     "..kmk......kmk..",
   ]),
-  // Jess (placeholder look until Leon sends references): shoulder-length brown hair,
-  // coral top, light-blue jeans, white sneakers.
+  // Jess (CR-006, from Leon's reference; 16x20): long straight dark hair past the shoulders,
+  // sunglasses pushed up on her head, small gold hoops, fitted black sleeveless top, long pale
+  // blue linen maxi skirt, brown paper tote in one hand, slight smile. Skin tone s/t unchanged
+  // (the reference doesn't specify it).
   jess: [
     "....kkkkkkkk....",
-    "...khhhhhhhhk...",
-    "..khhhhhhhhhhk..",
-    "..khhhhhhhhhik..",
-    "..khsshhhhhsik..",
-    "..khskssssksik..",
-    "..khskssssksik..",
-    "..khpssqqsspik..",
-    "..khhssssssiik..",
-    "..kihrrssrrhik..",
-    ".krrrrrrrrrrrqk.",
-    ".kskrrrrrrrqksk.",
-    ".kskrrrrrrrqksk.",
-    ".ktkuuuuuuuvktk.",
-    "...kuuvkkvuvk...",
-    "..kaaak..kaaak..",
+    "...kihiiiiiik...",
+    "..kidbdkkdbdik..",
+    "..kihhiiiiiiik..",
+    "..khiissssiiik..",
+    "..khissssssiik..",
+    "..kiskssssksik..",
+    "..kiskssssksik..",
+    "..kipstsstspik..",
+    "..kiyssqqssyik..",
+    "..kiiktsstkiik..",
+    ".kiisddddddsiik.",
+    "kskiidjddddiiksk",
+    "kskidjddddddiksk",
+    "ktkkLLLLLLLMkktk",
+    "kUUkLLLLLLLMk...",
+    "kTUkLLMLLLMMk...",
+    "kTUkLLMLLLMMk...",
+    "kkkkLLMLLLMMMk..",
+    "...kkktkkkktkk..",
   ],
-  // Leon (placeholder look): short dark hair, green tee, dark-blue jeans.
+  // Leon (CR-007, from Leon's reference; 16x20): warm medium-brown skin (B/C), short dark curly
+  // hair with volume, full trimmed beard, black rectangular sunglasses, silver hoop earring, chain
+  // and bracelet (S), boxy cropped blue/gray plaid short-sleeve shirt (P v c b), baggy brown
+  // canvas pants (D/E), gray-green suede low-tops (G/H) with a white side stripe.
   leon: [
-    "................",
     ".....kkkkkk.....",
-    "....kiiihiik....",
-    "...kiiiiiiiik...",
-    "...kiissssiik...",
-    "...kssksskssk...",
-    "...kssksskssk...",
-    "...ktsssssstk...",
-    "....kssqqssk....",
-    "...kggkttkggk...",
-    "..kgggggggggfk..",
-    ".kskgggggggfksk.",
-    ".kskgggggggfksk.",
-    ".ktkvvvvvvvjktk.",
-    "...kvvjkkvvjk...",
-    "..kjjjk..kjjjk..",
+    "...kkikiikikk...",
+    "..kiikiikiikik..",
+    "..kikiikiikiik..",
+    "..kiBBBBBBBBik..",
+    "..kBkkkkkkkkBk..",
+    "..kBkcdkkcdkBk..",
+    "..kiBBBCCBBBiS..",
+    "..kiiiiiiiiiik..",
+    "...kiiaaaaiik...",
+    "....kiiiiiik....",
+    ".kPvPkBBBBkPvPk.",
+    "kPvPPvkSSkvPPvPk",
+    "kbcbbcbccbcbbcbk",
+    "kBkPvPPccPPvPkBk",
+    "kBkDDDDDDDDDDkSk",
+    "kCkDDDDEDDDDEkCk",
+    ".kDDDDEkkDDDDEk.",
+    "..kGGaGkkGaGGk..",
+    ".kGGGGHkkHGGGGk.",
   ],
-  // Leon with a big swollen upper lip (pink highlight, coral, dark red underside).
+  // Leon with a comically swollen upper lip (pink highlight, coral, dark red underside).
   leon_lips: [
-    "................",
     ".....kkkkkk.....",
-    "....kiiihiik....",
-    "...kiiiiiiiik...",
-    "...kiissssiik...",
-    "...kssksskssk...",
-    "...kssksskssk...",
-    "..kkkkkkkkkkkk..",
+    "...kkikiikikk...",
+    "..kiikiikiikik..",
+    "..kikiikiikiik..",
+    "..kiBBBBBBBBik..",
+    "..kBkkkkkkkkBk..",
+    "..kBkcdkkcdkBk..",
+    ".kkkkkkkkkkkkkS.",
     ".kpppprrrrpppqk.",
     ".krrrrrrrrrrrqk.",
-    "..kqqkkkkkkqqk..",
-    ".kskgggggggfksk.",
-    ".kskgggggggfksk.",
-    ".ktkvvvvvvvjktk.",
-    "...kvvjkkvvjk...",
-    "..kjjjk..kjjjk..",
+    "..kqqkiiiikqqk..",
+    ".kPvPkBBBBkPvPk.",
+    "kPvPPvkSSkvPPvPk",
+    "kbcbbcbccbcbbcbk",
+    "kBkPvPPccPPvPkBk",
+    "kBkDDDDDDDDDDkSk",
+    "kCkDDDDEDDDDEkCk",
+    ".kDDDDEkkDDDDEk.",
+    "..kGGaGkkGaGGk..",
+    ".kGGGGHkkHGGGGk.",
   ],
-  // 24x10: Leon asleep on his back, lying across a doorway (head left, sneakers right).
+  // 24x10: Leon asleep on his back across a doorway (head left, sneakers right), sunglasses off,
+  // eyes closed. Silver chain across the collar, earring at the ear.
   leon_asleep: [
-    "..kkkkk.................",
-    ".kiisstk..kkkkkkk.......",
-    "kiiisksskkgggggggk..kkk.",
-    "kiisskssktgggggggkkkkaak",
-    "khissssqktggssgggvvvkaak",
-    "kiissssqktgggggggvvvkaak",
-    "kiisskssktfffffffjjjkaak",
-    "kiiisksskkffffffkjjjkjjk",
-    ".kiisstk..kkkkkkkkkkkkk.",
-    "..kkkkk.................",
+    ".kkkkkkkk..kkkkkkkkkkkk.",
+    "kikiBBBiikkPvPPvDDDDkGGk",
+    "kiikBkBiikBbcbbcDDDEkaHk",
+    "kkiiBkBiikSPvPPvDDDEkGHk",
+    "kiikBBCiikSPvPPvDDDDkkk.",
+    "kikiBBCiikSPvPPvDDDDkkk.",
+    "kiikBkBiikSbcbbcDDDEkGGk",
+    "kkiiBkBiikBPvPPvDDDEkaHk",
+    "kikiBBBiikkPvPPvDDDDkGHk",
+    ".kkkkkSkk..kkkkkkkkkkkk.",
+  ],
+  // Dr. Josephson, the "Tea Professor" (CR-005; 16x20, no reference): bald crown with gray side
+  // hair, gray round-ish glasses and mustache, brown cardigan over a white shirt and coral bow tie,
+  // slate trousers, holding a steaming coral mug of tea.
+  professor: [
+    "................",
+    "....kkkkkkkk....",
+    "...kssasssssk.a.",
+    "..kbbssssssbck.b",
+    "..kbcccsscccck.a",
+    "..kscakcckacsk.b",
+    "..kscccsscccskb.",
+    "..ksssbbbbsssk..",
+    "...ksstsstssk...",
+    "....kssqqssk....",
+    "..khhkarrakhhk..",
+    ".khhhhiaaihknnnk",
+    ".khhhhiaaihkrrrk",
+    ".khhhhiaaisskrrk",
+    ".ksskhiaaihkrrrk",
+    ".ksskhiaaihhkkk.",
+    "..kjjjjjjjjjjk..",
+    "..kjjjjkkjjjjk..",
+    "..kjjjk..kjjjk..",
+    ".kiiik....kiiik.",
   ],
   // Lactaid box: white and blue, with a little face.
   lactaid: [
