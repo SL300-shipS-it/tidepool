@@ -174,30 +174,31 @@ export const SPRITES = {
     "kikiBBBiikkPvPPvDDDDkGHk",
     ".kkkkkSkk..kkkkkkkkkkkk.",
   ],
-  // Dr. Josephson, the "Tea Professor" (CR-005; 16x20, no reference): bald crown with gray side
-  // hair, gray round-ish glasses and mustache, brown cardigan over a white shirt and coral bow tie,
-  // slate trousers, holding a steaming coral mug of tea.
+  // Dr. Andy Josephson, the "Tea Professor" (16x20, from Leon's photo): short grey hair combed back
+  // with a few darker strands (b/c), slightly receding temples, fair clean-shaven slim face, calm
+  // half-smile; white shirt (e) with a gold tie of small light squares (x/z) under a long open white
+  // lab coat (a, shadow b); slate trousers; coral mug of tea in one hand.
   professor: [
     "................",
-    "....kkkkkkkk....",
-    "...kssasssssk.a.",
-    "..kbbssssssbck.b",
-    "..kbcccsscccck.a",
-    "..kscakcckacsk.b",
-    "..kscccsscccskb.",
-    "..ksssbbbbsssk..",
-    "...ksstsstssk...",
-    "....kssqqssk....",
-    "..khhkarrakhhk..",
-    ".khhhhiaaihknnnk",
-    ".khhhhiaaihkrrrk",
-    ".khhhhiaaisskrrk",
-    ".ksskhiaaihkrrrk",
-    ".ksskhiaaihhkkk.",
-    "..kjjjjjjjjjjk..",
-    "..kjjjjkkjjjjk..",
-    "..kjjjk..kjjjk..",
-    ".kiiik....kiiik.",
+    ".....kkkkkk.....",
+    "....kbbcbbbk....",
+    "...kbcbbcbbck...",
+    "...kbsbbbcsbk...",
+    "...kbssssssbk...",
+    "...kskssssksk...",
+    "...kssstssstk...",
+    "...ksssstttsk...",
+    "....ktsssstk....",
+    "..kaakexxekaak..",
+    ".kaabkexzekbaak.",
+    ".kaabkezxekknnnk",
+    ".kaabkexzekkrrrk",
+    ".kaabkezxesskrrk",
+    ".kssbkeexekkrrrk",
+    ".kssbkjjjjkbkkk.",
+    "..kabkjjjjkbak..",
+    "..kkkkjkkjkkkk..",
+    "...kiiik.kiiik..",
   ],
   // Lactaid box: white and blue, with a little face.
   lactaid: [
