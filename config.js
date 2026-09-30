@@ -15,5 +15,7 @@ export const CONFIG = {
     // false: the prologue lodging pick is real (inn or hideout, shown on the Trainer Card).
     // true: after either pick, GIDGET knocks the other brochure off the table; lodging ends as the inn.
     fakeLodging: false,
+    // Offer the Half Moon Bay dinner (Pasta Moon) as a choice. false = skip straight to the city restaurant list.
+    coastsideFeast: true,
   },
 };

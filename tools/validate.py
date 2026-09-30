@@ -82,6 +82,15 @@ def check_effects(do, where):
         if "status" in e and e["status"] not in statuses: err(f"{where}: unknown status '{e['status']}'")
         if "badge" in e and e["badge"] not in badges: err(f"{where}: unknown badge '{e['badge']}'")
 
+def check_share_text(st, where):
+    """trainerCard shareText / meta.shareText: sent as-is (plus the restore link) by the Share button."""
+    if not isinstance(st, str) or not st.strip(): err(f"{where}: shareText must be a non-empty string"); return
+    text_flags(st)
+    n = len(re.sub(r"\{[^}]+\}", "X" * 10, st))
+    if n > 280: warn(f"{where}: shareText is {n} chars (keep it under ~280 so the text message stays short)")
+
+if "shareText" in story.get("meta", {}): check_share_text(story["meta"]["shareText"], "meta")
+
 # ---------- static checks ----------
 for sid, s in scenes.items():
     w = f"scene {sid}"
@@ -115,6 +124,7 @@ for sid, s in scenes.items():
         if s["choicesFrom"] not in lists: err(f"{w}: choicesFrom list '{s['choicesFrom']}' missing")
         if not s.get("choiceFlag"): err(f"{w}: choicesFrom needs choiceFlag")
         flags_set.add(s.get("choiceFlag"))
+    if t == "trainerCard" and "shareText" in s: check_share_text(s["shareText"], w)
     for c in s.get("choices") or []:
         cw = f"{w} choice '{c.get('label')}'"
         if len(c.get("label", "")) > 28: warn(f"{cw}: label longer than 28 chars")
@@ -132,6 +142,24 @@ for sid, s in scenes.items():
     if t == "photos":
         for p in s.get("photos", []):
             if not (ROOT / p["src"]).exists(): err(f"{w}: photo file missing: {p['src']}")
+
+# ---------- lists (choicesFrom items) ----------
+for lid, items_ in lists.items():
+    if not isinstance(items_, list): err(f"list {lid}: must be an array"); continue
+    ids = set()
+    for i, x in enumerate(items_):
+        lw = f"list {lid}[{i}]"
+        if not isinstance(x, dict): err(f"{lw}: must be an object with id and name"); continue
+        if not x.get("id"): err(f"{lw}: missing id")
+        elif x["id"] in ids: err(f"{lw}: duplicate id '{x['id']}'")
+        else: ids.add(x["id"])
+        if not x.get("name"): err(f"{lw}: missing name")
+        elif len(x["name"]) > 28: warn(f"{lw}: name longer than 28 chars (it is a choice label)")
+        if "lines" in x and "line" in x: err(f"{lw}: use lines or line, not both")
+        ls = x.get("lines", [x["line"]] if "line" in x else [])
+        if not isinstance(ls, list) or not all(isinstance(l, str) for l in ls):
+            err(f"{lw}: lines must be an array of strings (or line a single string)"); continue
+        for j, line in enumerate(ls): check_line(line, f"{lw} ({x.get('id')}) line {j+1}")
 
 for bid, b in battles.items():
     for i, q in enumerate(b.get("questions", [])):

@@ -26,8 +26,9 @@ that are too long.
 | `items` | `{ id: { name, desc } }` |
 | `statuses` | `{ id: { name, desc } }` (flavor conditions like PUFFED) |
 | `labels` | Display names for flag values: `{ lodging: { inn: "Seaside Inn" } }` |
-| `lists` | Editable lists. `restaurants: [{ id, name, available? }]`; set `"available": false` to hide one. |
+| `lists` | Editable lists. `restaurants: [{ id, name, lines?, line?, available? }]`; set `"available": false` to hide one. `id` and `name` are required (`name` is the choice label, max ~28 chars, and what `{L.restaurant}` shows). Optional `lines: ["..."]` (or one `line: "..."`) play after that item is picked, with the scene's `speaker`, before `next`. |
 | `card` | Trainer card rows: `{ label, value, if? }` |
+| `meta` | Game-wide text. `shareTitle` (first line of the old card-rows share message). `shareText` (optional, placeholders work): the Share message everywhere the card is opened (hub, menu, `trainerCard` scenes without their own `shareText`). It sends exactly that text plus the restore link and no card rows, so lodging and dinner stay private. Keep it under ~280 chars (validator warns). |
 | `battles` | Battle definitions (see below) |
 | `scenes` | All scenes by id |
 
@@ -37,7 +38,7 @@ that are too long.
 | --- | --- |
 | `type` | One of the types below. Omit for plain dialogue. |
 | `bg` | Background: `beach`, `road`, `sunset`, `night`, `field`, `town`, `inn`, `hideout`, `doorway`, `battle`, `title`. Omit to keep the previous one. |
-| `sprites` | `[{ "art": "gidget", "at": "left", "anim": "bounce", "flip": true, "zzz": true }]`. `at`: left, center, right, farleft, farright, or 0–1. `anim`: bounce, bob. `[]` clears; omit to keep previous. Art: `gidget`, `gidget_sleep`, `jess`, `leon`, `leon_lips`, `leon_asleep`, `lactaid`, `tennis`, `npc`. |
+| `sprites` | `[{ "art": "gidget", "at": "left", "anim": "bounce", "flip": true, "zzz": true }]`. `at`: left, center, right, farleft, farright, or 0–1. `anim`: bounce, bob. `[]` clears; omit to keep previous. Art: `gidget`, `gidget_sleep`, `jess`, `leon`, `leon_lips`, `leon_asleep`, `lactaid`, `tennis`, `npc`, `professor`. |
 | `speaker` | Name tag on the text box (supports `{partner}` etc.). |
 | `lines` | Array of text boxes. |
 | `do` | Effects after the lines: `{ "item": id }`, `{ "status": id }`, `{ "clearStatus": id }`, `{ "achievement": "Text" }`, `{ "badge": id }`, `{ "set": { flag: value } }`, `{ "sfx": name }`, `{ "wait": ms }`. |
@@ -64,6 +65,7 @@ in the story, run the validator.
 
 | Toggle | Default | Effect |
 | --- | --- | --- |
+| `coastsideFeast` | `true` | Offer the Half Moon Bay dinner (Pasta Moon) as a choice. Off: skip straight to the city restaurant list. Story reads it as `{ "cfg.coastsideFeast": true }`. |
 | `fakeLodging` | `false` | Off: the prologue lodging pick is real (`lodging` = `inn` or `hideout`, shown on the Trainer Card). On: after either pick, `pro_lodging_fake` plays ({partner} knocks the other brochure off the table) and sets `lodging` = `inn`. Nothing later depends on `lodging`. |
 
 ## Scene types
@@ -76,7 +78,7 @@ in the story, run the validator.
 | `encounter` | `text` ("A wild LEON appeared!"), `sprites` slide in with a flash | `ch1_wild` |
 | `obstacle` | Choices with `fail: [lines]` show a funny fail line and loop back; the right choice has `next`. Any choice in any scene can use `fail`. | `ch2_obstacle` |
 | `battle` | `battle` (id in `battles`), `afterBg`, `afterSprites` | `ch1_trainer` (mini NPC), `ch7_battle` |
-| `trainerCard` | Shows the card with the Share button | `pro_card` |
+| `trainerCard` | Shows the card with the Share button. Optional `shareText` (placeholders like `{name}` work): when set, Share sends exactly that text plus `\n\nRestore link: <link>` and no card rows. Without it, Share falls back to `meta.shareText`, then to the card title and every card row. Keep it under ~280 chars (validator warns). | `pro_card` |
 | `letter` | `title`, `text` (blank line = new paragraph, each fades in) or `paragraphs: []`, `msPerParagraph` | `ch7_letter` |
 | `photos` | `photos: [{ src: "assets/photos/x.jpg", caption }]`, tap to advance | `ch7_photos` |
 | `credits` | `lines` (a line starting `#` is a big heading), `speed` | `post_credits` |

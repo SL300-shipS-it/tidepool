@@ -167,7 +167,7 @@ async function play(id, s) {
     }
     case "trainerCard": {
       await sayAll(s.lines, s.speaker);
-      await showCard({ share: true });
+      await showCard({ share: true, shareText: s.shareText });
       return resolveNext(s.next);
     }
     case "minigame": {
@@ -242,7 +242,11 @@ async function runMinigame(s) {
 async function menuOrNext(s) {
   let choices = s.choices;
   if (s.choicesFrom) {
-    choices = (G.story.lists[s.choicesFrom] || []).filter((x) => x.available !== false).map((x) => ({ label: x.name, set: { [s.choiceFlag]: x.id }, next: s.next }));
+    // List items may carry `lines` (or a single `line`), shown with the scene's speaker after the pick.
+    choices = (G.story.lists[s.choicesFrom] || []).filter((x) => x.available !== false).map((x) => ({
+      label: x.name, set: { [s.choiceFlag]: x.id }, next: s.next,
+      lines: x.lines || (x.line ? [x.line] : undefined),
+    }));
   }
   if (!choices) return resolveNext(s.next);
   while (true) {
@@ -290,13 +294,19 @@ export function renderCard() {
 }
 const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 
-export function showCard({ share = false } = {}) {
+// Share text order: the trainerCard scene's shareText, else story meta.shareText, else the old
+// title + card rows. With a shareText, Share sends only that text + the restore link (no rows),
+// so lodging/dinner never leak into the message (CR-013).
+export function showCard({ share = false, shareText = null } = {}) {
+  shareText = shareText || G.story.meta?.shareText || null;
   return new Promise((resolve) => {
     const rows = renderCard();
     $("cardMsg").textContent = "";
     $("cardShare").classList.toggle("hidden", !share && !G.state.done.includes("prologue"));
     $("cardShare").onclick = async () => {
-      const text = `${G.story.meta?.shareTitle || "TRAINER CARD"}\n` + rows.map(([k, v]) => `${k}: ${v}`).join("\n") + `\n\nRestore link: ${restoreLink()}`;
+      const text = shareText
+        ? `${fmt(shareText)}\n\nRestore link: ${restoreLink()}`
+        : `${G.story.meta?.shareTitle || "TRAINER CARD"}\n` + rows.map(([k, v]) => `${k}: ${v}`).join("\n") + `\n\nRestore link: ${restoreLink()}`;
       try {
         if (navigator.share) { await navigator.share({ text }); $("cardMsg").textContent = "SENT!"; return; }
       } catch (e) { if (e.name === "AbortError") return; }
