@@ -8,7 +8,7 @@ export const CONFIG = {
   PARTNER: "GIDGET",
   TEXT_SPEED_MS: 28,       // typewriter delay per character
   SAVE_KEY: "tp_save_v1",
-  VERSION: "0.1.1",
+  VERSION: "0.1.2",
   // Deploy-time story switches. Story conditions read them as { "cfg.<name>": true/false }.
   // Change here (not in the admin panel), then validate + deploy. Missing toggles count as false.
   TOGGLES: {
