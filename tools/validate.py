@@ -139,6 +139,40 @@ for bid, b in battles.items():
             err(f"battle {bid} Q{i+1}: answer index out of range")
     if b.get("award") and b["award"] not in badges: err(f"battle {bid}: unknown award badge")
     if b.get("foeSprite") and b["foeSprite"] not in SPRITES: err(f"battle {bid}: unknown foeSprite")
+    # Line arrays. distracted/nap/wake are Gidget's harmless stand-ins for hurt/faint/revive (CR-010).
+    for key in ("intro", "revive", "finisher", "win", "distracted", "nap", "wake"):
+        if key not in b: continue
+        v = b[key]
+        if not isinstance(v, list) or not all(isinstance(x, str) for x in v):
+            err(f"battle {bid}: '{key}' must be an array of strings"); continue
+        for i, line in enumerate(v): check_line(line, f"battle {bid} {key} line {i+1}")
+    for i, q in enumerate(b.get("questions", [])):
+        for key in ("q", "hitText", "missText"):
+            if isinstance(q.get(key), str): check_line(q[key], f"battle {bid} Q{i+1} {key}")
+    for i, m in enumerate(b.get("foeMoves", [])):
+        if isinstance(m.get("text"), str) and m["text"]: check_line(m["text"], f"battle {bid} foeMove {i+1} text")
+
+# ---------- Gidget never faints (CR-010) ----------
+# Gidget was Jess's real cat: no faint/hurt/KO wording may apply to her anywhere. Checks every string in
+# the story that mentions her ({partner} or GIDGET), plus every battle's revive/nap/wake/distracted lines
+# (those are always about her). Lines about {name} or LEON alone may still take silly hits.
+GIDGET_RE = re.compile(r"\{partner\}|gidget", re.I)
+HARM_RE = re.compile(r"\b(?:faint(?:s|ed|ing)?|hurts?|hurting|injur(?:ed|y|ies)|died|dies|dead|ko(?:'?d)?)\b|\bk\.o\.?", re.I)
+GIDGET_KEYS = ("revive", "nap", "wake", "distracted")
+
+def gidget_harm(node, path, always=False):
+    if isinstance(node, str):
+        m = HARM_RE.search(node)
+        if m and (always or GIDGET_RE.search(node)):
+            err(f"{path}: '{m.group(0)}' wording tied to Gidget (she only gets distracted or naps): {node[:60]}")
+    elif isinstance(node, list):
+        for i, x in enumerate(node): gidget_harm(x, f"{path}[{i}]", always)
+    elif isinstance(node, dict):
+        for k, x in node.items():
+            gidget_harm(x, f"{path}.{k}", always or (path.startswith("battles.") and path.count(".") == 1 and k in GIDGET_KEYS))
+
+for top, val in story.items():
+    gidget_harm(val, top)
 
 for bid, b in badges.items():
     if b.get("icon") not in BADGE_ICONS: err(f"badge {bid}: unknown icon '{b.get('icon')}'")

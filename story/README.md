@@ -140,7 +140,10 @@ edit `index.html` or `styles.css`: create any DOM they need inside `container`.
   "intro": ["..."],
   "questions": [{ "q": "Question?", "options": ["A", "B", "C"], "answer": 0, "move": "MOVE NAME", "hitText": "optional", "missText": "optional" }],
   "foeMoves": [{ "name": "DAD JOKE", "text": "..." }],
+  "distracted": ["{partner} got distracted by a bug!", "{partner} started grooming mid-battle."],
+  "nap": ["{partner} curled up for a nap..."],
   "revive": ["All letters received at 11:59 PM!", "{name} was revived!"],
+  "wake": ["{partner} woke up and stretched! Ready to go!"],
   "finisher": ["{partner} used TWO YEARS!", "It's super effective!"],
   "win": ["..."],
   "award": "twoyear"
@@ -148,8 +151,23 @@ edit `index.html` or `styles.css`: create any DOM they need inside `container`.
 ```
 
 `answer` is the index of the right option, counting from 0. A right answer is Gidget's attack. A wrong
-answer is a random foe move. The player can't lose: `revive` fires once when HP gets low, and HP never
-reaches 0. If the foe still has HP after the last question, `finisher` knocks it out.
+answer is a random foe move. The player can't lose: HP never reaches 0. If the foe still has HP after the
+last question, `finisher` knocks it out.
+
+**Gidget never gets hurt or faints.** Gidget was Jess's real cat; she stays playful and safe:
+
+| Moment | What plays | Field (all optional arrays of lines) |
+| --- | --- | --- |
+| Wrong answer | Foe move name + its `text` (only {name} blinks), then ONE random line while {partner} turns away and hops, then `missText` | `distracted`. Default pool: "{partner} got distracted by a bug!", "{partner} started grooming mid-battle.", "{partner} is staring at absolutely nothing." |
+| HP runs low (once per battle) | {partner} switches to the sleeping sprite with a zzz: all `nap` lines, then all `revive` lines, then she wakes up, HP refills, all `wake` lines | `nap` (default "{partner} curled up for a nap..."), `revive` (default none), `wake` (default "{partner} woke up and stretched! Ready to go!") |
+
+Omitted or empty arrays use the defaults. The nap/wake happens in every battle whose HP gets low, even
+without `revive`. The HP bar stays the team's ("{name} & {partner}").
+
+Wording rule (the validator errors on it): no text anywhere in the story that mentions {partner} or
+GIDGET, and no `distracted`/`nap`/`revive`/`wake` line, may say faint/fainted, KO/K.O./KO'd,
+hurt, injured, died or dead. Silly hits on {name} or LEON are fine (e.g. foe move `text`
+"Somehow that hurt YOU.").
 
 ## Adding a chapter's real script
 

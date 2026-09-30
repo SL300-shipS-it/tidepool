@@ -18,6 +18,16 @@ function setHp(el, name, hp, max, showNum) {
   if (num && showNum) num.textContent = `${Math.max(1, Math.ceil(hp))}/${max}`;
 }
 
+// Gidget never gets hurt or faints (CR-010): a wrong answer distracts her, low HP makes her nap.
+const DEFAULT_DISTRACTED = [
+  "{partner} got distracted by a bug!",
+  "{partner} started grooming mid-battle.",
+  "{partner} is staring at absolutely nothing.",
+];
+const DEFAULT_NAP = ["{partner} curled up for a nap..."];
+const DEFAULT_WAKE = ["{partner} woke up and stretched! Ready to go!"];
+const pool = (lines, dflt) => (Array.isArray(lines) && lines.length ? lines : dflt);
+
 export async function runBattle(def) {
   const max = def.hp || 100;
   let me = max, foe = max, revived = false;
@@ -25,6 +35,7 @@ export async function runBattle(def) {
   const perHit = Math.ceil(max / Math.max(1, qs.length));
   const dmg = def.damage || 30;
   let foeHurt = 0, meHurt = 0;
+  let cat = "idle"; // Gidget's mood: "idle" | "distracted" (turns away, hops) | "nap" (asleep, zzz)
 
   stage.bg = def.bg || "battle";
   stage.sprites = [];
@@ -35,10 +46,21 @@ export async function runBattle(def) {
     const fx = Math.round(W * 0.73 - fg.w), fy = Math.round(H * 0.34 - fg.h * 2 + 4);
     if (!(foeHurt && ((t / 80) | 0) % 2)) drawGrid(ctx, foeG, fx, fy, 2);
     const jx = Math.round(W * 0.08), jy = Math.round(H * 0.84 - 32 + 4);
-    if (!(meHurt && ((t / 80) | 0) % 2)) {
-      drawGrid(ctx, SPRITES.jess, jx, jy, 2, true);
+    // Only Jess blinks on a hit; Gidget is never shown as hurt.
+    if (!(meHurt && ((t / 80) | 0) % 2)) drawGrid(ctx, SPRITES.jess, jx, jy, 2, true);
+    const gidG = SPRITES.gidget, napG = SPRITES.gidget_sleep || gidG;
+    const g = cat === "nap" ? napG : gidG;
+    const gx = jx + 32, gy = jy + (gridSize(gidG).h - gridSize(g).h) * 2; // bottom-aligned
+    if (cat === "nap") {
+      drawGrid(ctx, g, gx, gy, 2, true);
+      ctx.fillStyle = "#303838"; ctx.font = "8px PressStart";
+      ctx.fillText("z".repeat(1 + (((t / 500) | 0) % 3)), gx + gridSize(g).w * 2 - 4, gy - 2);
+    } else if (cat === "distracted") {
+      const hop = Math.round(Math.abs(Math.sin(t / 110)) * 4);
+      drawGrid(ctx, g, gx, gy - hop, 2, false); // turned away from the foe
+    } else {
       const gb = Math.round(Math.abs(Math.sin(t / 260)) * 2);
-      drawGrid(ctx, SPRITES.gidget, jx + 32, jy - gb, 2, true);
+      drawGrid(ctx, g, gx, gy - gb, 2, true);
     }
   };
   const hpFoe = $("hpFoe"), hpMe = $("hpMe");
@@ -64,12 +86,21 @@ export async function runBattle(def) {
       me = Math.max(1, me - dmg); setHp(hpMe, meName, me, max, true);
       await sleep(400);
       if (mv.text) await say(mv.text);
+      const dl = pool(def.distracted, DEFAULT_DISTRACTED);
+      cat = "distracted";
+      await say(dl[Math.floor(Math.random() * dl.length)]);
+      cat = "idle";
       if (q.missText) await say(q.missText);
-      if (!revived && me <= dmg && def.revive) {
+      // "Out of HP": Gidget naps, the revive lines play, she wakes up and HP refills. Once per battle.
+      if (!revived && me <= dmg) {
         revived = true;
+        cat = "nap";
+        for (const l of pool(def.nap, DEFAULT_NAP)) await say(l);
         sfx("revive");
-        for (const l of def.revive) await say(l);
+        for (const l of def.revive || []) await say(l);
+        cat = "idle";
         me = max; setHp(hpMe, meName, me, max, true);
+        for (const l of pool(def.wake, DEFAULT_WAKE)) await say(l);
       }
     }
   }
