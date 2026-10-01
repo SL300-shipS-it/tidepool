@@ -154,6 +154,28 @@ h2 { font-size: calc(var(--fs) * 1.15); }
 #choices li.sel { background: var(--cream); border-color: var(--coral); }
 #choices.q li { font-size: calc(var(--fs) * .85); }
 
+/* Partner carousel (CR-045). The ring is drawn on the stage; #choices.ring keeps the picks in the DOM
+   for the playtest but off screen. */
+#choices.ring {
+  position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); pointer-events: none; opacity: 0;
+}
+#stageWrap.ringon { touch-action: none; } /* horizontal swipes reach us instead of panning */
+#ring { margin-top: 4px; }
+#ringName { text-align: center; min-height: 1.7em; color: var(--coral); }
+#ringRow { display: flex; align-items: stretch; gap: 10px; margin-top: 6px; padding: 0 3px; }
+#ringChoose { flex: 1 1 auto; width: auto; min-width: 0; }
+.ringbtn {
+  flex: 0 0 56px; min-height: 48px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--paper); color: var(--ink); border: 3px solid var(--slate2); border-radius: 6px;
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+}
+.ringbtn:active { background: var(--cream); border-color: var(--coral); }
+.tri { display: block; width: 0; height: 0; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+.tri.l { border-right: 12px solid var(--coral); margin-right: 3px; }
+.tri.r { border-left: 12px solid var(--coral); margin-left: 3px; }
+
 #inputRow { display: flex; gap: 8px; margin-top: 10px; }
 #nameInput {
   flex: 1; min-width: 0; min-height: 48px; padding: 8px; border: 3px solid var(--slate2); background: var(--paper); color: var(--ink);

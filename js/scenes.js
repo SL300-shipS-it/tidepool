@@ -1,7 +1,7 @@
 // Scene runner, chapter flow (hub), trainer card, letter, photos, credits.
 import { G, $, sleep, fmt, test, label, saveState, restoreLink, on } from "./core.js";
 import { CONFIG } from "../config.js";
-import { show, transition, setScene, stage, say, sayAll, setSpeaker, choose, askText, popup, flash } from "./ui.js";
+import { show, transition, setScene, stage, say, sayAll, setSpeaker, choose, carousel, endRing, askText, popup, flash } from "./ui.js";
 import { sfx } from "./audio.js";
 import { runBattle } from "./battle.js";
 import { grantKey, awardBadgeAnim, renderCase, scan, promptWord, badgeVisible } from "./badges.js";
@@ -342,10 +342,18 @@ async function menuOrNext(s) {
     }));
   }
   if (!choices) return resolveNext(s.next);
+  let ringFront = null;
   while (true) {
-    const visible = choices.filter((c) => test(c.if));
-    const i = await choose(visible.map((c) => c.label), { prompt: s.prompt || lastLine(s) });
-    const c = visible[i];
+    let c = null;
+    if (s.carousel && !s.choicesFrom) {
+      const r = await pickFromRing(s, choices, ringFront);
+      if (r) { c = r.choice; ringFront = r.slot; }
+    }
+    if (!c) {
+      const visible = choices.filter((c) => test(c.if));
+      const i = await choose(visible.map((c) => c.label), { prompt: s.prompt || lastLine(s) });
+      c = visible[i];
+    }
     if (c.fail) {
       // Wrong answer: show the fail lines, then loop back to the menu.
       sfx("fail");
@@ -357,6 +365,32 @@ async function menuOrNext(s) {
     await doEffects(c.do);
     if (c.lines) await sayAll(c.lines, c.speaker || s.speaker);
     return resolveNext(c.next || s.next);
+  }
+}
+// CR-045: `carousel: true` shows the choices as a ring of `art` sprites. Choices sharing an `art` share
+// a slot (the first one whose `if` passes is live); a slot with no live choice stays as an empty spot.
+// Returns { choice, slot }, or null to use the plain list (no art on a choice, missing sprite, error).
+function ringSlots(choices) {
+  const slots = [], byArt = {};
+  for (const c of choices) {
+    if (!c || !c.art) return null;
+    let sl = byArt[c.art];
+    if (!sl) { sl = byArt[c.art] = { art: c.art, label: "", silhouette: false, empty: true, choice: null }; slots.push(sl); }
+    if (sl.empty && test(c.if)) Object.assign(sl, { choice: c, label: c.label, silhouette: !!c.silhouette, empty: false });
+  }
+  return slots.length >= 2 && slots.some((sl) => !sl.empty) ? slots : null;
+}
+async function pickFromRing(s, choices, start) {
+  try {
+    const slots = ringSlots(choices);
+    if (!slots) return null;
+    const k = await carousel(slots.map(({ art, label, silhouette, empty }) => ({ art, label, silhouette, empty })),
+      { prompt: s.prompt || lastLine(s), start });
+    return slots[k] && slots[k].choice ? { choice: slots[k].choice, slot: k } : null;
+  } catch (e) {
+    console.warn("carousel unavailable; plain menu", e);
+    endRing();
+    return null;
   }
 }
 function lastLine(s) { return s.lines && s.lines.length ? s.lines[s.lines.length - 1] : ""; }

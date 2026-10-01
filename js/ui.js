@@ -2,10 +2,11 @@
 import { G, $, sleep, fmt } from "./core.js";
 import { CONFIG } from "../config.js";
 import { sfx } from "./audio.js";
-import { drawBg, drawGrid, gridSize, SPRITES, renderBadge, renderSprite } from "./art.js";
+import { drawBg, drawGrid, gridSize, SPRITES, PAL, renderBadge, renderSprite } from "./art.js";
 
 // ---------- screens ----------
 export function show(id) {
+  if (id !== "play") endRing();
   document.querySelectorAll(".screen:not(.overlay)").forEach((s) => s.classList.toggle("on", s.id === id));
   if (id === "play") resizeStage();
 }
@@ -33,6 +34,7 @@ export function resizeStage() {
   $("stageWrap").style.width = stage.W * scale + "px";
 }
 
+const HOPIN_MS = 900;
 const AT = { left: 0.25, center: 0.5, right: 0.75, farleft: 0.15, farright: 0.85 };
 
 function drawStage(t) {
@@ -53,6 +55,15 @@ function drawStage(t) {
     let y = floor - h * s + (sp.dy || 0);
     if (sp.anim === "bounce") y -= Math.round(Math.abs(Math.sin(t / 260)) * 3);
     if (sp.anim === "bob") y -= ((t / 500) | 0) % 2;
+    if (sp.anim === "hopin") {
+      // CR-043: hops in from off-screen left in 3 small hops (~900 ms), then sits still at `at`.
+      if (sp._t0 == null) sp._t0 = t;
+      const p = Math.min(1, Math.max(0, (t - sp._t0) / HOPIN_MS));
+      if (p < 1) {
+        x = Math.round(x - (x + w * s) * (1 - p));
+        y -= Math.round(Math.abs(Math.sin(p * 3 * Math.PI)) * 6);
+      }
+    }
     if (sp.enter != null) { x += sp.enter; sp.enter = Math.max(0, sp.enter - 3); if (!sp.enter) sp.enter = null; }
     drawGrid(ctx, grid, x, y, s, sp.flip);
     if (sp.zzz) { ctx.fillStyle = "#303838"; ctx.font = "8px PressStart"; ctx.fillText("z".repeat(1 + (((t / 500) | 0) % 3)), x + w * s - 4, y - 2); }
@@ -63,6 +74,7 @@ requestAnimationFrame(loop);
 window.addEventListener("resize", () => { if ($("play").classList.contains("on")) resizeStage(); });
 
 export function setScene(scene) {
+  endRing();
   if (scene.bg !== undefined) stage.bg = scene.bg;
   if (scene.sprites !== undefined) stage.sprites = scene.sprites.map((s) => ({ ...s }));
 }
@@ -150,6 +162,201 @@ export function choose(options, { prompt = null, cls = "" } = {}) {
     });
     ul.classList.remove("hidden");
   });
+}
+
+// ---------- partner carousel (CR-045) ----------
+// slots: [{ art, label, silhouette, empty }] in ring order. Resolves with the chosen slot index.
+// The ring is drawn on the stage canvas; the text box shows the prompt, the front slot's name, the
+// arrows and CHOOSE. #choices stays in the DOM (visually hidden, class "ring") with one <li> per
+// non-empty slot, so the playtest's choice driver works unchanged.
+// Throws synchronously-before-showing-anything if a slot's art is missing (caller falls back to
+// choose()). If drawing fails later, it degrades in place to the plain list.
+let ringNow = null;  // active ring: { slots, n, from, to, t0, dur, front, done }
+const RING_MS = 280;
+const SILHOUETTE = "#283038";
+
+export function endRing() {
+  const r = ringNow;
+  if (!r) return;
+  ringNow = null;
+  r.done = true;
+  if (stage.custom === r.draw) stage.custom = null;
+  $("ring").classList.add("hidden");
+  $("stageWrap").classList.remove("ringon");
+  const ul = $("choices");
+  // A ring list left behind (a new run took over mid-pick) must not turn into a visible menu.
+  if (ul.classList.contains("ring")) { ul.classList.add("hidden"); ul.innerHTML = ""; ul.classList.remove("ring"); }
+}
+
+// Pixel-exact grid draw at any (fractional) scale: each cell snaps to whole canvas pixels, so the
+// art stays crisp mid-turn. `fill` paints every opaque cell one color (the silhouette).
+function drawPix(ctx, grid, x, y, s, fill) {
+  for (let r = 0; r < grid.length; r++) {
+    const row = grid[r];
+    const y0 = Math.round(y + r * s), y1 = Math.round(y + (r + 1) * s);
+    if (y1 <= y0) continue;
+    for (let c = 0; c < row.length; c++) {
+      const ch = row[c];
+      if (ch === ".") continue;
+      const x0 = Math.round(x + c * s), x1 = Math.round(x + (c + 1) * s);
+      if (x1 <= x0) continue;
+      ctx.fillStyle = fill || PAL[ch] || "#ff00ff";
+      ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+    }
+  }
+}
+function pixEllipse(ctx, cx, cy, rx, ry, color) {
+  ctx.fillStyle = color;
+  for (let dy = -ry; dy <= ry; dy++) {
+    const hw = Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy / (ry + 0.5)) ** 2)));
+    if (hw > 0) ctx.fillRect(Math.round(cx - hw), Math.round(cy + dy), hw * 2, 1);
+  }
+}
+const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const mod = (a, n) => ((a % n) + n) % n;
+
+function ringPos(r, t) {
+  if (!r.dur || t >= r.t0 + r.dur) return r.to;
+  return r.from + (r.to - r.from) * ease(Math.max(0, (t - r.t0) / r.dur));
+}
+
+function ringDraw(r, ctx, t) {
+  const W = stage.W, H = stage.H, n = r.n;
+  const pos = ringPos(r, t);
+  const moving = pos !== r.to;
+  // Dim the room, then a spotlight cone + pool on the front spot.
+  ctx.fillStyle = "rgba(32,32,40,0.32)";
+  ctx.fillRect(0, 0, W, H);
+  const cx = Math.round(W / 2), cy = Math.round(H * 0.72);
+  const rx = Math.round(W * 0.3), ry = Math.max(6, Math.round(H * 0.12));
+  const frontY = cy + ry;
+  ctx.fillStyle = "rgba(248,248,232,0.16)";
+  for (let y = 0; y < frontY; y++) {
+    const hw = Math.round(6 + (y / frontY) * 18);
+    ctx.fillRect(cx - hw, y, hw * 2, 1);
+  }
+  pixEllipse(ctx, cx, frontY, 24, 5, "rgba(248,248,232,0.5)");
+  const items = r.slots.map((sl, i) => {
+    const a = ((i - pos) * 2 * Math.PI) / n;
+    return { sl, i, a, depth: Math.cos(a) };
+  }).sort((p, q) => p.depth - q.depth);
+  for (const it of items) {
+    const fx = cx + Math.sin(it.a) * rx;
+    const fy = cy + it.depth * ry;
+    const sc = 1 + Math.min(1, Math.max(0, (it.depth + 0.5) / 1.5));  // back 1x .. front 2x
+    const grid = !it.sl.empty && SPRITES[it.sl.art];
+    if (!grid) { pixEllipse(ctx, fx, fy, Math.round(7 * sc), Math.max(1, Math.round(1.5 * sc)), "rgba(32,32,40,0.18)"); continue; }
+    const { w, h } = gridSize(grid);
+    pixEllipse(ctx, fx, fy, Math.round(w * sc * 0.4), Math.max(1, Math.round(1.5 * sc)), "rgba(32,32,40,0.35)");
+    const front = !moving && it.i === r.front;
+    const bob = front && !it.sl.silhouette ? ((t / 500) | 0) % 2 : 0;
+    drawPix(ctx, grid, fx - (w * sc) / 2, fy - h * sc - bob, sc, it.sl.silhouette ? SILHOUETTE : null);
+  }
+}
+
+export function carousel(slots, { prompt = null, start = null } = {}) {
+  endRing();
+  bindSwipe();
+  const n = slots.length;
+  if (n < 2) throw new Error("carousel needs at least 2 slots");
+  for (const sl of slots) if (!sl.empty && !SPRITES[sl.art]) throw new Error("carousel: missing art " + sl.art);
+  const firstFull = slots.findIndex((sl) => !sl.empty);
+  if (firstFull < 0) throw new Error("carousel: no choosable slot");
+  const front0 = start != null && slots[start] && !slots[start].empty ? start : firstFull;
+  const r = { slots, n, from: front0, to: front0, t0: 0, dur: 0, front: front0, done: false };
+  r.draw = (ctx, t) => {
+    try { ringDraw(r, ctx, t); }
+    catch (e) { console.warn("carousel draw failed; plain list instead", e); degrade(); }
+  };
+  // Test-draw once off-screen: a throw here means "use the plain menu" before anything is shown.
+  const probe = document.createElement("canvas");
+  probe.width = Math.max(1, stage.W); probe.height = Math.max(1, stage.H);
+  ringDraw(r, probe.getContext("2d"), 0);
+
+  const ul = $("choices"), box = $("ring"), nameEl = $("ringName"), chooseBtn = $("ringChoose");
+  const labelOf = (sl) => (sl.silhouette ? "???" : fmt(sl.label || ""));
+  let resolveFn;
+  const done = new Promise((res) => (resolveFn = res));
+
+  function refresh() {
+    const sl = slots[r.front];
+    nameEl.textContent = sl.empty ? "" : labelOf(sl);
+    chooseBtn.disabled = !!sl.empty;
+  }
+  function turn(dir) {
+    if (r.done) return;
+    const now = performance.now();
+    r.from = ringPos(r, now);
+    r.to = r.to + dir;
+    r.t0 = now;
+    r.dur = FAST ? 0 : RING_MS;
+    r.front = mod(r.to, n);
+    sfx("move");
+    refresh();
+  }
+  async function finish(i) {
+    if (r.done || !slots[i] || slots[i].empty) return;
+    r.done = true;
+    sfx("select");
+    await sleep(160);
+    ul.classList.add("hidden"); ul.innerHTML = "";
+    if (ringNow === r) endRing();
+    resolveFn(i);
+  }
+  function degrade() {
+    // Drawing broke: drop the ring, show the hidden list as the normal menu.
+    if (stage.custom === r.draw) stage.custom = null;
+    box.classList.add("hidden");
+    $("stageWrap").classList.remove("ringon");
+    ul.classList.remove("ring");
+  }
+  r.turn = turn;
+  ringNow = r;
+  stage.custom = r.draw;
+  $("stageWrap").classList.add("ringon");
+
+  (async () => {
+    if (prompt) await say(prompt, { wait: false });
+    if (r.done || ringNow !== r) return;
+    $("more").classList.add("hidden");
+    ul.className = "ring";
+    ul.innerHTML = "";
+    slots.forEach((sl, i) => {
+      if (sl.empty) return;
+      const li = document.createElement("li");
+      li.textContent = labelOf(sl);
+      li.addEventListener("click", () => { li.classList.add("sel"); finish(i); });
+      ul.appendChild(li);
+    });
+    ul.classList.remove("hidden");
+    $("ringLeft").onclick = () => turn(-1);
+    $("ringRight").onclick = () => turn(1);
+    chooseBtn.onclick = () => finish(r.front);
+    refresh();
+    if (stage.custom === r.draw) box.classList.remove("hidden");
+  })();
+  return done;
+}
+
+// Swipe on the stage turns the ring (horizontal drag > 30 px). Bound once; idle when no ring is up.
+let swipeX = null, swipeLast = null;
+function swipeEnd() {
+  if (swipeX == null) return;
+  const dx = swipeLast - swipeX;
+  swipeX = null;
+  const r = ringNow;
+  if (!r || r.done || stage.custom !== r.draw) return;
+  if (Math.abs(dx) > 30) r.turn(dx > 0 ? -1 : 1);  // drag right: the left one comes to the front
+}
+let ringBound = false;
+function bindSwipe() {
+  if (ringBound) return;
+  ringBound = true;
+  const w = $("stageWrap");
+  w.addEventListener("pointerdown", (e) => { if (ringNow) { swipeX = swipeLast = e.clientX; } });
+  w.addEventListener("pointermove", (e) => { if (swipeX != null) swipeLast = e.clientX; });
+  w.addEventListener("pointerup", (e) => { if (swipeX != null) { swipeLast = e.clientX; swipeEnd(); } });
+  w.addEventListener("pointercancel", swipeEnd);
 }
 
 export function askText({ max = 10, placeholder = "" } = {}) {

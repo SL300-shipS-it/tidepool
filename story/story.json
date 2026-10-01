@@ -169,11 +169,12 @@
     "pro_starter_pick": {
       "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "prompt": "Which partner will you choose?",
+      "carousel": true,
       "choices": [
-        { "label": "LACTAID", "next": "pro_starter_lactaid", "if": { "triedLactaid": "!yes" } },
-        { "label": "TENNIS BALLS", "next": "pro_starter_tennis", "if": { "triedTennis": "!yes" } },
-        { "label": "???", "next": "pro_starter_mystery_locked", "if": { "bothTried": "!yes" } },
-        { "label": "???", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
+        { "label": "LACTAID", "art": "lactaid", "next": "pro_starter_lactaid", "if": { "triedLactaid": "!yes" } },
+        { "label": "TENNIS BALLS", "art": "tennis", "next": "pro_starter_tennis", "if": { "triedTennis": "!yes" } },
+        { "label": "???", "art": "gidget_plain", "silhouette": true, "next": "pro_starter_mystery_locked", "if": { "bothTried": "!yes" } },
+        { "label": "???", "art": "gidget_plain", "silhouette": true, "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
       ]
     },
     "pro_starter_lactaid": {
@@ -209,8 +210,11 @@
     "pro_starter_pick_last": {
       "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "prompt": "Hm? Someone's peeking out from under the table...",
+      "carousel": true,
       "choices": [
-        { "label": "???", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
+        { "label": "LACTAID", "art": "lactaid", "next": "pro_starter_lactaid", "if": { "triedLactaid": "!yes" } },
+        { "label": "TENNIS BALLS", "art": "tennis", "next": "pro_starter_tennis", "if": { "triedTennis": "!yes" } },
+        { "label": "???", "art": "gidget_plain", "silhouette": true, "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
       ]
     },
     "pro_starter_mystery_locked": {
@@ -305,7 +309,13 @@
     "pro_sunflower_yes": {
       "bg": "field",
       "speaker": "DR. JOSEPHSON",
-      "lines": ["Wonderful! You may come home with an armful.", "GIDGET is practicing her sitting-in-flowers pose."],
+      "lines": ["Wonderful! You may come home with an armful."],
+      "next": "pro_sunflower_yes_pose"
+    },
+    "pro_sunflower_yes_pose": {
+      "sprites": [{ "art": "sunflower_patch", "at": "center" }, { "art": "gidget", "at": "center", "anim": "hopin", "dy": -4 }],
+      "speaker": "DR. JOSEPHSON",
+      "lines": ["GIDGET is practicing her sitting-in-flowers pose."],
       "next": "pro_dinner"
     },
     "pro_sunflower_no": {

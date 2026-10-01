@@ -38,7 +38,7 @@ that are too long.
 | --- | --- |
 | `type` | One of the types below. Omit for plain dialogue. |
 | `bg` | Background: `beach`, `road`, `sunset`, `night`, `field`, `town`, `inn`, `hideout`, `doorway`, `battle`, `title`. Omit to keep the previous one. |
-| `sprites` | `[{ "art": "gidget", "at": "left", "anim": "bounce", "flip": true, "zzz": true }]`. `at`: left, center, right, farleft, farright, or 0–1. `anim`: bounce, bob. `[]` clears; omit to keep previous. Art: `gidget`, `gidget_sleep`, `jess`, `leon`, `leon_lips`, `leon_asleep`, `lactaid`, `tennis`, `npc`, `professor`. |
+| `sprites` | `[{ "art": "gidget", "at": "left", "anim": "bounce", "flip": true, "zzz": true }]`. `at`: left, center, right, farleft, farright, or 0–1. `anim`: bounce, bob, hopin (hops in from off-screen left in 3 small hops over ~0.9 s, then sits still at `at`; CR-043). `dy`: pixels to shift down (negative = up). Sprites draw in list order, so put a backdrop sprite (e.g. `sunflower_patch`) first. `[]` clears; omit to keep previous. Art: `gidget`, `gidget_sleep`, `jess`, `leon`, `leon_lips`, `leon_asleep`, `lactaid`, `tennis`, `npc`, `professor`. |
 | `speaker` | Name tag on the text box (supports `{partner}` etc.). |
 | `lines` | Array of text boxes. |
 | `do` | Effects after the lines: `{ "item": id }` (add `"quiet": true` to add it to the Bag silently, see below), `{ "status": id }`, `{ "clearStatus": id }`, `{ "achievement": "Text" }`, `{ "badge": id }`, `{ "set": { flag: value } }`, `{ "sfx": name }`, `{ "wait": ms }`. |
@@ -185,7 +185,7 @@ in the story, run the validator.
 | Type | Extra fields | Example scene |
 | --- | --- | --- |
 | dialogue (default) | `lines`, optional `choices` | `pro_start` |
-| `choice` | `choices: [{ label, set?, next?, lines?, do?, if? }]`, `prompt?`. Or `choicesFrom: "restaurants"` + `choiceFlag` to build choices from a list. | `pro_lodging`, `pro_restaurant`, `ch2_breakfast` |
+| `choice` | `choices: [{ label, set?, next?, lines?, do?, if?, art?, silhouette? }]`, `prompt?`, `carousel?`. Or `choicesFrom: "restaurants"` + `choiceFlag` to build choices from a list. See "Partner carousel" for `carousel`. | `pro_lodging`, `pro_restaurant`, `ch2_breakfast`, `pro_starter_pick` |
 | `input` | `flag` (`"name"` = trainer name), `prompt`, `placeholder`, `max` | `pro_name` |
 | `encounter` | `text` ("A wild LEON appeared!"), `sprites` slide in with a flash | `ch1_wild` |
 | `obstacle` | Choices with `fail: [lines]` show a funny fail line and loop back; the right choice has `next`. Any choice in any scene can use `fail`. | `ch2_obstacle` |
@@ -195,6 +195,32 @@ in the story, run the validator.
 | `photos` | `photos: [{ src: "assets/photos/x.jpg", caption }]`, tap to advance | `ch7_photos` |
 | `credits` | `lines` (a line starting `#` is a big heading), `speed` | `post_credits` |
 | `minigame` | `game` (id in `js/minigames/index.js`), `params` (passed to the game), `win`, `lose`, `next`, optional `retry`, `retryPrompt`, `scoreFlag`. See below. | `ex_minigame` (admin-only example) |
+
+## Partner carousel (CR-045)
+
+A choice scene with `"carousel": true` shows its choices as a ring of sprites on the stage instead of a
+list: left/right arrows (and swiping on the stage) turn the ring, the front one is spotlit, and the text
+box shows the prompt, the front one's name and CHOOSE.
+
+- Every choice needs `"art": "<sprite id>"` (validator). Choices with the same `art` share one spot in
+  the ring; the first one whose `if` passes is the live one. That is how `pro_starter_pick` has two `???`
+  choices (before/after both are tried) in one spot.
+- A spot with no live choice stays in the ring as an empty spot (a faint shadow; CHOOSE is disabled
+  there). So keep tried partners in the list with an `if` that is now false, e.g.
+  `{ "triedLactaid": "!yes" }`, instead of removing them.
+- `"silhouette": true` draws the art as a flat dark shape and the name as `???` whatever the label says.
+- The ring opens on the first live spot (`pro_starter_pick_last` opens on the silhouette).
+- Routing is unchanged: `next`, `set`, `do`, `lines`, `fail` work exactly as in a list.
+- Fallback: if a sprite is missing or drawing fails, the plain list menu shows instead. `choicesFrom`
+  can't be a carousel (validator).
+
+```json
+"carousel": true,
+"choices": [
+  { "label": "LACTAID", "art": "lactaid", "next": "pro_starter_lactaid", "if": { "triedLactaid": "!yes" } },
+  { "label": "???", "art": "gidget_plain", "silhouette": true, "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
+]
+```
 
 ## Minigames
 

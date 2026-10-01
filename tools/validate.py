@@ -78,6 +78,7 @@ TOGGLES = {k: v == "true" for k, v in re.findall(r"^\s*(\w+):\s*(true|false)", _
 
 _sprites_src = art_js.split("export const SPRITES")[1].split("\n};")[0]  # only the SPRITES table
 SPRITES = set(re.findall(r"^\s{2}(\w+): (?:withTail\(\[|\[)", _sprites_src, re.M))
+ANIMS = {"bounce", "bob", "hopin"}  # js/ui.js drawStage
 BADGE_ICONS = set(re.findall(r"^\s{2}(\w+): \[", art_js.split("BADGE_ICONS = {")[1], re.M)) | {"canele"}
 BGS = set(re.findall(r'case "(\w+)"', art_js.split("export function drawBg")[1]))
 TYPES = {"dialogue", "choice", "input", "encounter", "obstacle", "battle", "trainerCard", "letter", "photos", "credits", "minigame"}
@@ -185,6 +186,21 @@ for sid, s in scenes.items():
     for key in ("sprites", "afterSprites"):
         for sp in s.get(key) or []:
             if sp.get("art") not in SPRITES: err(f"{w}: unknown sprite '{sp.get('art')}' (known: {', '.join(sorted(SPRITES))})")
+            if "anim" in sp and sp["anim"] not in ANIMS: err(f"{w}: unknown anim '{sp['anim']}' (known: {', '.join(sorted(ANIMS))})")
+    # CR-045: carousel choice scenes (ring of `art` sprites; `silhouette` hides the art's colors).
+    if "carousel" in s:
+        if not isinstance(s["carousel"], bool): err(f"{w}: carousel must be true or false")
+        elif s["carousel"]:
+            if s.get("choicesFrom"): err(f"{w}: carousel doesn't work with choicesFrom (use choices with art)")
+            elif not s.get("choices"): err(f"{w}: carousel needs choices")
+            else:
+                if any(not c.get("art") for c in s["choices"]): err(f"{w}: carousel: every choice needs art (else the plain menu shows)")
+                if len({c.get("art") for c in s["choices"]}) < 2: err(f"{w}: carousel needs at least 2 different art slots")
+    for c in s.get("choices") or []:
+        cw = f"{w} choice '{c.get('label')}'"
+        if "art" in c and c["art"] not in SPRITES: err(f"{cw}: unknown art '{c['art']}' (known: {', '.join(sorted(SPRITES))})")
+        if "silhouette" in c and not isinstance(c["silhouette"], bool): err(f"{cw}: silhouette must be true or false")
+        if ("art" in c or "silhouette" in c) and not s.get("carousel"): warn(f"{cw}: art/silhouette only show with carousel: true")
     read_cond(s.get("if"), w)
     for i, line in enumerate(s.get("lines", [])): check_line(line, f"{w} line {i+1}")
     if s.get("prompt"): check_line(s["prompt"], f"{w} prompt")
