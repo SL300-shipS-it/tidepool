@@ -16,7 +16,7 @@
 //     B #a8704a Leon skin (warm medium brown)   C #7a4c30 Leon skin shadow
 //     S #dce4ec silver (chain, hoop, bracelet)
 //     G #6c7c64 dark gray-green suede           H #4c5846 suede shadow
-//     D #9a7a52 brown canvas                    E #6a5034 canvas shadow
+//     D #3c3e48 black pants                     E #2a2b33 black pants shadow
 //     L #e4eef8 pale blue-white linen/satin     M #b4c8dc skirt shadow
 //     T #c8a070 brown paper (kraft)             U #94704a kraft shadow
 //     P #5a80b8 plaid mid blue (currently unused; kept for future sprites)
@@ -37,7 +37,7 @@ export const PAL = {
   g: "#58a848", f: "#307838", j: "#384850",
   w: "#d0e050",
   B: "#a8704a", C: "#7a4c30", S: "#dce4ec",
-  G: "#6c7c64", H: "#4c5846", D: "#9a7a52", E: "#6a5034",
+  G: "#6c7c64", H: "#4c5846", D: "#3c3e48", E: "#2a2b33",
   L: "#e4eef8", M: "#b4c8dc", T: "#c8a070", U: "#94704a", P: "#5a80b8",
   A: "#2a2838", F: "#46485f", R: "#8090b8",
   I: "#24222c", J: "#4c4e66", N: "#fcdab4", O: "#e2b284", Q: "#243058",
@@ -143,7 +143,7 @@ export const SPRITES = {
   // Leon (CR-007, refined from Leon's photos; 16x20): warm medium-brown skin (B/C), rounded tight-curly
   // black hair (I with J curl highlights) with slightly receding temples, full dark beard and
   // mustache (i), black rectangular sunglasses, silver hoop earring, curb chain and bracelet (S),
-  // oversized short-sleeve navy/blue/gray tartan shirt (Q v b c), baggy brown canvas pants (D/E),
+  // oversized short-sleeve navy/blue/gray tartan shirt (Q v b c), baggy black pants (D/E),
   // white socks, dark gray-green suede low-tops (G/H) with a plain white side stripe.
   leon: [
     "....kkkkkkkk....",
