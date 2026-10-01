@@ -1,3 +1,6 @@
 # Badge secrets: never commit or deploy
 tools/tokens.local.json
 .DS_Store
+
+# Full Script export output
+tools/.script_out/
