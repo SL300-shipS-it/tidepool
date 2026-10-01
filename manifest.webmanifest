@@ -1,7 +1,7 @@
 {
   "name": "TRAINER QUEST: AN ANNIVERSARY ADVENTURE",
   "short_name": "TRAINER QUEST",
-  "description": "A letter from DR. JOSEPHSON has arrived.",
+  "description": "A letter has arrived.",
   "start_url": "./",
   "scope": "./",
   "display": "browser",

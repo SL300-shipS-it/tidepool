@@ -24,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ICONS = ROOT / "assets" / "icons"
-DESCRIPTION = "A letter from DR. JOSEPHSON has arrived."
+DESCRIPTION = "A letter has arrived."
 
 # UI tokens (match :root in styles.css)
 BG = "#e0f0f8"
@@ -348,7 +348,7 @@ def write_manifest(cfg):
 
 def main():
     cfg = read_config()
-    rows, pal = read_art("gidget")
+    rows, pal = read_art("canele")  # no Gidget before the prologue reveal (CR-050)
     ICONS.mkdir(parents=True, exist_ok=True)
     how = og_card(cfg, rows, pal).save(ICONS / "og-card.png")
     icon(180, rows, pal).save(ICONS / "apple-touch-icon.png")
@@ -356,7 +356,7 @@ def main():
     icon(32, rows, pal, framed=False).save(ICONS / "favicon-32.png")
     write_manifest(cfg)
     changed = update_index(cfg)
-    print("build_meta: OK (%s; gidget %dx%d; index.html %s)" % (how, len(rows[0]), len(rows), "updated" if changed else "unchanged"))
+    print("build_meta: OK (%s; canele %dx%d; index.html %s)" % (how, len(rows[0]), len(rows), "updated" if changed else "unchanged"))
 
 
 if __name__ == "__main__":

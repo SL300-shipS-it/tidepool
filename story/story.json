@@ -130,16 +130,8 @@
   },
 
   "scenes": {
-    "pro_intro": {
-      "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
-      "speaker": "DR. JOSEPHSON",
-      "lines": [
-        "Ah! A new trainer on the coast. Welcome!",
-        "I'm DR. JOSEPHSON. Around here they call me the TEA PROFESSOR.",
-        "I study this region's creatures... but mostly its gossip."
-      ],
-      "next": [{ "if": { "@replaying": true }, "next": "pro_recognize" }, { "next": "pro_name" }]
-    },
+    "pro_intro": {"bg": "town", "sprites": [{"art": "professor", "at": "center"}], "speaker": "???", "lines": ["Ah! A new trainer on the coast. Welcome!", "Oh! Forgive me. Where are my manners?"], "next": "pro_intro_name"},
+    "pro_intro_name": {"speaker": "DR. JOSEPHSON", "lines": ["I'm DR. JOSEPHSON. Around here they call me the TEA PROFESSOR.", "I study this region's creatures... but mostly its gossip."], "next": [{"if": {"@replaying": true}, "next": "pro_recognize"}, {"next": "pro_name"}]},
     "pro_name": {
       "type": "input", "flag": "name", "speaker": "DR. JOSEPHSON",
       "prompt": "Hmm. You look familiar. Are you one of my interns? Remind me of your name?", "placeholder": "YOUR NAME", "max": 10,
@@ -225,7 +217,7 @@
     },
     "pro_starter_gidget": {
       "bg": "town", "sprites": [{ "art": "gidget_plain", "at": "center", "anim": "bounce" }],
-      "lines": ["Something crawls out from under the table...", "It's GIDGET!", "GIDGET sat directly on your foot."],
+      "lines": ["Out she comes, one paw at a time...", "It's GIDGET!", "GIDGET sat directly on your foot."],
       "next": "pro_starter_gidget_chosen"
     },
     "pro_starter_gidget_chosen": {
@@ -234,7 +226,7 @@
       "next": "pro_starter_gidget_joined"
     },
     "pro_starter_gidget_joined": {
-      "lines": ["GIDGET joined your team!"],
+      "lines": ["GIDGET joined your team!"], "do": [{ "set": { "gidgetJoined": "yes" } }],
       "next": "pro_starter_charm"
     },
     "pro_starter_charm": {
@@ -299,7 +291,7 @@
     "pro_sunflower": {
       "type": "choice", "bg": "field", "sprites": [{ "art": "professor", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["A little bird told me there's a sunflower field along your route.", "A detour could be... blooming lovely."],
+      "lines": ["That settles where you'll sleep. Now, about the drive there...", "A little bird told me there's a sunflower field along the way.", "It would be a shame to drive right past."],
       "prompt": "Take the sunflower detour?",
       "choices": [
         { "label": "YES, FLOWERS!", "set": { "sunflowers": "yes" }, "next": "pro_sunflower_yes" },

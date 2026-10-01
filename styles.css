@@ -153,6 +153,12 @@ h2 { font-size: calc(var(--fs) * 1.15); }
 #choices li.sel::before, #choices li:active::before { content: "▶"; }
 #choices li.sel { background: var(--cream); border-color: var(--coral); }
 #choices.q li { font-size: calc(var(--fs) * .85); }
+#choices.many { gap: 4px; margin-top: 6px; }
+#choices.many li { padding: 7px 8px 7px 26px; min-height: 40px; font-size: calc(var(--fs) * .82); }
+#choices.many li::before { left: 8px; }
+#choices.many.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+#choices.many.grid li { padding: 7px 6px 7px 20px; font-size: calc(var(--fs) * .74); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#choices.many.grid li::before { left: 5px; }
 
 /* Partner carousel (CR-045). The ring is drawn on the stage; #choices.ring keeps the picks in the DOM
    for the playtest but off screen. */

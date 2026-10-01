@@ -19,7 +19,10 @@ async function boot() {
   loadState();
   initTap(); initMenus(); initAdmin();
   $("versionText").textContent = "v" + CONFIG.VERSION;
-  renderSprite($("titleArt"), "gidget", 8);
+  // Gidget is the prologue's reveal (CR-050): show the canele until she has joined the team.
+  const metGidget = G.state.flags.gidgetJoined === "yes" || G.state.done.includes("prologue");
+  if (metGidget) renderSprite($("titleArt"), "gidget", 8);
+  else renderSprite($("titleArt"), "canele", 12);
   $("titleArt").style.animation = "none";
   refreshMute();
 

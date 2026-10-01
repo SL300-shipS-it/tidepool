@@ -144,7 +144,9 @@ export function choose(options, { prompt = null, cls = "" } = {}) {
     if (prompt) await say(prompt, { wait: false });
     $("more").classList.add("hidden");
     const ul = $("choices");
-    ul.className = cls;
+    // Long menus stay inside the box: compact rows, and two columns when every label is short.
+    const many = options.length > 3, short = options.every((o) => fmt(o).length <= 12);
+    ul.className = cls + (many ? " many" : "") + (many && short ? " grid" : "");
     ul.innerHTML = "";
     options.forEach((opt, i) => {
       const li = document.createElement("li");
