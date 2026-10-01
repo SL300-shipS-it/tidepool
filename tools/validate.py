@@ -6,10 +6,54 @@ never set, lines too long for the text box, and walks EVERY branch combination o
 to make sure each path reaches the end without getting stuck. The walk runs once per combination of
 config.js TOGGLES (read in conditions as "cfg.<name>"). Exit code 1 on errors.
 """
-import json, re, sys
+import hashlib, json, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# ---------- prologue lock ----------
+# Later-chapter work must leave the prologue byte-identical. The "prologue surface" is everything the
+# prologue shows or depends on; tools/prologue.lock holds its sha256 (plus one hash per part, so a
+# mismatch can say what changed). Relock on purpose with --relock-prologue.
+PROLOGUE_LOCK = ROOT / "tools" / "prologue.lock"
+# Label keys that belong to the prologue (plus any flag a pro_ scene sets, e.g. the starter flags).
+# NOT lunch / recover / breakfast: those are later-chapter flags.
+PROLOGUE_LABEL_FLAGS = {"lodging", "sunflowers", "dinner", "restaurant"}
+
+def canon(x):
+    return json.dumps(x, sort_keys=True, ensure_ascii=False)
+
+def prologue_flags_set(st):
+    out = set()
+    for sid, sc in st.get("scenes", {}).items():
+        if not sid.startswith("pro_"): continue
+        for e in sc.get("do") or []: out.update((e.get("set") or {}).keys())
+        for c in sc.get("choices") or []:
+            out.update((c.get("set") or {}).keys())
+            for e in c.get("do") or []: out.update((e.get("set") or {}).keys())
+        if sc.get("choiceFlag"): out.add(sc["choiceFlag"])
+        if sc.get("type") == "input": out.add(sc.get("flag", "name"))
+    return out
+
+def prologue_surface(st):
+    """Dict of part name -> JSON-able value. Part names are flat ("scenes.pro_intro", "labels.lodging")."""
+    parts = {}
+    for sid, sc in st.get("scenes", {}).items():
+        if sid.startswith("pro_"): parts[f"scenes.{sid}"] = sc
+    parts["chapter.prologue"] = next((c for c in st.get("chapters", []) if c.get("id") == "prologue"), None)
+    for k in ("meta", "card", "items", "lists"): parts[k] = st.get(k)
+    labels = st.get("labels", {})
+    for k in sorted((PROLOGUE_LABEL_FLAGS | prologue_flags_set(st)) - {"name"}):
+        if k in labels: parts[f"labels.{k}"] = labels[k]
+    for bid, b in st.get("badges", {}).items():
+        parts[f"badges.{bid}"] = {"name": b.get("name"), "icon": b.get("icon")}
+    return parts
+
+def prologue_lock_data(st):
+    parts = prologue_surface(st)
+    return {"sha256": hashlib.sha256(canon(parts).encode("utf-8")).hexdigest(),
+            "parts": {k: hashlib.sha256(canon(v).encode("utf-8")).hexdigest() for k, v in sorted(parts.items())}}
+
 story = json.loads((ROOT / "story" / "story.json").read_text())
 art_js = (ROOT / "js" / "art.js").read_text()
 cfg_js = (ROOT / "config.js").read_text()
@@ -31,7 +75,8 @@ SPECIAL_TARGETS = ("@end", "@hub", "@replay", "@cancel")
 LOCKED_TEXT = "Your next badge will find you."  # js/scenes.js fallback for a locked chapter
 # CR-015: words that would give away the destination. Case-insensitive.
 BLOCKLIST = ["Half Moon Bay", "HMB", "Miramar", "Montara", "El Granada", "Princeton", "Pillar Point",
-             "Cypress", "Pasta Moon", "Mavericks", "Johnny's", "tidepool"]
+             "Cypress", "Pasta Moon", "Mavericks", "Johnny's", "tidepool",
+             "Pilot Light", "Cantina", "San Benito", "Andreotti", "Ritz"]  # CR-022
 BLOCK_RE = re.compile(r"\b(?:%s)\b" % "|".join(re.escape(w).replace("'", "['’]") for w in BLOCKLIST), re.I)
 EXAMPLE_PREFIX = "ex_"  # admin-only example scenes: not warned about when unreachable
 MAX_BOX = 90  # characters per text box (after {name} etc. expand to ~10 chars)
@@ -195,6 +240,14 @@ for bid, b in battles.items():
     for i, q in enumerate(b.get("questions", [])):
         for key in ("q", "hitText", "missText"):
             if isinstance(q.get(key), str): check_line(q[key], f"battle {bid} Q{i+1} {key}")
+        # CR-021: leonMove plays before the question: one string or an array of strings (text boxes).
+        if "leonMove" in q:
+            lm = q["leonMove"]
+            lm = [lm] if isinstance(lm, str) else lm
+            if not isinstance(lm, list) or not lm or not all(isinstance(x, str) and x.strip() for x in lm):
+                err(f"battle {bid} Q{i+1}: leonMove must be a non-empty string or an array of non-empty strings")
+            else:
+                for j, line in enumerate(lm): check_line(line, f"battle {bid} Q{i+1} leonMove line {j+1}")
     for i, m in enumerate(b.get("foeMoves", [])):
         if isinstance(m.get("text"), str) and m["text"]: check_line(m["text"], f"battle {bid} foeMove {i+1} text")
 
@@ -226,12 +279,20 @@ for bid, b in badges.items():
     read_cond(b.get("if"), f"badge {bid}")
     if "hint" in b: err(f"badge {bid}: 'hint' is no longer allowed (locked badges reveal nothing, CR-015); remove it")
 
+def is_numbered(ch):
+    """Mirror of js/scenes.js isNumbered: chapters with a key, minus the prologue and numbered: false."""
+    return ch is not PRO and ch.get("id") != "prologue" and bool(ch.get("key")) and ch.get("numbered") is not False
+
 for ch in story["chapters"]:
     if ch["start"] not in scenes: err(f"chapter {ch['id']}: start '{ch['start']}' missing")
     k = ch.get("key")
     if k and k != "continue" and k not in badges: err(f"chapter {ch['id']}: key '{k}' is not a badge")
     read_cond(ch.get("if"), f"chapter {ch['id']}")
     if "lockedTitle" in ch: warn(f"chapter {ch['id']}: lockedTitle is ignored (locked chapters show CHAPTER N: ???)")
+    # CR-022: numbers are computed ("CHAPTER N: title"); the prologue is never numbered.
+    if "numbered" in ch and not isinstance(ch["numbered"], bool): err(f"chapter {ch['id']}: numbered must be true or false")
+    if is_numbered(ch) and re.match(r"\s*(CH\.|CHAPTER\b)", ch.get("title", ""), re.I):
+        warn(f"chapter {ch['id']}: title '{ch['title']}' starts with CH./CHAPTER; the number is added automatically, remove it")
 
 # ---------- locked screens reveal nothing (CR-015) ----------
 # A locked chapter shows "CHAPTER N: ???" and its lockedText (or LOCKED_TEXT). That text may not name a
@@ -421,6 +482,25 @@ if frozen_path.exists():
     for k, vs in frozen["flags"].items():
         for v in vs:
             if v not in now.get(k, set()): warn(f"frozen flag value {k}={v} no longer set anywhere; saves holding it may misbehave")
+
+# ---------- prologue lock (see prologue_surface at the top) ----------
+cur_lock = prologue_lock_data(story)
+if "--relock-prologue" in sys.argv:
+    PROLOGUE_LOCK.write_text(json.dumps(cur_lock, indent=1, sort_keys=True) + "\n")
+    print(f"Wrote tools/prologue.lock ({cur_lock['sha256'][:12]}...)")
+if not PROLOGUE_LOCK.exists():
+    warn("tools/prologue.lock is missing; run python3 tools/validate.py --relock-prologue")
+else:
+    try:
+        old_lock = json.loads(PROLOGUE_LOCK.read_text())
+    except ValueError:
+        old_lock = {"sha256": PROLOGUE_LOCK.read_text().strip(), "parts": {}}
+    if old_lock.get("sha256") != cur_lock["sha256"]:
+        op, np_ = old_lock.get("parts", {}), cur_lock["parts"]
+        diff = [f"~{k}" for k in sorted(op.keys() & np_.keys()) if op[k] != np_[k]]
+        diff += [f"-{k}" for k in sorted(op.keys() - np_.keys())] + [f"+{k}" for k in sorted(np_.keys() - op.keys())]
+        err("prologue changed (tools/prologue.lock); if intended, run python3 tools/validate.py --relock-prologue"
+            + (f"\n      differs: {', '.join(diff)}" if diff else ""))
 
 # ---------- report ----------
 for w in warnings: print("WARN ", w)

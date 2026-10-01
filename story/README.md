@@ -21,7 +21,7 @@ that are too long.
 
 | Key | What it holds |
 | --- | --- |
-| `chapters` | Ordered list. `id`, `prefix` (scene id prefix), `title`, `start` scene, `key` (badge id, `"continue"` for a tap-to-continue chapter, or omitted for the prologue), optional `if` (chapter only exists when flags match), `lockedText` (see "Locked screens"), `intro`. |
+| `chapters` | Ordered list. `id`, `prefix` (scene id prefix), `title` (no "CH.N" prefix: numbers are computed, see "Chapter numbers"), `numbered` (optional, `false` = no number, e.g. the post-game), `start` scene, `key` (badge id, `"continue"` for a tap-to-continue chapter, or omitted for the prologue), optional `if` (chapter only exists when flags match), `lockedText` (see "Locked screens"), `intro`. |
 | `badges` | Unlock keys by id: `name`, `icon` (glamour, snooze, bloom, tide, compass, sunset, canele), optional `if`, `kind: "key"` (says "obtained the ... Key"), `revealOn: "battle"` + `scanText` (scan starts the chapter; the badge itself is awarded by a battle). `hash`/`wordHash` are written by `tools/gen_tokens.py`; never edit them by hand. No `hint` field: the validator errors on it (locked badges reveal nothing). |
 | `items` | `{ id: { name, desc } }` |
 | `statuses` | `{ id: { name, desc } }` (flavor conditions like PUFFED) |
@@ -53,18 +53,48 @@ prologue is being replayed, see below). All keys must match.
 
 - **Badge case:** an unearned badge shows one shared `locked` icon and `???`, never its name, icon or a hint.
   Earned badges show normally. A badge hidden by `if` (Bloom when `sunflowers` = no) has no slot.
-- **Hub:** a locked chapter shows `CHAPTER N: ???` and its `lockedText`, or `Your next badge will find you.`
-  if it has none. No chapter title, time of day or background; the HUD shows no title either. N counts
-  chapters that have a `key` (ch1 = 1), skipping chapters hidden by `if`; the prologue has no number.
-  Set `lockedText` only on ch1 ("Your first badge awaits at the GALA."); leave it off later chapters.
+- **Hub:** a locked chapter shows `CHAPTER N: ???` (or just `???` if it is unnumbered) and its `lockedText`,
+  or `Your next badge will find you.` if it has none. No chapter title, time of day or background; the HUD
+  shows no title either. N is computed (see "Chapter numbers"). Set `lockedText` only on ch1 ("Your first badge awaits at the GALA."); leave it off later chapters.
 - **Trainer Card:** the badge row shows earned (and visible) badges only.
 - **Scanned early:** the SAVED FOR LATER popup names the badge but never the chapter.
 - Validator: errors if any `lockedText` (or the fallback) contains a badge name, a chapter title, or a
   blocklisted word (Half Moon Bay, HMB, Miramar, Montara, El Granada, Princeton, Pillar Point, Cypress,
-  Pasta Moon, Mavericks, Johnny's, tidepool), and if any badge has `hint`. It warns if prologue scenes,
+  Pasta Moon, Mavericks, Johnny's, tidepool, Pilot Light, Cantina, San Benito, Andreotti, Ritz), and if any badge has `hint`. It warns if prologue scenes,
   `meta`, `card` or `lists` contain a blocklisted word.
 - Unlock links use random tokens (`#b=<hex>`), never key ids. Backup words are neutral words
   (`python3 tools/gen_tokens.py --new-words` redraws only the words; tokens and QR links stay the same).
+
+## Chapter numbers (CR-022)
+
+Titles never contain the number. The hub and the HUD show:
+
+| Chapter | Open | Locked |
+| --- | --- | --- |
+| numbered | `CHAPTER N: TITLE` | `CHAPTER N: ???` |
+| unnumbered | `TITLE` | `???` |
+
+- N counts, in story order, the numbered chapters that currently pass their `if` (ch1 = 1). Hiding the
+  sunflower chapter (`sunflowers` = no) keeps the numbers consecutive. Reordering chapters renumbers them.
+- Unnumbered: the prologue (always; id `prologue`) and any chapter with `"numbered": false` (the post-game).
+- Validator: warns if a numbered chapter's `title` still starts with `CH.` or `CHAPTER`; errors if
+  `numbered` isn't `true`/`false`.
+
+```json
+{ "id": "post", "prefix": "post_", "title": "POST-GAME", "numbered": false, "start": "post_start", "key": "legendary" }
+```
+
+## Prologue lock
+
+Later-chapter work must leave the prologue byte-identical. `tools/prologue.lock` holds a sha256 of the
+"prologue surface": every `pro_` scene, the `prologue` chapter object, `meta`, `card`, `items`, `lists`,
+the `labels` for prologue flags (`lodging`, `sunflowers`, `dinner`, `restaurant`, plus any flag a `pro_`
+scene sets) and each badge's `name` and `icon` (not hashes). Other labels (`lunch`, `breakfast`,
+`recover`, ...) and everything else in later chapters are outside it.
+
+The validator errors with `prologue changed (tools/prologue.lock)` and lists the parts that differ
+(`~scenes.pro_intro` changed, `+x` added, `-x` removed). If the change is intended (an approved prologue
+CR), relock: `python3 tools/validate.py --relock-prologue`.
 
 ## Prologue replay (CR-019)
 
@@ -191,7 +221,8 @@ edit `index.html` or `styles.css`: create any DOM they need inside `container`.
 "champion": {
   "foe": "CHAMPION LEON", "foeSprite": "leon", "hp": 100, "damage": 30,
   "intro": ["..."],
-  "questions": [{ "q": "Question?", "options": ["A", "B", "C"], "answer": 0, "move": "MOVE NAME", "hitText": "optional", "missText": "optional" }],
+  "questions": [{ "q": "Question?", "options": ["A", "B", "C"], "answer": 0, "move": "MOVE NAME", "hitText": "optional", "missText": "optional",
+                  "leonMove": ["LEON used FINGER GUNS!", "{name} is not impressed."] }],
   "foeMoves": [{ "name": "DAD JOKE", "text": "..." }],
   "distracted": ["{partner} got distracted by a bug!", "{partner} started grooming mid-battle."],
   "nap": ["{partner} curled up for a nap..."],
@@ -202,6 +233,10 @@ edit `index.html` or `styles.css`: create any DOM they need inside `container`.
   "award": "twoyear"
 }
 ```
+
+`leonMove` (optional, CR-021): LEON's move before that question is asked. One string or an array of
+strings, each one text box (placeholders like `{name}` work, ~90 chars each). After the first box LEON
+lunges with a hit sound and a screen shake; nobody takes damage. Then the question appears.
 
 `answer` is the index of the right option, counting from 0. A right answer is Gidget's attack. A wrong
 answer is a random foe move. The player can't lose: HP never reaches 0. If the foe still has HP after the

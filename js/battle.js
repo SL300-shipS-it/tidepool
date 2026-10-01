@@ -34,7 +34,7 @@ export async function runBattle(def) {
   const qs = def.questions || [];
   const perHit = Math.ceil(max / Math.max(1, qs.length));
   const dmg = def.damage || 30;
-  let foeHurt = 0, meHurt = 0;
+  let foeHurt = 0, meHurt = 0, foeLunge = 0;
   let cat = "idle"; // Gidget's mood: "idle" | "distracted" (turns away, hops) | "nap" (asleep, zzz)
 
   stage.bg = def.bg || "battle";
@@ -43,7 +43,7 @@ export async function runBattle(def) {
     const W = stage.W, H = stage.H;
     const foeG = SPRITES[def.foeSprite || "leon"];
     const fg = gridSize(foeG);
-    const fx = Math.round(W * 0.73 - fg.w), fy = Math.round(H * 0.34 - fg.h * 2 + 4);
+    const fx = Math.round(W * 0.73 - fg.w) - foeLunge, fy = Math.round(H * 0.34 - fg.h * 2 + 4);
     if (!(foeHurt && ((t / 80) | 0) % 2)) drawGrid(ctx, foeG, fx, fy, 2);
     const floor = Math.round(H * 0.84 + 4); // player platform line; sprites stand on it whatever their height
     const jx = Math.round(W * 0.08), jy = floor - gridSize(SPRITES.jess).h * 2;
@@ -73,6 +73,14 @@ export async function runBattle(def) {
   for (const l of def.intro || []) await say(l);
 
   for (const q of qs) {
+    // CR-021: LEON's move before the question. A string or an array of text boxes; the first box
+    // plays, then LEON lunges toward the team with a hit sound and a shake (nobody blinks: no damage).
+    const lm = typeof q.leonMove === "string" ? [q.leonMove] : Array.isArray(q.leonMove) ? q.leonMove : [];
+    for (const [i, l] of lm.entries()) {
+      if (typeof l !== "string" || !l) continue;
+      await say(l);
+      if (i === 0) { sfx("hit"); foeLunge = 6; await shake(); foeLunge = 0; await sleep(200); }
+    }
     const pick = await choose(q.options, { prompt: q.q, cls: "q" });
     if (pick === q.answer) {
       await say(`${CONFIG.PARTNER} used ${q.move || "TACKLE"}!`);

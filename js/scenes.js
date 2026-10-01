@@ -16,10 +16,21 @@ export function nextChapter() {
 function chapterOpen(ch) {
   return !ch.key || ch.key === "continue" || !!G.state.keys[ch.key];
 }
-// Chapter number shown on a locked hub: ch1 = 1. The prologue (no key) isn't numbered and chapters
-// hidden by `if` are skipped, so the count never hints at a hidden side quest.
+// Chapter numbers are computed, never written in titles (CR-022): N counts, in order, numbered
+// chapters that currently pass their `if`, so a hidden side quest never leaves a gap or a hint.
+// The prologue (no key / id "prologue") and chapters with `numbered: false` (the post-game) get none.
+export function isNumbered(ch) {
+  return !!ch && ch.id !== "prologue" && !!ch.key && ch.numbered !== false;
+}
 export function chapterNumber(ch) {
-  return G.story.chapters.filter((c) => c.key && test(c.if)).indexOf(ch) + 1;
+  return isNumbered(ch) ? G.story.chapters.filter((c) => isNumbered(c) && test(c.if)).indexOf(ch) + 1 : 0;
+}
+// "CHAPTER N: TITLE" when open, "CHAPTER N: ???" when locked; unnumbered: the title, or "???".
+export function chapterLabel(ch, { locked = false } = {}) {
+  if (!ch) return "";
+  const t = locked ? "???" : fmt(ch.title || "");
+  const n = chapterNumber(ch);
+  return n > 0 ? `CHAPTER ${n}: ${t}` : t;
 }
 export const LOCKED_TEXT = "Your next badge will find you.";
 
@@ -34,7 +45,7 @@ export async function startChapter(ch) {
     G.state.chapter = ch.id;
     G.state.scene = ch.start;
     saveState();
-    await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch.title); });
+    await transition(() => { show("play"); $("hudChapter").textContent = chapterLabel(ch); });
   } finally { starting = false; }
   await runFrom(ch.start);
 }
@@ -47,7 +58,7 @@ export async function resume() {
     const pro = chapterOf(s.chapter) || prologue();
     s.chapter = pro.id;
     const from = G.story.scenes[s.scene] ? s.scene : pro.start;
-    await transition(() => { show("play"); $("hudChapter").textContent = fmt(pro.title || ""); });
+    await transition(() => { show("play"); $("hudChapter").textContent = chapterLabel(pro); });
     await runFrom(from);
     return;
   }
@@ -55,7 +66,7 @@ export async function resume() {
   if (ch && !s.done.includes(s.chapter)) {
     // If a story edit removed the saved scene, restart the chapter instead of breaking.
     const from = G.story.scenes[s.scene] ? s.scene : ch.start;
-    await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch.title || ""); });
+    await transition(() => { show("play"); $("hudChapter").textContent = chapterLabel(ch); });
     await runFrom(from);
   } else {
     await openHub();
@@ -76,7 +87,7 @@ export async function openHub({ autoStart = true } = {}) {
     return;
   }
   if (chapterOpen(ch)) {
-    title.textContent = fmt(ch.title);
+    title.textContent = chapterLabel(ch);
     text.textContent = fmt(ch.intro || (ch.key === "continue" ? "Ready when you are." : "A new route is open!"));
     go.classList.remove("hidden");
     go.textContent = ch.key === "continue" ? "CONTINUE" : "START";
@@ -86,7 +97,7 @@ export async function openHub({ autoStart = true } = {}) {
     return;
   }
   // Locked: reveal nothing (CR-015). No chapter title, no badge name or hint, no background.
-  title.textContent = `CHAPTER ${chapterNumber(ch)}: ???`;
+  title.textContent = chapterLabel(ch, { locked: true });
   text.textContent = fmt(ch.lockedText || LOCKED_TEXT);
   go.classList.add("hidden");
   show("hub");
@@ -332,7 +343,7 @@ export async function startReplay() {
   s.replaying = true;
   s.chapter = pro.id; s.scene = first;
   saveState();
-  await transition(() => { show("play"); $("hudChapter").textContent = fmt(pro.title || ""); });
+  await transition(() => { show("play"); $("hudChapter").textContent = chapterLabel(pro); });
   await runFrom(first);
 }
 
@@ -344,7 +355,7 @@ async function finishReplay() {
   if (ch && !s.done.includes(ch.id) && test(ch.if)) {
     s.chapter = ch.id; s.scene = G.story.scenes[ret.scene] ? ret.scene : ch.start;
     saveState();
-    await transition(() => { show("play"); $("hudChapter").textContent = fmt(ch.title || ""); });
+    await transition(() => { show("play"); $("hudChapter").textContent = chapterLabel(ch); });
     await runFrom(s.scene);
   } else {
     s.chapter = null; s.scene = null;
