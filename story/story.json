@@ -420,18 +420,8 @@
       "lines": ["NOT THE HEIRLOOM! MY GREAT-GREAT-GRANDMOTHER'S CHEST!"],
       "next": "ch1_heirloom_sticker"
     },
-    "ch1_heirloom_sticker": {
-      "type": "dialogue",
-      "lines": [
-        "THE WASIAN bursts into tears and flips it over to check for damage.",
-        "There's a sticker on the bottom.",
-        "MICHAELS. $24.99. 40% OFF. MADE IN CHINA.",
-        "THE WASIAN quietly leaves the room.",
-        "The ANCIENT FAMILY HEIRLOOM CHEST was added to your Bag."
-      ],
-      "do": [{ "item": "heirloom_chest", "quiet": true }],
-      "next": "@end"
-    },
+    "ch1_heirloom_sticker": {"type": "dialogue", "lines": ["THE WASIAN bursts into tears and flips it over to check for damage.", "There's a sticker on the bottom.", "MICHAELS. $24.99. 40% OFF. MADE IN CHINA."], "next": "ch1_heirloom_after"},
+    "ch1_heirloom_after": {"type": "dialogue", "sprites": [{"art": "gidget", "at": "center"}], "lines": ["THE WASIAN quietly leaves the room.", "The ANCIENT FAMILY HEIRLOOM CHEST was added to your Bag."], "do": [{"item": "heirloom_chest", "quiet": true}], "next": "@end"},
 
     "ch2_morning": {
       "if": { "lodging": "!hideout" }, "else": "ch2_morning_hideout",

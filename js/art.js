@@ -343,6 +343,26 @@ export const SPRITES = {
     "................",
     "................",
   ],
+  // dots z across the top; arm tips curl up and outward. Existing palette letters only.
+  sea_star: [
+    "........kk........",
+    ".......kymk.......",
+    ".......kmzk.......",
+    "......kymmnk......",
+    "......kmzmnk......",
+    ".kk...kmmmnk...kk.",
+    "kymkkkymzmmnkkkmnk",
+    "kmzmmymmmmzmmmmznk",
+    ".kmmzmmzmmmmzmmnk.",
+    "..knmmmmmzmmmmnnk.",
+    "...kmmzmmmmmzmnk..",
+    "...kmmmmnnmmmmnk..",
+    "..kmzmnkkkknmzmnk.",
+    "..kmmnk....knmmnk.",
+    ".kymnk......knmnk.",
+    ".kznk........knzk.",
+    "..kk..........kk..",
+  ],
 };
 
 // ---------- badge icons (16x16, drawn on a round badge) ----------
@@ -478,26 +498,6 @@ export const BADGE_ICONS = {
   ],
   // Sea star (CR-025): 18x17 orange ochre sea star resting on the ground, five arms, no face.
   // Caramel-orange body m with a darker underside/right edge n, upper-left glints y, bumpy lighter
-  // dots z across the top; arm tips curl up and outward. Existing palette letters only.
-  sea_star: [
-    "........kk........",
-    ".......kymk.......",
-    ".......kmzk.......",
-    "......kymmnk......",
-    "......kmzmnk......",
-    ".kk...kmmmnk...kk.",
-    "kymkkkymzmmnkkkmnk",
-    "kmzmmymmmmzmmmmznk",
-    ".kmmzmmzmmmmzmmnk.",
-    "..knmmmmmzmmmmnnk.",
-    "...kmmzmmmmmzmnk..",
-    "...kmmmmnnmmmmnk..",
-    "..kmzmnkkkknmzmnk.",
-    "..kmmnk....knmmnk.",
-    ".kymnk......knmnk.",
-    ".kznk........knzk.",
-    "..kk..........kk..",
-  ],
   // Locked (CR-015): shared icon for every unearned badge. Plain gray disc with a "?", no color hints.
   locked: [
     "................",

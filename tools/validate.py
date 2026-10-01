@@ -76,7 +76,8 @@ cfg_js = (ROOT / "config.js").read_text()
 _tg = re.search(r"TOGGLES:\s*\{(.*?)\n\s*\}", cfg_js, re.S)
 TOGGLES = {k: v == "true" for k, v in re.findall(r"^\s*(\w+):\s*(true|false)", _tg.group(1), re.M)} if _tg else {}
 
-SPRITES = set(re.findall(r"^\s{2}(\w+): (?:withTail\(\[|\[)", art_js, re.M))
+_sprites_src = art_js.split("export const SPRITES")[1].split("\n};")[0]  # only the SPRITES table
+SPRITES = set(re.findall(r"^\s{2}(\w+): (?:withTail\(\[|\[)", _sprites_src, re.M))
 BADGE_ICONS = set(re.findall(r"^\s{2}(\w+): \[", art_js.split("BADGE_ICONS = {")[1], re.M)) | {"canele"}
 BGS = set(re.findall(r'case "(\w+)"', art_js.split("export function drawBg")[1]))
 TYPES = {"dialogue", "choice", "input", "encounter", "obstacle", "battle", "trainerCard", "letter", "photos", "credits", "minigame"}
