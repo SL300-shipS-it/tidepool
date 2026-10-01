@@ -185,14 +185,14 @@
     },
     "pro_starter_lactaid_gone": {
       "sprites": [],
-      "lines": ["...LACTAID is only needed occasionally. It rolled off to wait for dessert."],
+      "lines": ["...LACTAID is more of an as-needed partner. It rolled off to wait for dessert."],
       "do": [{ "set": { "triedLactaid": "yes" } }, { "item": "lactaid" }],
       "next": "pro_starter_both"
     },
     "pro_starter_tennis": {
       "bg": "town", "sprites": [{ "art": "tennis", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["TENNIS BALLS! Straight from your college tennis days.", "Fast, bouncy, and a little fuzzy."],
+      "lines": ["TENNIS BALLS! Straight from your college days.", "Fast, bouncy, and a little fuzzy."],
       "next": "pro_starter_tennis_gone"
     },
     "pro_starter_tennis_gone": {
@@ -230,7 +230,7 @@
     },
     "pro_starter_gidget_chosen": {
       "speaker": "DR. JOSEPHSON",
-      "lines": ["Well! It seems she's chosen YOU."],
+      "lines": ["Well! It seems she's chosen YOU.", "Funny... I ordered a fourth partner. It must be running late."],
       "next": "pro_starter_gidget_joined"
     },
     "pro_starter_gidget_joined": {
