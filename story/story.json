@@ -94,17 +94,17 @@
       "foe": "CHAMPION DR. JOSEPHSON", "foeSprite": "professor", "hp": 100, "damage": 30,
       "intro": [],
       "questions": [
-        { "q": "When we eat out, what is LEON's main job?", "options": ["SPLITTING DISHES", "HOLDING THE BAG", "ORDERING SALAD"], "answer": 0, "move": "SAMPLER PLATTER",
+        { "q": "When we eat out, what is LEON's main job?", "options": ["HOLDING THE BAG", "SPLITTING DISHES", "ORDERING SALAD"], "answer": 1, "move": "SAMPLER PLATTER",
           "leonMove": "LEON used CLUBS OR NO CLUBS? It's a stalemate!" },
-        { "q": "LEON heads to ANDYTOWN. Where does he end up?", "options": ["THE WRONG ONE", "THE RIGHT ONE", "FRESNO"], "answer": 0, "move": "WRONG TURN",
+        { "q": "LEON heads to ANDYTOWN. Where does he end up?", "options": ["FRESNO", "THE RIGHT ONE", "THE WRONG ONE"], "answer": 2, "move": "WRONG TURN",
           "leonMove": "LEON was whisked away to FRESNO for 8 weeks!" },
         { "q": "A certain friend's legendary biscuits come from...", "options": ["A BOX", "GRANDMA'S RECIPE", "PURE TALENT"], "answer": 0, "move": "BOXED MIX",
           "leonMove": "LEON used SCUBA DIVE. LEON is nauseous!" },
-        { "q": "Your first 'mosquito bites' were actually...", "options": ["FLEAS", "MOSQUITOES", "STRESS HIVES"], "answer": 0, "move": "FLEA FLICKER",
+        { "q": "Your first 'mosquito bites' were actually...", "options": ["MOSQUITOES", "FLEAS", "STRESS HIVES"], "answer": 1, "move": "FLEA FLICKER",
           "leonMove": "LEON needs the bathroom... but CHLOE is in there. LEON must wait. Forever." },
         { "q": "Of the four of us on that 3AM bison walk, who ended up together?", "options": ["THE OTHER TWO", "THE BISON", "US (EVENTUALLY)"], "answer": 2, "move": "LONG GAME",
           "leonMove": ["LEON used GET SICK AGAIN!", "{name} used LEMON-LIME GATORADE. It's super effective!"] },
-        { "q": "On our big trip with all our friends, who planned everything?", "options": ["YOU DID", "LEON DID", "THE GROUP CHAT"], "answer": 0, "move": "SUNBURN",
+        { "q": "On our big trip with all our friends, who planned everything?", "options": ["LEON DID", "YOU DID", "THE GROUP CHAT"], "answer": 1, "move": "SUNBURN",
           "leonMove": "LEON used PUPPY EYES. It's super effective!" }
       ],
       "foeMoves": [
