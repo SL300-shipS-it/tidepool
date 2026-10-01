@@ -13,7 +13,7 @@ export const CONFIG = {
   PARTNER: "GIDGET",
   TEXT_SPEED_MS: 28,       // typewriter delay per character
   SAVE_KEY: "tp_save_v1",
-  VERSION: "0.1.4",
+  VERSION: "0.1.5",
   // CR-028: a message from Leon, played once (before the menu/chapter) on the first open on or after
   // `from` (device-local date, YYYY-MM-DD), once the prologue is done. Never during a replay or ?fast=1.
   // The admin panel can preview it without marking it seen.
