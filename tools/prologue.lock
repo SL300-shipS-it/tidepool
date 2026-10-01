@@ -28,7 +28,7 @@
   "scenes.pro_lodging_hideout": "d69bdee6b4841387fc708b6b8951634d40ffb60f872dd7482faffbc3ee1e26d3",
   "scenes.pro_lodging_inn": "d8b433c141af195e82466dca5b9a493c7daaa55ed4a111521972133bb04c2feb",
   "scenes.pro_name": "ad869eb0b158da483abc4c7a5e1c1873493025f631f45eef08d905113c1dd27c",
-  "scenes.pro_recognize": "762817eea07ad1f64cb3e3cdd8a3536b6b5de2a9cae2348679ef54b1976dafa1",
+  "scenes.pro_recognize": "0380833279472444be9118194189c7f6bdd93e278ab9f1531937a4ef1689c925",
   "scenes.pro_replay_start": "be9e61ee228ad9da8d3e7bda7d332d3cc9376eb7078b8f710210444a9dc8ea3f",
   "scenes.pro_starter": "c32c2468a6c1f4ebf64a07da6c2ebe5f5c1d97e7305460601a86ea58a5565e7a",
   "scenes.pro_starter_both": "bf4eb5d1975003fd0c54ad75240ea02474c6d8920dbae9b635b06e9db389f618",
@@ -51,5 +51,5 @@
   "scenes.pro_sunflower_yes": "2e125f1af07022a7ff3c90b5ac0234bb36e092fcb37f4707e98bde571cb23e36",
   "scenes.pro_sunflower_yes_pose": "1a883053593ebc4a4ebb822d88b4c2c463741744834e52354f87050299bbba0b"
  },
- "sha256": "1e2ddb202ce4c9dad4e154bc34f7347db44158b959c0afaa6dfe231540ea168c"
+ "sha256": "43404ea2e1430fda9d8ac70c9e5910014a0a1720b80630e8f7dacdea4be292c5"
 }
