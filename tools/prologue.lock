@@ -21,7 +21,7 @@
   "scenes.pro_dinner_city": "07edfc0dc69e0315220a021cbcbe3a0f738493b18f992b6adefa99a0d6febe3d",
   "scenes.pro_dinner_city_only": "3e18ac34347112229aa2e09dbc5dcbf29ba0af624d6df4c7794318cb968f7d10",
   "scenes.pro_dinner_coastside": "93da9a4461ff422f853c5527700ddf06dcce90c5948c1aab8461da682e10a095",
-  "scenes.pro_ending": "99e52574c92cb631879e55b0946daaf6c34fb85f55ff27b6a2349b609db62e67",
+  "scenes.pro_ending": "2fed752f2232a8ca3e7e6168818fbe858a00f6afd4e6423fa5f65df920c78a1c",
   "scenes.pro_intro": "83ace921a786f266bc34ecb67414c916367b589136c2681738c02611a8afc592",
   "scenes.pro_lodging": "16f8186ae3079d80b16a14ecdd5ba268d9effed82eaff81b34a8c5fb647dc718",
   "scenes.pro_lodging_fake": "61e3815e28f220938a6bb4e818d42d9839a1da065b612e35709e716a0ca7df9b",
@@ -34,7 +34,7 @@
   "scenes.pro_starter_both": "bf4eb5d1975003fd0c54ad75240ea02474c6d8920dbae9b635b06e9db389f618",
   "scenes.pro_starter_charm": "7d1025debc10695040db60fe69c9a0d728c5d4d5d60713d8c5ce7e3bbce5a66f",
   "scenes.pro_starter_charm_done": "903f4d4739c95c45cb1e631da6bb542268c203a3ac869976691b134b8721a464",
-  "scenes.pro_starter_charm_pick": "b0c8fa89b78a6b653172dd6c4e5dfd2adba50525dc4821d4e052f643b7183abb",
+  "scenes.pro_starter_charm_pick": "1805d862b3afe602f672d330933c72a7053ec0d0b990909506439afa44456dea",
   "scenes.pro_starter_charm_safe": "1bdaadb633f4b305de920c8a48dbb9fe6db1044fb234678b67c1b66f9a4b3b9a",
   "scenes.pro_starter_gidget": "ae8cd4e94fed09d07d86034090231e33df10f512ccfa41c44539f3565203654b",
   "scenes.pro_starter_gidget_chosen": "aed2e9d2d032aba56614ca8a44813893617e31cdf30fdb720cfa0788134938d2",
@@ -42,13 +42,13 @@
   "scenes.pro_starter_lactaid": "c9629aac6db0e1514f74a57a1043f2e0a5ff27c3df3f9edbfc31fc9eee627318",
   "scenes.pro_starter_lactaid_gone": "e9f781d9b584c3da0d10f847027a15d6132f60dbe0389ad0782b7f6ec43c5f27",
   "scenes.pro_starter_mystery_locked": "b1e23aa01cb461e1fe0a9fdeb6b6a538d7f4d75051eb2c38b64697af1343dc68",
-  "scenes.pro_starter_pick": "872cf73572b599db7b62cc13bdc0f5284def4df289b38a6420b68e8c7069cacf",
-  "scenes.pro_starter_pick_last": "ef2050b8901031470662655fe20a9615cfe410f30ee2e6fdb1792eaf336ebe02",
+  "scenes.pro_starter_pick": "76e4bc223b28169a7a8d2f7ff03c2437207837f27024a2fdfc3446ab6c6abc3a",
+  "scenes.pro_starter_pick_last": "a79e848c3fe308734dcb24e2ebc19b2bdc265441dd59462ba1167ae7f5295af9",
   "scenes.pro_starter_tennis": "4f8d3eef00d0f718616291b2c7e126c4eef7129ee12d31cc467f498296dddcc3",
   "scenes.pro_starter_tennis_gone": "4774f71a45e4ce710a97217076142ca5f3998adc97a7236bc8e296aece8cec4a",
   "scenes.pro_sunflower": "4f34655b120a99138e9103c1f45178d7758422561a7c3148d1da6091460c5061",
   "scenes.pro_sunflower_no": "ca1736165af3da089b68b4035ca09178a3b53fb3f3020ddc9e5d0afe0967bb20",
   "scenes.pro_sunflower_yes": "ae7a884b0ca3d608d4af13667066d4ce46ffb1036df846274c8d28f4aef089ad"
  },
- "sha256": "15dc2eabbf07bc62e5bb478e97b39912c66749f30b01cd1f3a9971f9710fdb98"
+ "sha256": "a120f2b093fc691068f5557d7fdd6f78578b91353122fc3a1b7669614d4a33dc"
 }

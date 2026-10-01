@@ -547,6 +547,13 @@ else:
         err("prologue changed (tools/prologue.lock); if intended, run python3 tools/validate.py --relock-prologue"
             + (f"\n      differs: {', '.join(diff)}" if diff else ""))
 
+# ---------- packing lines stay coast-free (CR-032) ----------
+COAST_WORDS = ["beach", "sand", "trail", "hike", "ocean", "tide"]
+for i, line in enumerate(scenes.get("pro_ending", {}).get("lines", [])):
+    for w in COAST_WORDS:
+        if re.search(r"\b%s" % w, line, re.I):
+            err(f"scene pro_ending line {i+1}: coast word '{w}' gives the destination away: {line}")
+
 # ---------- report ----------
 for w in warnings: print("WARN ", w)
 for e in errors: print("ERROR", e)

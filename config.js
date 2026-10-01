@@ -25,6 +25,6 @@ export const CONFIG = {
     // true: after either pick, GIDGET knocks the other brochure off the table; lodging ends as the inn.
     fakeLodging: false,
     // Offer the coastside dinner as a choice. false = skip straight to the city restaurant list.
-    coastsideFeast: true,
+    coastsideFeast: false,
   },
 };

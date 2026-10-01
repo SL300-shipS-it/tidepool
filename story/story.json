@@ -173,7 +173,7 @@
         { "label": "LACTAID", "next": "pro_starter_lactaid", "if": { "triedLactaid": "!yes" } },
         { "label": "TENNIS BALLS", "next": "pro_starter_tennis", "if": { "triedTennis": "!yes" } },
         { "label": "???", "next": "pro_starter_mystery_locked", "if": { "bothTried": "!yes" } },
-        { "label": "GIDGET", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
+        { "label": "???", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
       ]
     },
     "pro_starter_lactaid": {
@@ -210,7 +210,7 @@
       "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "prompt": "Hm? Someone's peeking out from under the table...",
       "choices": [
-        { "label": "GIDGET", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
+        { "label": "???", "next": "pro_starter_gidget", "if": { "bothTried": "yes" } }
       ]
     },
     "pro_starter_mystery_locked": {
@@ -244,7 +244,7 @@
       "lines": ["He hands you a tiny golden CANELE CHARM."],
       "prompt": "What will you do?",
       "choices": [
-        { "label": "EAT IT", "fail": ["It's a charm, not a pastry. (Also, you'd need a LACTAID.)"] },
+        { "label": "EAT IT", "fail": ["It's a charm, not a pastry."] },
         { "label": "PUT IT ON GIDGET", "next": "pro_starter_charm_done" }
       ]
     },
@@ -355,7 +355,8 @@
         "I'm sworn to silence. But I can tell you three things.",
         "ONE: Keep the night of OCT 10 through OCT 11 free.",
         "TWO: Have a bag packed by Saturday afternoon.",
-        "Inside: something fancy, something cozy, and something to sleep in.",
+        "Inside: something fancy, something cozy, something sturdy to walk in,",
+        "and something to sleep in.",
         "LEON will take it from there.",
         "THREE: Your first badge awaits at the GALA.",
         "The rest? You'll discover it one badge at a time."
