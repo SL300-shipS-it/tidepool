@@ -4,7 +4,7 @@ description: Ship the current committed state of Tidepool to GitHub Pages safely
 ---
 # Deploy
 
-Live: https://sl300-ships-it.github.io/tidepool/ · repo SL300-shipS-it/tidepool (branch main).
+Live: https://sl300-ships-it.github.io/tq/ · repo SL300-shipS-it/tq (branch main).
 
 1. **Freeze check**: on or after 2026-10-10 (the trip), deploy only if the changes since the last
    `deploy-*` tag touch `story/story.json` alone, unless Leon said "override".
@@ -15,7 +15,7 @@ Live: https://sl300-ships-it.github.io/tidepool/ · repo SL300-shipS-it/tidepool
    (`tp-v...`); rerun validate (it checks they match). Commit `Release vX.Y.Z`.
 5. **Tag + push**: `git tag deploy-vX.Y.Z && git push && git push --tags`.
 6. **Verify live**: use Monitor to wait until
-   `curl -s https://sl300-ships-it.github.io/tidepool/config.js` contains the new version (usually
+   `curl -s https://sl300-ships-it.github.io/tq/config.js` contains the new version (usually
    1–2 min), then confirm `/tools/tokens.local.json` returns 404.
 7. **Tell Leon**: version, what shipped, and that phones pick it up on their next open (the page loads
    the old version once while the new one downloads; the reload after that shows it).

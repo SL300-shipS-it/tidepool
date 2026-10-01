@@ -42,7 +42,7 @@ Commands: `/intake`, `/deploy` (checks, version bump, tag, push, verify), `/play
 4. The desktop browser pane can't register service workers; test offline on the phone.
 
 ## Deploy
-- Live: https://sl300-ships-it.github.io/tidepool/ · Repo: github.com/SL300-shipS-it/tidepool (public; Pages from `main` /root)
+- Live: https://sl300-ships-it.github.io/tq/ · Repo: github.com/SL300-shipS-it/tq (public; Pages from `main` /root). Never rename again: her save and offline copy are tied to this address.
 - Steps: bump `VERSION` in `sw.js` and `config.js` → validate → commit → `git push`. Pages rebuilds in ~1 min.
 - `gh` is installed at /usr/local/bin and logged in as SL300-shipS-it. No Homebrew or Node on this Mac; use Python.
 
