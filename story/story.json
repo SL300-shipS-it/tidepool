@@ -9,7 +9,7 @@
     { "id": "prologue", "prefix": "pro_", "title": "PROLOGUE", "start": "pro_intro" },
     { "id": "ch1", "prefix": "ch1_", "title": "NIGHT ROUTE", "start": "ch1_start", "key": "gala",
       "lockedText": "Your first badge awaits at the GALA." },
-    { "id": "ch2", "prefix": "ch2_", "title": "INN MORNING", "start": "ch2_morning", "key": "matcha" },
+    { "id": "ch2", "prefix": "ch2_", "title": "MORNING", "start": "ch2_morning", "key": "matcha" },
     { "id": "ch5", "prefix": "ch5_", "title": "LUNCH", "start": "ch5_lunch", "key": "brush" },
     { "id": "ch6", "prefix": "ch6_", "title": "FIGHT OR FLIGHT?", "start": "ch6_recover", "key": "continue",
       "intro": "Lunch is done. Tap CONTINUE when you're ready." },
@@ -407,7 +407,7 @@
       "lines": [
         "Morning on the coast. The sun is out. GIDGET is already hungry.",
         "A reminder: LEON once went to the wrong ANDYTOWN. Twice.",
-        "Good news: breakfast is right here at the inn. What could go wrong?"
+        "Good news: breakfast is right here at the hideout. What could go wrong?"
       ],
       "next": "ch2_directions"
     },
