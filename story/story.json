@@ -13,9 +13,9 @@
     { "id": "ch5", "prefix": "ch5_", "title": "LUNCH", "start": "ch5_lunch", "key": "brush" },
     { "id": "ch6", "prefix": "ch6_", "title": "FIGHT OR FLIGHT?", "start": "ch6_recover", "key": "continue",
       "intro": "Lunch is done. Tap CONTINUE when you're ready." },
-    { "id": "ch3", "prefix": "ch3_", "title": "SUNFLOWER FIELD", "start": "ch3_start", "key": "sunflower",
+    { "id": "ch3", "prefix": "ch3_", "title": "SUNFLOWER FIELD", "start": "ch3_field", "key": "sunflower",
       "if": { "sunflowers": "yes" } },
-    { "id": "ch4", "prefix": "ch4_", "title": "ROUTE SOUTH", "start": "ch4_start", "key": "tide" },
+    { "id": "ch4", "prefix": "ch4_", "title": "ROUTE SOUTH", "start": "ch4_tide", "key": "tide" },
     { "id": "ch7", "prefix": "ch7_", "title": "THE CHAMPION", "start": "ch7_start", "key": "twoyear" },
     { "id": "post", "prefix": "post_", "title": "POST-GAME", "start": "post_start", "key": "legendary", "numbered": false }
   ],
@@ -36,7 +36,10 @@
     "sunflower": { "name": "SUNFLOWER", "desc": "TODO: It follows you around." },
     "paintbrush": { "name": "PAINTBRUSH", "desc": "TODO: A key item for artists." },
     "lactaid": { "name": "LACTAID", "desc": "Blocks all DAIRY-type attacks. Just in case." },
-    "tennis": { "name": "TENNIS BALLS", "desc": "Fast, bouncy, a little fuzzy. For old times' sake." }
+    "tennis": { "name": "TENNIS BALLS", "desc": "Fast, bouncy, a little fuzzy. For old times' sake." },
+    "heirloom_chest": { "name": "ANCIENT FAMILY HEIRLOOM CHEST", "desc": "Priceless family heirloom. Actually $24.99." },
+    "cutters": { "name": "CUTTERS", "desc": "For snipping. Not for LEON's beard." },
+    "sunflower_stem": { "name": "SUNFLOWER", "desc": "The perfect one." }
   },
 
   "statuses": {
@@ -88,8 +91,8 @@
       "win": ["TODO: HIKER was defeated!", "TODO: \"Nice partner you've got there.\""]
     },
     "champion": {
-      "foe": "CHAMPION LEON", "foeSprite": "leon", "hp": 100, "damage": 30,
-      "intro": ["TODO: CHAMPION LEON wants to battle!", "TODO: Two years of training led here."],
+      "foe": "CHAMPION DR. JOSEPHSON", "foeSprite": "professor", "hp": 100, "damage": 30,
+      "intro": [],
       "questions": [
         { "q": "When we eat out, what is LEON's main job?", "options": ["SPLITTING DISHES", "HOLDING THE BAG", "ORDERING SALAD"], "answer": 0, "move": "SAMPLER PLATTER",
           "leonMove": "LEON used CLUBS OR NO CLUBS? It's a stalemate!" },
@@ -105,9 +108,9 @@
           "leonMove": "LEON used PUPPY EYES. It's super effective!" }
       ],
       "foeMoves": [
-        { "name": "DAD JOKE", "text": "TODO: It's not very effective... but it hurt {name} a little." },
-        { "name": "LIP FILLER", "text": "TODO: LEON's lips grew. Somehow that hurt YOU." },
-        { "name": "SNORE", "text": "TODO: LEON fell asleep mid-battle. The noise did damage to {name}." }
+        { "name": "POP QUIZ" },
+        { "name": "INSOMNIA" },
+        { "name": "NEURO EXAM" }
       ],
       "distracted": [
         "{partner} got distracted by a bug!",
@@ -121,7 +124,7 @@
       "revive": ["All letters received at 11:59 PM!", "{name} was revived!"],
       "wake": ["{partner} woke up and stretched! Ready to go!"],
       "finisher": ["{partner} used TWO YEARS!", "It's super effective!"],
-      "win": ["CHAMPION LEON was defeated!", "TODO: \"You were always going to win.\""],
+      "win": [],
       "award": "twoyear"
     }
   },
@@ -372,32 +375,61 @@
     "pro_card": { "type": "trainerCard", "shareText": "Trainer {name} chose GIDGET! Picks are in. Keeping Oct 10–11 free... LEON, I'm onto you. 👀", "next": "@end" },
 
     "ch1_start": {
-      "bg": "night", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
-      "lines": ["TODO: The Night Route glitters..."],
-      "next": "ch1_wild"
+      "type": "dialogue", "bg": "night", "sprites": [{ "art": "leon", "at": "center" }],
+      "lines": ["What a night! {name} dazzled everyone at the GALA.", "LEON appears with your bag. Perfect timing."],
+      "next": "ch1_start_leon"
     },
-    "ch1_wild": {
-      "type": "encounter", "text": "A wild LEON appeared!",
-      "sprites": [{ "art": "leon_lips", "at": "right" }],
-      "lines": ["TODO: Its lips are at MAXIMUM SIZE."],
-      "do": [{ "status": "puffed" }],
+    "ch1_start_leon": {
+      "type": "dialogue", "speaker": "LEON",
+      "lines": ["Your next adventure awaits. To the car!"],
+      "next": "ch1_drive"
+    },
+    "ch1_drive": {
+      "type": "dialogue", "bg": "road", "sprites": [{ "art": "gidget_sleep", "at": "center" }],
+      "lines": ["The road winds off into the dark.", "GIDGET curled up and fell asleep!"],
+      "next": "ch1_arrive"
+    },
+    "ch1_arrive": {
+      "if": { "lodging": "!hideout" }, "else": "ch1_arrive_hideout",
+      "type": "dialogue", "bg": "inn", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["You arrive at {L.lodging}. It's late. Very late.", "GIDGET wakes up and immediately explores the room."],
+      "next": "ch1_heirloom"
+    },
+    "ch1_arrive_hideout": {
+      "type": "dialogue", "bg": "hideout", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["You arrive at {L.lodging}. It's late. Very late.", "GIDGET wakes up and immediately explores the room."],
+      "next": "ch1_heirloom"
+    },
+    "ch1_heirloom": {
+      "type": "obstacle", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["WOW! You found the ANCIENT FAMILY HEIRLOOM CHEST!", "Passed down for generations. Priceless beyond measure.", "GIDGET is already sitting on it."],
+      "prompt": "What will you do?",
       "choices": [
-        { "label": "FIGHT", "fail": ["TODO: You can't fight him. Look at those lips."] },
-        { "label": "HUG", "lines": ["TODO: It's super effective!"], "next": "ch1_trainer" },
-        { "label": "RUN", "fail": ["TODO: Can't escape! He's holding your hand."] }
+        { "label": "INSPECT IT", "fail": ["GIDGET is in the way. She does not care about your inspection."] },
+        { "label": "CHASE GIDGET OFF", "fail": ["GIDGET stares at you. GIDGET is not moving."] },
+        { "label": "SIT ON IT TOO", "next": "ch1_heirloom_reveal" }
       ]
     },
-    "ch1_trainer": {
-      "type": "battle", "battle": "hiker",
-      "bg": "road", "sprites": [],
-      "lines": ["TODO: A trainer blocks the path!"],
-      "afterBg": "night",
-      "next": "ch1_end"
+    "ch1_heirloom_reveal": {
+      "type": "dialogue", "sprites": [{ "art": "npc", "at": "center" }],
+      "lines": ["THE WASIAN bursts into the room!"],
+      "next": "ch1_heirloom_wasian"
     },
-    "ch1_end": {
-      "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
-      "lines": ["TODO: The night winds down. Time to rest."],
-      "do": [{ "clearStatus": "puffed" }],
+    "ch1_heirloom_wasian": {
+      "type": "dialogue", "speaker": "THE WASIAN",
+      "lines": ["NOT THE HEIRLOOM! MY GREAT-GREAT-GRANDMOTHER'S CHEST!"],
+      "next": "ch1_heirloom_sticker"
+    },
+    "ch1_heirloom_sticker": {
+      "type": "dialogue",
+      "lines": [
+        "THE WASIAN bursts into tears and flips it over to check for damage.",
+        "There's a sticker on the bottom.",
+        "MICHAELS. $24.99. 40% OFF. MADE IN CHINA.",
+        "THE WASIAN quietly leaves the room.",
+        "The ANCIENT FAMILY HEIRLOOM CHEST was added to your Bag."
+      ],
+      "do": [{ "item": "heirloom_chest", "quiet": true }],
       "next": "@end"
     },
 
@@ -407,7 +439,7 @@
       "lines": [
         "Morning on the coast. The sun is out. GIDGET is already hungry.",
         "A reminder: LEON once went to the wrong ANDYTOWN. Twice.",
-        "Good news: breakfast is right here at the hideout. What could go wrong?"
+        "Good news: breakfast is right here at the inn. What could go wrong?"
       ],
       "next": "ch2_directions"
     },
@@ -416,7 +448,7 @@
       "lines": [
         "Morning on the coast. The sun is out. GIDGET is already hungry.",
         "A reminder: LEON once went to the wrong ANDYTOWN. Twice.",
-        "Good news: breakfast is right here at the inn. What could go wrong?"
+        "Good news: breakfast is right here at the hideout. What could go wrong?"
       ],
       "next": "ch2_directions"
     },
@@ -445,20 +477,52 @@
       "next": "@end"
     },
 
-    "ch3_start": {
-      "bg": "field", "sprites": [{ "art": "gidget", "at": "center", "anim": "bounce" }],
-      "lines": ["TODO: A sea of sunflowers!"],
-      "do": [{ "item": "sunflower" }],
+    "ch3_field": {
+      "type": "dialogue", "bg": "field", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["A whole field of sunflowers, taller than LEON.", "GIDGET disappears between the stalks.", "LEON hands you a pair of CUTTERS."],
+      "do": [{ "item": "cutters" }],
+      "next": "ch3_pick"
+    },
+    "ch3_pick": {
+      "type": "obstacle", "bg": "field", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["You found the perfect sunflower."],
+      "prompt": "What will you do?",
+      "choices": [
+        { "label": "PULL IT", "fail": ["The sunflower is stronger than it looks."] },
+        { "label": "ASK GIDGET", "fail": ["GIDGET is watching a bee very carefully."] },
+        { "label": "USE CUTTERS", "next": "ch3_done" }
+      ]
+    },
+    "ch3_done": {
+      "type": "dialogue", "bg": "field", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["Snip! The SUNFLOWER was added to your Bag.", "GIDGET sniffs it and approves."],
+      "do": [{ "item": "sunflower_stem", "quiet": true }],
       "next": "@end"
     },
 
-    "ch4_start": {
-      "type": "choice", "bg": "beach", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
-      "lines": ["TODO: The coast road splits."],
+    "ch4_tide": {
+      "type": "dialogue", "bg": "beach", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["The tide is out. The rocks are full of tiny pools.", "GIDGET peers into the water, very seriously."],
+      "next": "ch4_encounter"
+    },
+    "ch4_encounter": {
+      "type": "encounter", "bg": "beach", "sprites": [{ "art": "sea_star", "at": "center" }],
+      "text": "A wild SEA STAR appeared!",
+      "next": "ch4_catch"
+    },
+    "ch4_catch": {
+      "type": "obstacle", "bg": "beach", "sprites": [{ "art": "sea_star", "at": "center" }],
+      "lines": ["The SEA STAR is just sitting there. Being a star."],
+      "prompt": "What will you do?",
       "choices": [
-        { "label": "TODO OPTION A", "set": { "route4": "a" } },
-        { "label": "TODO OPTION B", "set": { "route4": "b" } }
-      ],
+        { "label": "PICK IT UP", "fail": ["GIDGET gives you a look. It lives here."] },
+        { "label": "POKE IT", "fail": ["The SEA STAR does not move. It has all day."] },
+        { "label": "TAKE A PHOTO", "next": "ch4_done" }
+      ]
+    },
+    "ch4_done": {
+      "type": "dialogue", "bg": "beach", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["Click! A perfect shot of the SEA STAR.", "The sun is getting low. One more stop tonight."],
       "next": "@end"
     },
 
@@ -530,15 +594,48 @@
     },
 
     "ch7_start": {
-      "bg": "sunset", "sprites": [{ "art": "leon", "at": "center" }],
-      "speaker": "LEON",
-      "lines": ["TODO: So you've made it, {name}.", "TODO: I've been waiting two years for this."],
+      "type": "dialogue", "bg": "sunset", "sprites": [{ "art": "professor", "at": "center" }],
+      "lines": ["The sun is sinking toward the ocean. A fire pit crackles.", "A familiar figure sips his tea by the fire. It's DR. JOSEPHSON."],
+      "next": "ch7_start_josephson"
+    },
+    "ch7_start_josephson": {
+      "type": "dialogue", "speaker": "DR. JOSEPHSON",
+      "lines": ["Two years, TRAINER {name}. Let's see what you've learned."],
+      "next": "ch7_start_team"
+    },
+    "ch7_start_team": {
+      "type": "dialogue",
+      "lines": ["LEON steps up beside you. Your team is ready."],
+      "next": "ch7_challenge"
+    },
+    "ch7_challenge": {
+      "type": "encounter", "bg": "sunset", "sprites": [{ "art": "professor", "at": "center" }],
+      "text": "CHAMPION DR. JOSEPHSON would like to battle!",
       "next": "ch7_battle"
     },
     "ch7_battle": {
-      "type": "battle", "battle": "champion",
-      "afterBg": "sunset", "afterSprites": [{ "art": "leon", "at": "right" }, { "art": "jess", "at": "left" }],
-      "next": "ch7_letter"
+      "type": "battle", "bg": "sunset", "battle": "champion",
+      "next": "ch7_win"
+    },
+    "ch7_win": {
+      "type": "dialogue", "bg": "sunset", "sprites": [{ "art": "professor", "at": "center" }],
+      "lines": ["CHAMPION DR. JOSEPHSON is out of questions!"],
+      "next": "ch7_win_josephson"
+    },
+    "ch7_win_josephson": {
+      "type": "dialogue", "speaker": "DR. JOSEPHSON",
+      "lines": ["Splendid! You two make quite the team."],
+      "next": "ch7_win_sunset"
+    },
+    "ch7_win_sunset": {
+      "type": "dialogue",
+      "lines": ["The sun slips below the horizon.", "GIDGET curls up by the fire, very proud of herself."],
+      "next": "ch7_win_leon"
+    },
+    "ch7_win_leon": {
+      "type": "dialogue", "speaker": "LEON",
+      "lines": ["One last stop. Let's go eat."],
+      "next": "@end"
     },
     "ch7_letter": {
       "type": "letter", "title": "TODO: A LETTER",
@@ -567,6 +664,17 @@
     "post_credits": {
       "type": "credits",
       "lines": ["# TRAINER QUEST", "", "TODO: DIRECTED BY", "LEON", "", "TODO: STARRING", "{name}", "{partner}", "", "# THANK YOU FOR PLAYING"],
+      "next": "@end"
+    },
+
+    "leon_message": {
+      "type": "dialogue", "bg": "town", "sprites": [{ "art": "leon", "at": "center" }],
+      "lines": ["You have a new message!"],
+      "next": "leon_message_2"
+    },
+    "leon_message_2": {
+      "type": "dialogue", "speaker": "LEON",
+      "lines": ["I love you, and I'm so excited for this weekend."],
       "next": "@end"
     },
 
