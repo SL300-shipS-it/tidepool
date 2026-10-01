@@ -363,6 +363,27 @@ export const SPRITES = {
     ".kznk........knzk.",
     "..kk..........kk..",
   ],
+  // CR-043: 46x16 ring of sunflowers seen slightly from the front. Tall flowers at the back corners,
+  // medium ones on the sides, short ones in front; the middle (cols ~17-28) is open, low grass so
+  // Gidget (20x20) can sit inside it. Yellow petals y/x, brown centers n/o, stems and leaves g/f.
+  sunflower_patch: [
+    ".......kykyk......................kykyk.......",
+    "......kyyyyyk....................kyyyyyk......",
+    ".....kyynnnyyk..................kyynnnyyk.....",
+    "......kynnoxk.k.k............k.k.kynnoxk......",
+    "..kkkkyxnooxxkykyk..........kykykyxnooxxkkkk..",
+    ".kyyykkxxxxxkyyyyyk........kyyyyykxxxxxkkyyyk.",
+    "kynnnykkxfxkyynnnyyk......kyynnnyykxfxkkynnnyk",
+    "kynooxkkkfk.kynnoxk........kynnoxk.kfkkkynooxk",
+    ".kxxxkkggf.kyxnooxxk......kyxnooxxk.fggkkxxxk.",
+    "..kfkkkkfgk.kxxxxxk........kxxxxxk.kgfkk.kfk..",
+    ".kkfkyykkf...kxfxk..........kxfxk...fkyyk.fkk.",
+    "kggfynoxkf....kfkk..........kkfk....fynoxkfggk",
+    ".kfgkxxk.f.....fggk........kggf.....fkxxkkgfk.",
+    "kkkfkkfkkfkkkkkgfk..........kfgkkkkkfkkfkkfkkk",
+    "gfggfggfggfggfggfkkkkkkkkkkkkggfggfggfggfggfgg",
+    "gfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgfgf",
+  ],
 };
 
 // ---------- badge icons (16x16, drawn on a round badge) ----------
