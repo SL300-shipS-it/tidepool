@@ -6,7 +6,7 @@ import { unlockAudio, isMuted, setMuted, sfx } from "./audio.js";
 import { tryUnlock, tokenFrom } from "./badges.js";
 import { resume, startChapter, initMenus } from "./scenes.js";
 import { initAdmin } from "./admin.js";
-import { renderSprite } from "./art.js";
+import { SPRITES, drawGrid, gridSize } from "./art.js";
 
 async function boot() {
   try {
@@ -19,10 +19,8 @@ async function boot() {
   loadState();
   initTap(); initMenus(); initAdmin();
   $("versionText").textContent = "v" + CONFIG.VERSION;
-  // Gidget is the prologue's reveal (CR-050): show the canele until she has joined the team.
-  const metGidget = G.state.flags.gidgetJoined === "yes" || G.state.done.includes("prologue");
-  if (metGidget) renderSprite($("titleArt"), "gidget", 8);
-  else renderSprite($("titleArt"), "canele", 12);
+  // Title figure: Jess and Leon side by side (no Gidget, so the prologue reveal stays a surprise).
+  drawTitlePair($("titleArt"));
   $("titleArt").style.animation = "none";
   refreshMute();
 
@@ -47,6 +45,17 @@ async function boot() {
   show("title");
   await handleHash();
   debugUpdate();
+}
+
+function drawTitlePair(canvas) {
+  const jess = SPRITES.jess, leon = SPRITES.leon, gap = 3;
+  const a = gridSize(jess), b = gridSize(leon), h = Math.max(a.h, b.h);
+  canvas.width = a.w + gap + b.w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  drawGrid(ctx, jess, 0, h - a.h, 1);
+  drawGrid(ctx, leon, a.w + gap, h - b.h, 1);
+  const scale = 6;  // CSS pixels per sprite pixel
+  canvas.style.width = canvas.width * scale + "px"; canvas.style.height = canvas.height * scale + "px";
 }
 
 function refreshMute() {
