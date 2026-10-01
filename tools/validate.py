@@ -35,13 +35,27 @@ def prologue_flags_set(st):
         if sc.get("type") == "input": out.add(sc.get("flag", "name"))
     return out
 
+def prologue_items(st):
+    """Item ids a pro_ scene awards (scene `do` or a choice's `do`)."""
+    out = set()
+    for sid, sc in st.get("scenes", {}).items():
+        if not sid.startswith("pro_"): continue
+        effects = list(sc.get("do") or [])
+        for c in sc.get("choices") or []: effects += c.get("do") or []
+        out.update(e["item"] for e in effects if isinstance(e, dict) and e.get("item"))
+    return out
+
 def prologue_surface(st):
-    """Dict of part name -> JSON-able value. Part names are flat ("scenes.pro_intro", "labels.lodging")."""
+    """Dict of part name -> JSON-able value. Part names are flat ("scenes.pro_intro", "labels.lodging").
+    Items: only those a pro_ scene awards, so later-chapter items never trip the lock. Badges: all of
+    them (names/icons show in the badge case from the prologue on)."""
     parts = {}
     for sid, sc in st.get("scenes", {}).items():
         if sid.startswith("pro_"): parts[f"scenes.{sid}"] = sc
     parts["chapter.prologue"] = next((c for c in st.get("chapters", []) if c.get("id") == "prologue"), None)
-    for k in ("meta", "card", "items", "lists"): parts[k] = st.get(k)
+    for k in ("meta", "card", "lists"): parts[k] = st.get(k)
+    all_items = st.get("items") or {}
+    for iid in sorted(prologue_items(st)): parts[f"items.{iid}"] = all_items.get(iid)
     labels = st.get("labels", {})
     for k in sorted((PROLOGUE_LABEL_FLAGS | prologue_flags_set(st)) - {"name"}):
         if k in labels: parts[f"labels.{k}"] = labels[k]
@@ -72,6 +86,10 @@ _mg_block = re.search(r"GAMES\s*=\s*\{(.*?)\};", _mg.read_text(), re.S) if _mg.e
 MINIGAMES = set(re.findall(r"^\s*(\w+)\s*:", _mg_block.group(1), re.M)) if _mg_block else set()
 REPLAY_SCENE = "pro_replay_start"  # CR-019: the menu's REPLAY PROLOGUE opens this scene
 SPECIAL_TARGETS = ("@end", "@hub", "@replay", "@cancel")
+# CR-028: config.js LEON_MESSAGE = { scene: "...", from: "YYYY-MM-DD" }: a once-only standalone scene.
+_lm = re.search(r"LEON_MESSAGE:\s*\{([^}]*)\}", cfg_js)
+LEON_MESSAGE = dict(re.findall(r'(\w+):\s*"([^"]*)"', _lm.group(1))) if _lm else {}
+LEON_SCENE = LEON_MESSAGE.get("scene")
 LOCKED_TEXT = "Your next badge will find you."  # js/scenes.js fallback for a locked chapter
 # CR-015: words that would give away the destination. Case-insensitive.
 BLOCKLIST = ["Half Moon Bay", "HMB", "Miramar", "Montara", "El Granada", "Princeton", "Pillar Point",
@@ -142,6 +160,9 @@ def check_effects(do, where):
     for e in do or []:
         if "set" in e: flags_set.update(e["set"])
         if "item" in e and e["item"] not in items: err(f"{where}: unknown item '{e['item']}'")
+        if "quiet" in e:  # { "item": id, "quiet": true }: no ITEM GET popup
+            if not isinstance(e["quiet"], bool): err(f"{where}: quiet must be true or false")
+            elif "item" not in e: warn(f"{where}: quiet only applies to an item effect; it does nothing here")
         if "status" in e and e["status"] not in statuses: err(f"{where}: unknown status '{e['status']}'")
         if "badge" in e and e["badge"] not in badges: err(f"{where}: unknown badge '{e['badge']}'")
 
@@ -330,6 +351,29 @@ block_warn(story.get("lists", {}), "lists")
 for r in story.get("card", []):
     read_cond(r.get("if"), "card"); text_flags(r.get("value"))
 
+# ---------- message from Leon (CR-028) ----------
+# Played standalone (outside any chapter); "@" targets just end it. Everything it leads to counts as
+# reached; its text gets the length checks (above) and the blocklist check.
+leon_reached = set()
+if LEON_MESSAGE:
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", LEON_MESSAGE.get("from", "")):
+        err(f"config.js LEON_MESSAGE.from must be a YYYY-MM-DD date (got '{LEON_MESSAGE.get('from')}')")
+    if not LEON_SCENE: err("config.js LEON_MESSAGE has no scene")
+    elif LEON_SCENE not in scenes: warn(f"config.js LEON_MESSAGE scene '{LEON_SCENE}' is not in the story yet (nothing will play)")
+    else:
+        todo = [LEON_SCENE]
+        while todo:
+            sid = todo.pop()
+            if sid in leon_reached or sid not in scenes: continue
+            leon_reached.add(sid)
+            sc = scenes[sid]
+            if sc.get("type") == "input": warn(f"scene {sid}: an input scene inside Leon's message would overwrite her answer")
+            nxt = [sc.get("next"), sc.get("else"), sc.get("win"), sc.get("lose")] + [c.get("next") for c in sc.get("choices") or []]
+            for n in nxt:
+                for t in ([n] if isinstance(n, str) else [x.get("next") for x in n] if isinstance(n, list) else []):
+                    if t and not t.startswith("@"): todo.append(t)
+        for sid in leon_reached: block_warn(scenes[sid], f"scene {sid}")
+
 for f in sorted(flags_read - flags_set):
     err(f"flag '{f}' is read somewhere but never set")
 
@@ -439,7 +483,7 @@ for mask in range(2 ** len(names)):
     walk_lines.append(f"  [{tag}] {len(r)} reachable, {e} complete playthroughs, {st} states walked")
 
 for sid in scenes:
-    if sid not in reached and not sid.startswith(EXAMPLE_PREFIX): warn(f"scene {sid} is never reached in normal play")
+    if sid not in reached and sid not in leon_reached and not sid.startswith(EXAMPLE_PREFIX): warn(f"scene {sid} is never reached in normal play")
 
 # ---------- offline cache + version ----------
 sw = (ROOT / "sw.js").read_text()

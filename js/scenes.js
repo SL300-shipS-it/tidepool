@@ -50,8 +50,10 @@ export async function startChapter(ch) {
   await runFrom(ch.start);
 }
 
-// Resume wherever the save says.
+// Resume wherever the save says. Every open goes through here (CONTINUE, #b= and #r= links), so the
+// once-only message from Leon (CR-028) plays first when it is due.
 export async function resume() {
+  if (!(await maybeLeonMessage())) return;
   const s = G.state;
   if (s.replaying) {
     // Closed Safari mid-replay: keep replaying (the prologue is already done, so skip that check).
@@ -108,6 +110,52 @@ on("keys-changed", (id) => {
   if ($("hub").classList.contains("on")) openHub();
 });
 
+// ---------- message from Leon (CR-028) ----------
+// CONFIG.LEON_MESSAGE = { scene, from }. Due when: the prologue is done, the device's LOCAL date is on or
+// after `from`, the story has the scene, the save hasn't seen it, no replay is running, and not ?fast=1.
+function localDate() {
+  const d = new Date(), p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+export function leonMessageDue() {
+  const m = CONFIG.LEON_MESSAGE, s = G.state;
+  return !!(m && m.scene && m.from && !FAST && s && !s.seenLeonMessage && !s.replaying
+    && s.done.includes(prologue().id) && G.story.scenes[m.scene] && localDate() >= m.from);
+}
+// Plays the message if due, then marks it seen. Returns false if something else took over mid-message.
+async function maybeLeonMessage() {
+  if (!leonMessageDue()) return true;
+  await transition(() => { show("play"); $("hudChapter").textContent = ""; });
+  if (!(await playStandalone(CONFIG.LEON_MESSAGE.scene))) return false;
+  G.state.seenLeonMessage = true;
+  saveState();
+  return true;
+}
+
+// Plays a scene (and whatever its `next` leads to) outside any chapter: chapter/scene in the save are
+// untouched, and @end / @hub (any "@" target), a missing scene or no next just return. The stage is
+// restored afterwards. Resolves true when it ran to the end, false if a newer run (e.g. a replay) took over.
+let standalone = false;
+export async function playStandalone(sceneId) {
+  const gen = ++runGen;
+  const saved = { bg: stage.bg, sprites: stage.sprites };
+  standalone = true;
+  try {
+    let id = sceneId;
+    while (id && !id.startsWith("@")) {
+      if (gen !== runGen) return false;
+      const scene = G.story.scenes[id];
+      if (!scene) break;
+      if (scene.if && !test(scene.if)) { id = resolveNext(scene.else || scene.next); continue; }
+      id = await play(id, scene);
+    }
+    return gen === runGen;
+  } finally {
+    standalone = false;
+    if (gen === runGen) { stage.bg = saved.bg; stage.sprites = saved.sprites; }
+  }
+}
+
 // ---------- scene runner ----------
 // Special targets: @end (finish chapter; during a replay, return instead), @hub, and for the prologue
 // replay @replay (restart the current chapter from its start) and @cancel (end the replay, change nothing).
@@ -148,7 +196,8 @@ async function doEffects(list) {
       const it = G.story.items?.[e.item] || { name: e.item };
       if (!G.state.items.includes(e.item)) G.state.items.push(e.item);
       saveState();
-      await popup({ title: "ITEM GET!", text: `{name} obtained ${it.name}!` + (it.desc ? `\n${it.desc}` : ""), icon: { sprite: "item" }, sound: "item" });
+      // `quiet: true`: added silently (the scene's own text already says so).
+      if (!e.quiet) await popup({ title: "ITEM GET!", text: `{name} obtained ${it.name}!` + (it.desc ? `\n${it.desc}` : ""), icon: { sprite: "item" }, sound: "item" });
     }
     if (e.status) {
       const st = G.story.statuses?.[e.status] || { name: e.status };
@@ -326,7 +375,7 @@ async function endChapter() {
 // @cancel. Both @cancel and the prologue's @end return to where she was, with `done` untouched.
 export const REPLAY_SCENE = "pro_replay_start";
 function prologue() { return G.story.chapters.find((c) => !c.key) || G.story.chapters[0]; }
-export function canReplay() { return !!G.state && G.state.done.includes(prologue().id) && !G.state.replaying; }
+export function canReplay() { return !!G.state && G.state.done.includes(prologue().id) && !G.state.replaying && !standalone; }
 
 export async function startReplay() {
   if (!canReplay()) return;

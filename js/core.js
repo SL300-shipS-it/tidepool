@@ -32,6 +32,7 @@ export function freshState() {
     scene: null,        // scene to resume at
     replaying: false,   // true while replaying the prologue (CR-019)
     replayReturn: null, // where a replay goes back to: { chapter, scene } (chapter null = the hub)
+    seenLeonMessage: false, // CR-028: the once-only message from Leon has played
     started: Date.now(),
   };
 }
@@ -61,6 +62,7 @@ export function setPref(k, v) { storageSet("tp_pref_" + k, JSON.stringify(v)); }
 export function exportCode(state = G.state) {
   const s = state;
   const compact = { v: s.v, n: s.name, f: s.flags, k: Object.keys(s.keys), b: Object.keys(s.badges), i: s.items, s: s.statuses, a: s.ach, d: s.done, c: s.chapter, sc: s.scene };
+  if (s.seenLeonMessage) compact.lm = 1;
   if (s.replaying) compact.rp = { c: s.replayReturn?.chapter || null, sc: s.replayReturn?.scene || null };
   const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
   return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -72,7 +74,7 @@ export function importCode(code) {
   const st = freshState();
   Object.assign(st, {
     name: c.n || "", flags: c.f || {}, items: c.i || [], statuses: c.s || [], ach: c.a || [], done: c.d || [],
-    chapter: c.c || null, scene: c.sc || null,
+    chapter: c.c || null, scene: c.sc || null, seenLeonMessage: !!c.lm,
     keys: Object.fromEntries((c.k || []).map((k) => [k, t])),
     badges: Object.fromEntries((c.b || []).map((k) => [k, t])),
   });

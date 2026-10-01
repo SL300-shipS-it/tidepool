@@ -41,9 +41,17 @@ that are too long.
 | `sprites` | `[{ "art": "gidget", "at": "left", "anim": "bounce", "flip": true, "zzz": true }]`. `at`: left, center, right, farleft, farright, or 0–1. `anim`: bounce, bob. `[]` clears; omit to keep previous. Art: `gidget`, `gidget_sleep`, `jess`, `leon`, `leon_lips`, `leon_asleep`, `lactaid`, `tennis`, `npc`, `professor`. |
 | `speaker` | Name tag on the text box (supports `{partner}` etc.). |
 | `lines` | Array of text boxes. |
-| `do` | Effects after the lines: `{ "item": id }`, `{ "status": id }`, `{ "clearStatus": id }`, `{ "achievement": "Text" }`, `{ "badge": id }`, `{ "set": { flag: value } }`, `{ "sfx": name }`, `{ "wait": ms }`. |
+| `do` | Effects after the lines: `{ "item": id }` (add `"quiet": true` to add it to the Bag silently, see below), `{ "status": id }`, `{ "clearStatus": id }`, `{ "achievement": "Text" }`, `{ "badge": id }`, `{ "set": { flag: value } }`, `{ "sfx": name }`, `{ "wait": ms }`. |
 | `if` / `else` | Skip this scene unless flags match; go to `else` (or `next`) instead. |
 | `next` | Scene id, `"@end"` (finish chapter), `"@hub"`, `"@replay"` / `"@cancel"` (prologue replay only, see below), or a conditional list: `[{ "if": { "lodging": "hideout" }, "next": "a" }, { "next": "b" }]`. |
+
+Quiet items: `{ "item": "lactaid", "quiet": true }` adds the item to the Bag with no ITEM GET! popup. Use
+it only when the scene's own text already tells her she got it. `quiet` must be `true`/`false`
+(validator). Without `quiet`, the popup shows as usual.
+
+```json
+"do": [{ "item": "lactaid", "quiet": true }]
+```
 
 Conditions (`if`): `{ "flag": "value" }`, `{ "flag": ["a", "b"] }` (any of), `{ "flag": "!value" }` (not),
 `{ "cfg.toggle": true }` (a deploy-time toggle, see below), `{ "@replaying": true }` (true only while the
@@ -87,7 +95,8 @@ Titles never contain the number. The hub and the HUD show:
 ## Prologue lock
 
 Later-chapter work must leave the prologue byte-identical. `tools/prologue.lock` holds a sha256 of the
-"prologue surface": every `pro_` scene, the `prologue` chapter object, `meta`, `card`, `items`, `lists`,
+"prologue surface": every `pro_` scene, the `prologue` chapter object, `meta`, `card`, `lists`, the
+`items` a `pro_` scene awards (via a `do` item, on the scene or a choice; later-chapter items are outside it),
 the `labels` for prologue flags (`lodging`, `sunflowers`, `dinner`, `restaurant`, plus any flag a `pro_`
 scene sets) and each badge's `name` and `icon` (not hashes). Other labels (`lunch`, `breakfast`,
 `recover`, ...) and everything else in later chapters are outside it.
@@ -127,6 +136,28 @@ Example:
   "choices": [{ "label": "REPLAY", "next": "@replay" }, { "label": "NEVER MIND", "next": "@cancel" }]
 },
 "pro_intro": { "...": "...", "next": [{ "if": { "@replaying": true }, "next": "pro_recognize" }, { "next": "pro_name" }] }
+```
+
+## Message from Leon (CR-028)
+
+`config.js` has `LEON_MESSAGE: { scene: "leon_message", from: "2026-10-06" }`. On any open (CONTINUE,
+a `#b=` badge link or a `#r=` restore link) where the device's **local** date is on or after `from`, the
+prologue is done and the save hasn't seen it yet, that scene plays once before the hub/chapter. Then the
+save field `seenLeonMessage` is set (restore links carry it), so it never plays again. Before `from`,
+nothing changes. It never plays during a prologue replay (it waits for the next open) or in `?fast=1`.
+
+- It plays standalone (stage + text box, no chapter title). Its `next` chain can go through more scenes;
+  any `"@end"` / `"@hub"` just ends the message. It never finishes a chapter. Afterwards the game
+  continues where it would have (the chapter scene she was on, or the hub).
+- Admin panel: **PREVIEW LEON'S MESSAGE** plays it without setting `seenLeonMessage` (its `do` effects
+  still apply), then returns to the title + admin panel.
+- Avoid `input` scenes in it (validator warns). Its text gets the usual length checks and the
+  blocklist check. It is not warned about as "never reached". If the scene is missing, the validator warns
+  and nothing plays.
+
+```json
+"leon_message": { "bg": "night", "sprites": [{ "art": "leon", "at": "center" }], "speaker": "LEON",
+  "lines": ["Hey {name}. One more thing before we go."], "next": "@end" }
 ```
 
 ## Toggles (`cfg.` conditions)
@@ -235,8 +266,10 @@ edit `index.html` or `styles.css`: create any DOM they need inside `container`.
 ```
 
 `leonMove` (optional, CR-021): LEON's move before that question is asked. One string or an array of
-strings, each one text box (placeholders like `{name}` work, ~90 chars each). After the first box LEON
-lunges with a hit sound and a screen shake; nobody takes damage. Then the question appears.
+strings, each one text box (placeholders like `{name}` work, ~90 chars each). LEON is on Jess's team
+(CR-027), so it reads as a teammate's move: after the first box the hit sound plays and Jess hops on
+the player side. The foe doesn't move and nobody takes damage. Then the question appears. (A wrong
+answer's `foeMoves` still hit the team as before.)
 
 `answer` is the index of the right option, counting from 0. A right answer is Gidget's attack. A wrong
 answer is a random foe move. The player can't lose: HP never reaches 0. If the foe still has HP after the

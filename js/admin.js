@@ -3,7 +3,7 @@ import { G, $, saveState, resetState, exportCode, importCode, debugUpdate, resto
 import { CONFIG } from "../config.js";
 import { popup, show } from "./ui.js";
 import { grantKey } from "./badges.js";
-import { startChapter, runFrom, openHub, chapterOf } from "./scenes.js";
+import { startChapter, runFrom, openHub, chapterOf, playStandalone } from "./scenes.js";
 import { sfx, SFX_NAMES } from "./audio.js";
 import { transition } from "./ui.js";
 
@@ -66,6 +66,19 @@ export function openAdmin() {
     const ch = G.story.chapters.find((c) => scSel.value.startsWith(c.prefix || c.id)) || G.story.chapters[0];
     st.chapter = ch.id; st.replaying = false; st.replayReturn = null; saveState();
     transition(() => show("play")).then(() => runFrom(scSel.value));
+  })));
+
+  // CR-028: preview the once-only message from Leon. Never sets seenLeonMessage.
+  const lm = CONFIG.LEON_MESSAGE || {};
+  p.appendChild(h3(`LEON'S MESSAGE (from ${lm.from || "?"} · ${st.seenLeonMessage ? "seen" : "not seen"})`));
+  p.appendChild(row(btn("PREVIEW LEON'S MESSAGE", async () => {
+    if (!lm.scene || !G.story.scenes[lm.scene]) { popup({ title: "NOT IN STORY", text: `No scene "${lm.scene || ""}" yet.` }); return; }
+    close();
+    await transition(() => { show("play"); $("hudChapter").textContent = ""; });
+    const done = await playStandalone(lm.scene);
+    if (!done) return;  // something else took over (e.g. a replay from the menu)
+    await transition(() => show("title"));
+    openAdmin();
   })));
 
   // keys / badges

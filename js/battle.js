@@ -34,7 +34,8 @@ export async function runBattle(def) {
   const qs = def.questions || [];
   const perHit = Math.ceil(max / Math.max(1, qs.length));
   const dmg = def.damage || 30;
-  let foeHurt = 0, meHurt = 0, foeLunge = 0;
+  let foeHurt = 0, meHurt = 0;
+  let allyHop = 0; // CR-027: start time of a teammate (LEON) move; Jess hops twice on the player side
   let cat = "idle"; // Gidget's mood: "idle" | "distracted" (turns away, hops) | "nap" (asleep, zzz)
 
   stage.bg = def.bg || "battle";
@@ -43,10 +44,13 @@ export async function runBattle(def) {
     const W = stage.W, H = stage.H;
     const foeG = SPRITES[def.foeSprite || "leon"];
     const fg = gridSize(foeG);
-    const fx = Math.round(W * 0.73 - fg.w) - foeLunge, fy = Math.round(H * 0.34 - fg.h * 2 + 4);
+    const fx = Math.round(W * 0.73 - fg.w), fy = Math.round(H * 0.34 - fg.h * 2 + 4);
     if (!(foeHurt && ((t / 80) | 0) % 2)) drawGrid(ctx, foeG, fx, fy, 2);
     const floor = Math.round(H * 0.84 + 4); // player platform line; sprites stand on it whatever their height
-    const jx = Math.round(W * 0.08), jy = floor - gridSize(SPRITES.jess).h * 2;
+    if (allyHop && !allyHop.t0) allyHop.t0 = t;
+    const ht = allyHop ? t - allyHop.t0 : 0;
+    const hop = allyHop && ht < 360 ? Math.round(Math.abs(Math.sin((ht / 360) * Math.PI * 2)) * 5) : 0;
+    const jx = Math.round(W * 0.08), jy = floor - gridSize(SPRITES.jess).h * 2 - hop;
     // Only Jess blinks on a hit; Gidget is never shown as hurt.
     if (!(meHurt && ((t / 80) | 0) % 2)) drawGrid(ctx, SPRITES.jess, jx, jy, 2, true);
     const gidG = SPRITES.gidget, napG = SPRITES.gidget_sleep || gidG;
@@ -73,13 +77,14 @@ export async function runBattle(def) {
   for (const l of def.intro || []) await say(l);
 
   for (const q of qs) {
-    // CR-021: LEON's move before the question. A string or an array of text boxes; the first box
-    // plays, then LEON lunges toward the team with a hit sound and a shake (nobody blinks: no damage).
+    // CR-021/CR-027: LEON's move before the question. LEON is on Jess's team, so it is a teammate's
+    // move: after the first box, the hit sound plays and Jess hops on the player side. The foe never
+    // moves and nobody blinks (no damage).
     const lm = typeof q.leonMove === "string" ? [q.leonMove] : Array.isArray(q.leonMove) ? q.leonMove : [];
     for (const [i, l] of lm.entries()) {
       if (typeof l !== "string" || !l) continue;
       await say(l);
-      if (i === 0) { sfx("hit"); foeLunge = 6; await shake(); foeLunge = 0; await sleep(200); }
+      if (i === 0) { sfx("hit"); allyHop = {}; await sleep(380); allyHop = 0; await sleep(120); }
     }
     const pick = await choose(q.options, { prompt: q.q, cls: "q" });
     if (pick === q.answer) {

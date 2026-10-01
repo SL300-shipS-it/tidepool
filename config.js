@@ -14,6 +14,10 @@ export const CONFIG = {
   TEXT_SPEED_MS: 28,       // typewriter delay per character
   SAVE_KEY: "tp_save_v1",
   VERSION: "0.1.2",
+  // CR-028: a message from Leon, played once (before the menu/chapter) on the first open on or after
+  // `from` (device-local date, YYYY-MM-DD), once the prologue is done. Never during a replay or ?fast=1.
+  // The admin panel can preview it without marking it seen.
+  LEON_MESSAGE: { scene: "leon_message", from: "2026-10-06" },
   // Deploy-time story switches. Story conditions read them as { "cfg.<name>": true/false }.
   // Change here (not in the admin panel), then validate + deploy. Missing toggles count as false.
   TOGGLES: {
