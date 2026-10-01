@@ -7,17 +7,17 @@
 
   "chapters": [
     { "id": "prologue", "prefix": "pro_", "title": "PROLOGUE", "start": "pro_intro" },
-    { "id": "ch1", "prefix": "ch1_", "title": "CH.1 NIGHT ROUTE", "start": "ch1_start", "key": "gala",
+    { "id": "ch1", "prefix": "ch1_", "title": "NIGHT ROUTE", "start": "ch1_start", "key": "gala",
       "lockedText": "Your first badge awaits at the GALA." },
-    { "id": "ch2", "prefix": "ch2_", "title": "CH.2 MORNING", "start": "ch2_start", "key": "matcha" },
-    { "id": "ch3", "prefix": "ch3_", "title": "CH.3 SUNFLOWER FIELD", "start": "ch3_start", "key": "sunflower",
+    { "id": "ch2", "prefix": "ch2_", "title": "INN MORNING", "start": "ch2_morning", "key": "matcha" },
+    { "id": "ch5", "prefix": "ch5_", "title": "LUNCH", "start": "ch5_lunch", "key": "brush" },
+    { "id": "ch6", "prefix": "ch6_", "title": "FIGHT OR FLIGHT?", "start": "ch6_recover", "key": "continue",
+      "intro": "Lunch is done. Tap CONTINUE when you're ready." },
+    { "id": "ch3", "prefix": "ch3_", "title": "SUNFLOWER FIELD", "start": "ch3_start", "key": "sunflower",
       "if": { "sunflowers": "yes" } },
-    { "id": "ch4", "prefix": "ch4_", "title": "CH.4 ROUTE SOUTH", "start": "ch4_start", "key": "tide" },
-    { "id": "ch5", "prefix": "ch5_", "title": "CH.5 REST STOP", "start": "ch5_start", "key": "brush" },
-    { "id": "ch6", "prefix": "ch6_", "title": "CH.6 HEAL OR EXPLORE", "start": "ch6_start", "key": "continue",
-      "intro": "TODO: Take a breath, {name}. Tap CONTINUE when you're ready." },
-    { "id": "ch7", "prefix": "ch7_", "title": "CH.7 THE CHAMPION", "start": "ch7_start", "key": "twoyear" },
-    { "id": "post", "prefix": "post_", "title": "POST-GAME", "start": "post_start", "key": "legendary" }
+    { "id": "ch4", "prefix": "ch4_", "title": "ROUTE SOUTH", "start": "ch4_start", "key": "tide" },
+    { "id": "ch7", "prefix": "ch7_", "title": "THE CHAMPION", "start": "ch7_start", "key": "twoyear" },
+    { "id": "post", "prefix": "post_", "title": "POST-GAME", "start": "post_start", "key": "legendary", "numbered": false }
   ],
 
   "badges": {
@@ -47,8 +47,8 @@
     "lodging": { "inn": "Seaside Inn", "hideout": "Secret Hideout" },
     "sunflowers": { "yes": "Sunflower detour: yes", "no": "Sunflower detour: no" },
     "dinner": { "coastside": "Coastside Feast", "hometown": "Hometown Feast" },
-    "lunch": { "a": "TODO lunch A", "b": "TODO lunch B" },
-    "breakfast": { "room": "In-room breakfast", "johnnys": "Johnny's", "mavericks": "Mavericks Creperie" }
+    "lunch": { "pilotlight": "PILOT LIGHT", "cantina": "CANTINA" },
+    "recover": { "flight": "FIGHT OR FLIGHT", "rest": "REST AND DIGEST" }
   },
 
   "lists": {
@@ -91,11 +91,18 @@
       "foe": "CHAMPION LEON", "foeSprite": "leon", "hp": 100, "damage": 30,
       "intro": ["TODO: CHAMPION LEON wants to battle!", "TODO: Two years of training led here."],
       "questions": [
-        { "q": "TODO Q1: Where was our first date?", "options": ["TODO right", "TODO wrong", "TODO wrong"], "answer": 0, "move": "MEMORY LANE" },
-        { "q": "TODO Q2", "options": ["TODO wrong", "TODO right", "TODO wrong"], "answer": 1, "move": "INSIDE JOKE" },
-        { "q": "TODO Q3", "options": ["TODO wrong", "TODO wrong", "TODO right"], "answer": 2, "move": "CANELE CRUNCH" },
-        { "q": "TODO Q4", "options": ["TODO right", "TODO wrong"], "answer": 0, "move": "PURR" },
-        { "q": "TODO Q5", "options": ["TODO wrong", "TODO right"], "answer": 1, "move": "SUNSET GLARE" }
+        { "q": "When we eat out, what is LEON's main job?", "options": ["SPLITTING DISHES", "HOLDING THE BAG", "ORDERING SALAD"], "answer": 0, "move": "SAMPLER PLATTER",
+          "leonMove": "LEON used CLUBS OR NO CLUBS? It's a stalemate!" },
+        { "q": "LEON heads to ANDYTOWN. Where does he end up?", "options": ["THE WRONG ONE", "THE RIGHT ONE", "FRESNO"], "answer": 0, "move": "WRONG TURN",
+          "leonMove": "LEON was whisked away to FRESNO for 8 weeks!" },
+        { "q": "A certain friend's legendary biscuits come from...", "options": ["A BOX", "GRANDMA'S RECIPE", "PURE TALENT"], "answer": 0, "move": "BOXED MIX",
+          "leonMove": "LEON used SCUBA DIVE. LEON is nauseous!" },
+        { "q": "Your first 'mosquito bites' were actually...", "options": ["FLEAS", "MOSQUITOES", "STRESS HIVES"], "answer": 0, "move": "FLEA FLICKER",
+          "leonMove": "LEON needs the bathroom... but CHLOE is in there. LEON must wait. Forever." },
+        { "q": "Of the four of us on that 3AM bison walk, who ended up together?", "options": ["THE OTHER TWO", "THE BISON", "US (EVENTUALLY)"], "answer": 2, "move": "LONG GAME",
+          "leonMove": ["LEON used GET SICK AGAIN!", "{name} used LEMON-LIME GATORADE. It's super effective!"] },
+        { "q": "On our big trip with all our friends, who planned everything?", "options": ["YOU DID", "LEON DID", "THE GROUP CHAT"], "answer": 0, "move": "SUNBURN",
+          "leonMove": "LEON used PUPPY EYES. It's super effective!" }
       ],
       "foeMoves": [
         { "name": "DAD JOKE", "text": "TODO: It's not very effective... but it hurt {name} a little." },
@@ -106,7 +113,9 @@
         "{partner} got distracted by a bug!",
         "{partner} started grooming mid-battle.",
         "{partner} is staring at absolutely nothing.",
-        "{partner} is chasing a sunbeam!"
+        "{partner} is chasing a sunbeam!",
+        "GIDGET found half a drink and is saving the rest for later.",
+        "GIDGET is guarding the LEMON-LIME GATORADE."
       ],
       "nap": ["{partner} curled up for a nap..."],
       "revive": ["All letters received at 11:59 PM!", "{name} was revived!"],
@@ -392,51 +401,47 @@
       "next": "@end"
     },
 
-    "ch2_start": {
-      "if": { "lodging": "hideout" }, "else": "ch2_start_inn",
-      "bg": "hideout", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
-      "lines": ["TODO: Good morning, {name}!"],
-      "next": "ch2_breakfast"
-    },
-    "ch2_start_inn": {
-      "bg": "inn", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
-      "lines": ["TODO: Good morning, {name}!"],
-      "next": "ch2_breakfast"
-    },
-    "ch2_breakfast": {
-      "type": "choice",
-      "lines": ["TODO: Breakfast time! Where should we eat?"],
-      "choices": [
-        { "label": "IN-ROOM BREAKFAST", "set": { "breakfast": "room" } },
-        { "label": "JOHNNY'S", "set": { "breakfast": "johnnys" } },
-        { "label": "MAVERICKS CREPERIE", "set": { "breakfast": "mavericks" } }
+    "ch2_morning": {
+      "if": { "lodging": "!hideout" }, "else": "ch2_morning_hideout",
+      "bg": "inn", "sprites": [{ "art": "leon", "at": "center" }],
+      "lines": [
+        "Morning on the coast. The sun is out. GIDGET is already hungry.",
+        "A reminder: LEON once went to the wrong ANDYTOWN. Twice.",
+        "Good news: breakfast is right here at the inn. What could go wrong?"
       ],
-      "next": "ch2_obstacle"
+      "next": "ch2_directions"
     },
-    "ch2_obstacle": {
-      "type": "obstacle", "bg": "doorway",
-      "sprites": [{ "art": "leon_asleep", "at": "center", "zzz": true }],
-      "lines": ["TODO: A sleeping LEON is blocking the doorway!"],
-      "prompt": "TODO: What will you do?",
+    "ch2_morning_hideout": {
+      "bg": "hideout", "sprites": [{ "art": "leon", "at": "center" }],
+      "lines": [
+        "Morning on the coast. The sun is out. GIDGET is already hungry.",
+        "A reminder: LEON once went to the wrong ANDYTOWN. Twice.",
+        "Good news: breakfast is right here at the inn. What could go wrong?"
+      ],
+      "next": "ch2_directions"
+    },
+    "ch2_directions": {
+      "speaker": "LEON",
+      "lines": ["No directions needed. I can't get this one wrong."],
+      "next": "ch2_closet"
+    },
+    "ch2_closet": {
+      "lines": ["LEON walks confidently into the closet."],
+      "next": "ch2_split"
+    },
+    "ch2_split": {
+      "type": "obstacle", "sprites": [{ "art": "leon", "at": "center" }],
+      "lines": ["{name} wants to try a bit of everything. To share.", "LEON is guarding his plate."],
+      "prompt": "What will you do?",
       "choices": [
-        { "label": "SHOUT", "fail": ["TODO: LEON rolled over. Still asleep."] },
-        { "label": "STEP OVER", "fail": ["TODO: He grabbed your ankle in his sleep."] },
-        { "label": "OFFER MATCHA", "lines": ["TODO: LEON woke up! He smells matcha."], "next": "ch2_awake" }
+        { "label": "STEAL A BITE", "fail": ["LEON blocks with his fork. Impressive reflexes."] },
+        { "label": "ASK NICELY", "fail": ["LEON pretends not to hear you."] },
+        { "label": "OFFER A BITE OF YOURS", "next": "ch2_split_done" }
       ]
     },
-    "ch2_awake": {
-      "sprites": [{ "art": "leon", "at": "right" }, { "art": "gidget", "at": "left", "anim": "bounce" }],
-      "lines": ["TODO: The path is clear!"],
-      "do": [{ "item": "matcha" }, { "achievement": "TODO: Early Bird" }],
-      "next": "ch2_lunch"
-    },
-    "ch2_lunch": {
-      "type": "choice", "bg": "town",
-      "lines": ["TODO: Lunch plans?"],
-      "choices": [
-        { "label": "TODO LUNCH A", "set": { "lunch": "a" } },
-        { "label": "TODO LUNCH B", "set": { "lunch": "b" } }
-      ],
+    "ch2_split_done": {
+      "sprites": [{ "art": "leon", "at": "center" }],
+      "lines": ["LEON cannot resist. Plates are swapped. Everything is split.", "You got to try everything. As planned."],
       "next": "@end"
     },
 
@@ -457,7 +462,36 @@
       "next": "@end"
     },
 
-    "ch5_start": {
+    "ch5_lunch": {
+      "type": "choice", "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["GIDGET's stomach growls. It must be lunchtime."],
+      "prompt": "Where to for lunch?",
+      "choices": [
+        { "label": "PILOT LIGHT", "set": { "lunch": "pilotlight" }, "next": "ch5_wrongturn" },
+        { "label": "CANTINA", "set": { "lunch": "cantina" }, "next": "ch5_wrongturn" }
+      ]
+    },
+    "ch5_wrongturn": {
+      "bg": "town", "sprites": [{ "art": "leon", "at": "center" }],
+      "lines": ["LEON drives confidently to the wrong place."],
+      "next": "ch5_wrongturn_leon"
+    },
+    "ch5_wrongturn_leon": {
+      "speaker": "LEON",
+      "lines": ["Huh. There must be two of them."],
+      "next": [{ "if": { "lunch": "pilotlight" }, "next": "ch5_arrive_pilot" }, { "next": "ch5_arrive_cantina" }]
+    },
+    "ch5_arrive_pilot": {
+      "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["You made it to PILOT LIGHT. GIDGET settles in to watch the planes."],
+      "next": "ch5_easel"
+    },
+    "ch5_arrive_cantina": {
+      "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["You made it to CANTINA. GIDGET curls up by the fire pit."],
+      "next": "ch5_easel"
+    },
+    "ch5_easel": {
       "type": "choice", "bg": "road", "sprites": [{ "art": "gidget", "at": "left", "anim": "bounce" }],
       "lines": ["TODO: A quiet rest stop. There's an easel here..."],
       "choices": [
@@ -475,13 +509,23 @@
       "next": "@end"
     },
 
-    "ch6_start": {
-      "type": "choice", "bg": "inn", "sprites": [{ "art": "gidget_sleep", "at": "center" }],
-      "lines": ["TODO: {partner} looks tired. Heal or explore?"],
+    "ch6_recover": {
+      "type": "choice", "bg": "town", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["Lunch was a success. GIDGET is very full.", "Your nervous system has two settings. Which will it be?"],
+      "prompt": "Choose your mode.",
       "choices": [
-        { "label": "HEAL", "set": { "ch6": "heal" }, "lines": ["TODO: Everyone feels rested."] },
-        { "label": "EXPLORE", "set": { "ch6": "explore" }, "lines": ["TODO: Adventure calls!"] }
-      ],
+        { "label": "FIGHT OR FLIGHT", "set": { "recover": "flight" }, "next": "ch6_flight" },
+        { "label": "REST AND DIGEST", "set": { "recover": "rest" }, "next": "ch6_rest" }
+      ]
+    },
+    "ch6_flight": {
+      "bg": "beach", "sprites": [{ "art": "gidget", "at": "center" }],
+      "lines": ["You head out for a walk along the bluffs.", "The wind picks up. Heart rate: climbing.", "GIDGET trots ahead, tail high. Sympathetic system: engaged."],
+      "next": "@end"
+    },
+    "ch6_rest": {
+      "bg": "town", "sprites": [{ "art": "gidget_sleep", "at": "center" }],
+      "lines": ["You find somewhere cozy to recover.", "Heart rate: down. Lunch: digesting.", "GIDGET is already asleep. Parasympathetic system: engaged."],
       "next": "@end"
     },
 
