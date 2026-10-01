@@ -142,7 +142,7 @@
     },
     "pro_name": {
       "type": "input", "flag": "name", "speaker": "DR. JOSEPHSON",
-      "prompt": "Hmm. You look familiar. Remind me of your name?", "placeholder": "YOUR NAME", "max": 10,
+      "prompt": "Hmm. You look familiar. Are you one of my interns? Remind me of your name?", "placeholder": "YOUR NAME", "max": 10,
       "next": "pro_recognize"
     },
     "pro_recognize": {
@@ -163,7 +163,7 @@
     "pro_starter": {
       "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["Every trainer needs a partner.", "I've prepared THREE for you. Choose wisely!"],
+      "lines": ["I've prepared THREE for you. Choose wisely!"],
       "next": "pro_starter_pick"
     },
     "pro_starter_pick": {
@@ -184,19 +184,19 @@
     },
     "pro_starter_lactaid_gone": {
       "sprites": [],
-      "lines": ["...LACTAID is only needed occasionally. It rolled away."],
+      "lines": ["...LACTAID is only needed occasionally. It rolled off to wait for dessert."],
       "do": [{ "set": { "triedLactaid": "yes" } }, { "item": "lactaid" }],
       "next": "pro_starter_both"
     },
     "pro_starter_tennis": {
       "bg": "town", "sprites": [{ "art": "tennis", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["TENNIS BALLS! A veteran of college tennis.", "Fast, bouncy, and a little fuzzy."],
+      "lines": ["TENNIS BALLS! Straight from your college tennis days.", "Fast, bouncy, and a little fuzzy."],
       "next": "pro_starter_tennis_gone"
     },
     "pro_starter_tennis_gone": {
       "sprites": [],
-      "lines": ["...TENNIS BALLS served itself right out the window."],
+      "lines": ["...TENNIS BALLS bounced right out the window. Out of bounds!"],
       "do": [{ "set": { "triedTennis": "yes" } }, { "item": "tennis" }],
       "next": "pro_starter_both"
     },
@@ -236,7 +236,7 @@
     "pro_starter_charm": {
       "bg": "town", "sprites": [{ "art": "gidget_plain", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["One more thing! Every partner needs a keepsake."],
+      "lines": ["One more thing! A gift for your new partner."],
       "next": "pro_starter_charm_pick"
     },
     "pro_starter_charm_pick": {
@@ -261,7 +261,7 @@
     "pro_lodging": {
       "type": "choice", "bg": "town", "sprites": [{ "art": "professor", "at": "center" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["Every adventure needs a place to rest.", "Two brochures landed on my desk this morning. Curious!"],
+      "lines": ["Oh! I nearly forgot. LEON dropped off two brochures this morning.", "He said you'd need somewhere to rest. And that YOU get to choose."],
       "prompt": "Where will you stay?",
       "choices": [
         { "label": "SEASIDE INN", "set": { "lodging": "inn" }, "next": [
@@ -283,7 +283,7 @@
     "pro_lodging_inn": {
       "bg": "inn", "sprites": [{ "art": "professor", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["The SEASIDE INN! Right on the beach, with a fireplace in every room.", "Wine and homemade desserts each evening. GIDGET has questions about the desserts.", "And breakfast is on the house."],
+      "lines": ["The SEASIDE INN! Right on the beach, with a fireplace in every room.", "GIDGET has already claimed the spot by the fire.", "And breakfast is on the house."],
       "next": "pro_sunflower"
     },
     "pro_lodging_hideout": {
@@ -295,7 +295,7 @@
     "pro_sunflower": {
       "type": "choice", "bg": "field", "sprites": [{ "art": "professor", "at": "left" }, { "art": "gidget", "at": "right", "anim": "bounce" }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["Rumor has it there's a sunflower field along your route.", "A detour could be... blooming lovely."],
+      "lines": ["A little bird told me there's a sunflower field along your route.", "A detour could be... blooming lovely."],
       "prompt": "Take the sunflower detour?",
       "choices": [
         { "label": "YES, FLOWERS!", "set": { "sunflowers": "yes" }, "next": "pro_sunflower_yes" },
@@ -341,7 +341,7 @@
     "pro_dinner_city": {
       "type": "choice", "bg": "town",
       "speaker": "DR. JOSEPHSON",
-      "lines": ["The city has some fine tables. Choose one!"],
+      "lines": ["A few fine tables await. Choose one!"],
       "prompt": "Which table?",
       "choicesFrom": "restaurants", "choiceFlag": "restaurant",
       "next": "pro_ending"
@@ -353,12 +353,11 @@
         "Splendid! Your choices have been recorded.",
         "Now... about LEON's secret.",
         "I'm sworn to silence. But I can tell you three things.",
-        "ONE: Keep the night of OCT 10 through OCT 11 free.",
-        "TWO: Have a bag packed by Saturday afternoon.",
-        "Inside: something fancy, something cozy, something sturdy to walk in,",
-        "and something to sleep in.",
-        "LEON will take it from there.",
+        "ONE: Keep OCT 10 and OCT 11 free.",
+        "TWO: Have a bag packed by Saturday afternoon. LEON will take it from there.",
         "THREE: Your first badge awaits at the GALA.",
+        "Oh, and pack something fancy, something cozy,",
+        "something sturdy to walk in, and something to sleep in.",
         "The rest? You'll discover it one badge at a time."
       ],
       "next": "pro_card"
