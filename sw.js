@@ -3,7 +3,7 @@
 // Updates are all-or-nothing: a new version downloads every file into a fresh cache during install.
 // If any file fails (bad signal), the install fails and the phone keeps the old, complete version.
 // Pages are always served cache-first, so files from two versions never mix.
-const VERSION = "tp-v0.1.5";
+const VERSION = "tp-v0.1.6";
 const CORE = [
   "./", "index.html", "styles.css", "config.js",
   "js/main.js", "js/core.js", "js/ui.js", "js/art.js", "js/audio.js",
