@@ -307,7 +307,7 @@
     "pro_sunflower_yes_pose": {
       "sprites": [{ "art": "sunflower_patch", "at": "center" }, { "art": "gidget", "at": "center", "anim": "hopin", "dy": -4 }],
       "speaker": "DR. JOSEPHSON",
-      "lines": ["GIDGET is practicing her sitting-in-flowers pose."],
+      "lines": ["Look at GIDGET. She's found her flower patch."],
       "next": "pro_dinner"
     },
     "pro_sunflower_no": {
